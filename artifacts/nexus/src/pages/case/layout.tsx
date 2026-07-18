@@ -30,22 +30,22 @@ export default function CaseLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-border bg-sidebar flex flex-col flex-shrink-0 z-20">
-        <div className="h-14 flex items-center px-4 border-b border-border">
-          <Link href="/" className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
+      {/* Sidebar — dark charcoal, uses sidebar-* tokens */}
+      <aside className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col flex-shrink-0 z-20">
+        <div className="h-14 flex items-center px-4 border-b border-sidebar-border">
+          <Link href="/" className="text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors flex items-center gap-2 text-sm font-medium">
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Link>
         </div>
         
-        <div className="p-4 border-b border-border">
-          <h2 className="font-mono text-lg font-bold text-zinc-100">{caseData.refId}</h2>
-          <div className="flex items-center gap-2 mt-2 text-xs text-zinc-500 font-mono">
+        <div className="p-4 border-b border-sidebar-border">
+          <h2 className="font-mono text-lg font-bold text-sidebar-foreground">{caseData.refId}</h2>
+          <div className="flex items-center gap-2 mt-2 text-xs text-sidebar-foreground/50 font-mono">
             <span>{caseData.documentCount} DOCS</span>
             <span>&bull;</span>
             <span className={cn(
-              caseData.exportGateStatus === 'ready' ? "text-teal-400" : "text-amber-500"
+              caseData.exportGateStatus === 'ready' ? "text-teal-400" : "text-amber-400"
             )}>
               {caseData.exportGateStatus.toUpperCase()}
             </span>
@@ -60,8 +60,8 @@ export default function CaseLayout() {
                 <div className={cn(
                   "flex items-center justify-between px-3 py-2 rounded-sm text-sm font-medium transition-colors cursor-pointer",
                   isActive 
-                    ? "bg-zinc-800 text-white" 
-                    : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                    ? "bg-sidebar-accent text-sidebar-foreground" 
+                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 )}>
                   <div className="flex items-center gap-3">
                     <item.icon className="w-4 h-4" />
@@ -69,8 +69,10 @@ export default function CaseLayout() {
                   </div>
                   {item.badge && (
                     <span className={cn(
-                      "text-[10px] uppercase font-mono px-1.5 py-0.5 rounded-sm bg-zinc-950 border",
-                      item.badge === 'Blocked' ? "border-amber-900/50 text-amber-500" : "border-zinc-700 text-zinc-300"
+                      "text-[10px] uppercase font-mono px-1.5 py-0.5 rounded-sm border",
+                      item.badge === 'Blocked' 
+                        ? "border-amber-500/40 text-amber-400 bg-amber-500/10" 
+                        : "border-sidebar-border text-sidebar-foreground/70 bg-sidebar-border/30"
                     )}>
                       {item.badge}
                     </span>
@@ -81,11 +83,13 @@ export default function CaseLayout() {
           })}
         </nav>
 
-        <div className="p-3 border-t border-border mt-auto">
+        <div className="p-3 border-t border-sidebar-border mt-auto">
           <Link href={`/case/${id}/audit`}>
             <div className={cn(
               "flex items-center gap-3 px-3 py-2 rounded-sm text-sm font-medium transition-colors cursor-pointer",
-              currentPath === '/audit' ? "bg-zinc-800 text-white" : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
+              currentPath === '/audit' 
+                ? "bg-sidebar-accent text-sidebar-foreground" 
+                : "text-sidebar-foreground/50 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
             )}>
               <History className="w-4 h-4" />
               Audit Trail
@@ -96,15 +100,15 @@ export default function CaseLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border bg-card/50 backdrop-blur-sm flex items-center justify-between px-6 flex-shrink-0 z-10">
+        <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm flex items-center justify-between px-6 flex-shrink-0 z-10">
           <div className="flex items-center gap-3">
             {caseData.exportGateStatus === 'ready' ? (
-              <div className="flex items-center gap-2 text-sm text-teal-400 font-medium">
+              <div className="flex items-center gap-2 text-sm text-teal-700 font-medium">
                 <ShieldCheck className="w-4 h-4" />
                 Export Gate Ready
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-sm text-amber-500 font-medium">
+              <div className="flex items-center gap-2 text-sm text-amber-700 font-medium">
                 <ShieldAlert className="w-4 h-4" />
                 Export Gate Blocked: 4 Unresolved Items
               </div>
@@ -117,8 +121,8 @@ export default function CaseLayout() {
             className={cn(
               "font-medium rounded-sm",
               caseData.exportGateStatus === 'ready' 
-                ? "bg-teal-500 hover:bg-teal-600 text-zinc-950" 
-                : "bg-zinc-800 text-zinc-500 border-zinc-700 cursor-not-allowed"
+                ? "bg-teal-600 hover:bg-teal-700 text-white" 
+                : "bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60"
             )}
           >
             <Download className="w-4 h-4 mr-2" />
@@ -135,7 +139,7 @@ export default function CaseLayout() {
             <Route path="/case/:id/export" component={CaseExportGate} />
             <Route path="/case/:id/audit" component={CaseAudit} />
             <Route>
-              <div className="p-8 text-center text-zinc-500 font-mono">Select a section from the sidebar.</div>
+              <div className="p-8 text-center text-muted-foreground font-mono">Select a section from the sidebar.</div>
             </Route>
           </Switch>
         </main>
