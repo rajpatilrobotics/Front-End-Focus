@@ -1,0 +1,392 @@
+# Raw Product Brief — ContextFirst Nexus
+
+This is intentionally **not a user flow, page map, navigation structure, or UI specification**. The capabilities below can be arranged and presented however a designer believes is clearest.
+
+## Product idea
+
+ContextFirst Nexus is an AI-assisted case-preparation workspace for qualified legal and support practitioners working with possible trafficking-related forced-criminality cases.
+
+It helps practitioners understand:
+
+- What the available records actually document.
+- Whether alleged conduct may relate to recruitment, movement, control, coercion, or compelled activity.
+- Which claims are supported by exact sources.
+- What is reported, alleged, contradictory, missing, uncertain, or unprocessed.
+- What requires human review before information can be shared.
+
+The system organizes and suggests. **A qualified human makes every consequential decision.**
+
+## Hackathon problem
+
+Important context may be scattered across job offers, messages, travel records, practitioner notes, financial or task logs, legal notices, and support records.
+
+Practitioners may struggle to reconstruct events quickly while preserving:
+
+- Source provenance.
+- Contradictions.
+- Missing pages.
+- Uncertainty.
+- Privacy.
+- Minimum-necessary disclosure.
+
+Generic AI summarizers can invent connections, hide missing evidence, flatten contradictions, or produce confident conclusions that cannot be audited.
+
+## Intended users
+
+- Legal-aid practitioners.
+- Defence or public-defender teams.
+- Court-navigation practitioners.
+- NGO legal teams.
+- Qualified supervisors or pilot evaluators.
+
+The person described in the evidence is an affected stakeholder, not the direct user.
+
+## Document capability
+
+The intended product can work with one or more case documents.
+
+Possible document types include:
+
+- Job advertisements or offers.
+- Recruiter communications.
+- Travel or movement records.
+- Practitioner notes.
+- Financial, task, penalty, or operational records.
+- Legal or procedural notices.
+- Support-provider records.
+- Other relevant documents.
+
+These are **examples, not mandatory upload categories or fixed document slots**. Document types should not be hard-coded as seven required files.
+
+For the hackathon safety demonstration, all material must remain fictional or synthetic. Real client, survivor, child, or private case data is prohibited.
+
+## Document processing
+
+- PDF validation.
+- Browser-local text extraction where possible.
+- Page and document coverage calculation.
+- Missing, unreadable, excluded, and failed-page detection.
+- Language and translation metadata.
+- Document-type identification.
+- Identifier and sensitive-information detection.
+- Suggested masking and redaction.
+- Human approval or correction of masking.
+- Redacted view by default.
+- Intentional reveal of sensitive source content.
+- Leak scanning before analysis or export.
+- Embedded instructions treated as untrusted evidence, never executable commands.
+- Honest extraction failures instead of fabricated content.
+
+## AI analysis capability
+
+The AI should transform processed, masked evidence into a strict structured proposal containing:
+
+- Candidate events.
+- Candidate relationships.
+- Exact citations.
+- Timeline information.
+- Contradictions.
+- Missing context.
+- Evidence gaps.
+- Possible control or coercion indicators.
+- Possible compelled-task relationships.
+- Alleged-conduct timing relationships.
+- Protection or procedural urgency.
+- Limitations and abstentions.
+
+The AI must not directly create approved findings. Its outputs remain proposals until reviewed by a human.
+
+## Source grounding
+
+Every consequential suggestion should be traceable to:
+
+- Document ID.
+- Page or equivalent location.
+- Stable source segment.
+- Exact matching masked quotation.
+- Evidence nature.
+- Support status.
+- Coverage status.
+
+Finding text in a source proves only that the text exists there. It does not prove truth, authenticity, credibility, admissibility, completeness, or legal sufficiency.
+
+## Charge–Coercion Nexus
+
+The project’s distinctive analytical artifact is the **Charge–Coercion Nexus**.
+
+It examines relationships among:
+
+- Alleged conduct, offence, charge, or sanction.
+- Recruitment.
+- Movement.
+- Control or coercion.
+- Compelled activities.
+- Timing.
+- Supporting and contrary evidence.
+- Missing evidence.
+- Protection or procedural urgency.
+
+It is not a trafficking determination or legal opinion.
+
+## Evidence classification
+
+The product must keep these dimensions separate:
+
+### Evidence nature
+
+- Documented in a source.
+- Reported or alleged in a source.
+- Reviewer-supplied context.
+- Unknown.
+
+### Origin
+
+- Source extraction.
+- AI suggestion.
+- Human-created.
+
+### Support
+
+- Exact-source supported.
+- Partially supported.
+- Conflicting.
+- Insufficient evidence.
+- Citation unresolved.
+- Not processed.
+
+### Human review
+
+- Pending.
+- Accepted.
+- Edited.
+- Rejected.
+- Uncertain.
+- Invalidated.
+
+Human acceptance must never erase the fact that something originated as an allegation or AI suggestion.
+
+## Human review capability
+
+Practitioners can:
+
+- Inspect the exact masked source.
+- Accept a proposal.
+- Edit it.
+- Reject it.
+- Mark it uncertain.
+- Preserve it as unknown.
+- Defer it.
+- Record context.
+- Review limitations and contradictions.
+- Resolve citation ambiguity.
+- Withdraw previously accepted evidence.
+
+There must be no bulk approval of consequential findings.
+
+## Dependency intelligence
+
+Findings are connected through an evidence-dependency graph.
+
+If evidence is rejected, withdrawn, replaced, or invalidated:
+
+- Dependent findings are recalculated.
+- Unsupported relationships reopen for review.
+- Previous positive conclusions cannot remain silently active.
+- Export readiness is revoked when necessary.
+- Historical decisions and dependency changes remain auditable.
+
+This is one of the project’s strongest differentiators from a normal CRUD application.
+
+## Context gaps and contradictions
+
+The system should explicitly preserve questions such as:
+
+- Is the sender’s identity or authority verified?
+- Is interpreter support confirmed?
+- Is an important page missing?
+- Do two records disagree on a date or location?
+- Is document provenance unknown?
+- Is a relationship unsupported?
+- Is translation status unclear?
+
+“Unknown” and “insufficient evidence” are valid results.
+
+## Three analytical perspectives
+
+The product supports separate consideration of:
+
+- Trafficking indicators requiring practitioner review.
+- Possible non-punishment relevance requiring practitioner review.
+- Protection, remedy, and procedural urgency.
+
+These must never be collapsed into a single score.
+
+## Timeline capability
+
+- Source-linked chronological events.
+- Exact or approximate dates.
+- Unknown dates.
+- Conflicting events.
+- Documented, reported, alleged, reviewer-created, and unknown evidence.
+- Direct access to supporting source locations.
+- Filters without hiding important limitations.
+
+## Export safety
+
+A handoff cannot be created while critical conditions remain unresolved.
+
+Possible blockers include:
+
+- Unreviewed consequential items.
+- Invalid or unresolved citations.
+- Missing critical evidence.
+- Coverage limitations.
+- Unresolved dependencies.
+- Incomplete masking.
+- Privacy or leak-scan failures.
+- Stale analysis.
+- Missing jurisdiction or purpose information.
+
+There is no unsafe override.
+
+## Outputs
+
+### Full practitioner handoff
+
+A reviewed, redacted case-preparation record for an authorized professional purpose.
+
+### Minimum-necessary safe share
+
+A recipient-specific output containing only selected, eligible, reviewed information.
+
+### Formats
+
+- Human-readable PDF.
+- Canonical structured JSON.
+- Semantic on-screen preview.
+
+All formats must come from the same immutable reviewed manifest and contain matching information.
+
+Outputs preserve:
+
+- Exact citations.
+- Limitations.
+- Gaps.
+- Human decisions.
+- Redaction status.
+- Audit provenance.
+- Analysis-run provenance.
+- Purpose binding.
+- Required safety labels.
+
+## Audit and trust
+
+- Append-only audit history.
+- Safe summaries without raw sensitive content.
+- Analysis provenance.
+- Human decision history.
+- Evidence withdrawal history.
+- Dependency changes.
+- Export-gate evaluations.
+- Export creation records.
+- Sensitive-source reveal records.
+- Unsafe-output reporting.
+- Reset history.
+- System card.
+- Provider and data-flow disclosures.
+- Synthetic evaluation evidence.
+- Honest reporting of what was tested and what was not tested.
+
+## Safety boundaries
+
+The system must never:
+
+- Decide whether someone is a trafficking victim.
+- Assess guilt or innocence.
+- Score credibility.
+- Determine legal eligibility.
+- Recommend prosecution or sentencing.
+- Predict case outcomes.
+- Rank people or cases.
+- Contact law enforcement automatically.
+- Make referrals automatically.
+- Scrape private platforms.
+- Perform facial recognition or identity resolution.
+- Profile people across cases.
+- Present international guidance as domestic legal advice.
+- Pretend failed extraction or failed AI output succeeded.
+
+It is also not:
+
+- A survivor chatbot.
+- A hotline.
+- An emergency service.
+- A reporting portal.
+- An automated interview tool.
+- A replacement for qualified legal judgment.
+
+## AI and model architecture
+
+Backend adapters have been prepared for:
+
+- OpenAI `gpt-5.6-sol`.
+- Google Gemini `gemini-3.5-flash`.
+- Mistral `mistral-small-2603`.
+
+The current public deployment is replay-only: it uses a bundled deterministic analysis result with no provider transmission. Live models are not currently enabled or selectable.
+
+The intended future system uses server-managed model routing only after each model configuration passes:
+
+- Evaluation.
+- Static admission.
+- Credential approval.
+- Spending approval.
+- Privacy review.
+- Production approval.
+
+Provider and model selection should not be exposed as a technical control to normal practitioners.
+
+## Technology
+
+- Next.js.
+- React.
+- TypeScript.
+- Zod validation.
+- Browser-local PDF handling.
+- Local PDF and JSON generation.
+- Vitest unit and contract testing.
+- Playwright end-to-end testing.
+- Automated accessibility checks.
+- Vercel deployment.
+- Server-only AI provider adapters.
+- Deterministic replay for reliable demonstrations.
+
+## Strongest demonstration
+
+A practitioner withdraws evidence supporting a key coercion relationship.
+
+The system immediately:
+
+- Recalculates dependent findings.
+- Marks unsupported relationships unresolved.
+- Preserves the withdrawal and earlier decisions.
+- Blocks export.
+- Requires renewed human review.
+- Includes the resulting limitation in the final handoff.
+
+## Design freedom
+
+A designer or design-generation tool should have complete freedom to invent:
+
+- Visual identity.
+- Color system.
+- Typography.
+- Information architecture.
+- Navigation model.
+- Workspace composition.
+- Density.
+- Interaction patterns.
+- Progressive disclosure.
+- Status presentation.
+
+It should **not copy the current application’s layout**, and this brief does not prescribe where any capability appears.
