@@ -1,0 +1,578 @@
+This is the complete product and user-flow description for ContextFirst Nexus, including the finished TASK-039 direction.
+Important: TASK-039 is currently completed in its worktree but not yet integrated into main. Therefore, use the TASK-039 local preview as the latest UI reference for Figma.
+1. What ContextFirst Nexus is
+ContextFirst Nexus is a source-grounded case-preparation workspace for qualified practitioners working on trafficking-related forced-criminality matters.
+It helps a practitioner answer:
+What does the case packet actually document about the relationship between alleged conduct and possible coercion, what conflicts or remains unknown, and what needs human review before a safe handoff?
+The system organizes and suggests. The practitioner makes every consequential decision.
+2. Who uses it
+Primary users:
+Legal-aid practitioners
+Defence lawyers
+Public defenders
+Court-navigation practitioners
+NGO legal practitioners
+Authorized supervisors or demo evaluators
+The affected person described in the records is not the direct user.
+The app is not:
+A survivor chatbot
+A hotline or emergency service
+A reporting channel
+A law-enforcement intake system
+A legal-advice system
+A trafficking-determination system
+3. Complete application flow
+Landing
+   ↓
+Purpose Brief
+   ↓
+Documents, coverage and masking
+   ↓
+Start local analysis
+   ↓
+Timeline, Nexus and human review
+   ↓
+Export gate
+   ↓
+Reviewed local PDF or JSON
+   ↓
+Trust, audit and evaluation evidence
+There is also a fast demonstration route:
+Purpose
+   ↓
+Load prepared checkpoint
+   ↓
+Review workspace
+   ↓
+Blocked export
+   ↓
+Withdraw evidence
+   ↓
+Review affected dependencies
+   ↓
+Create local handoff
+4. Landing page
+Route: /
+The user first sees:
+ContextFirst Nexus name and description
+Qualified-practitioner audience
+Synthetic-only case boundary
+Human-review responsibility
+Clear list of prohibited decisions
+Link to Trust and Safety
+Start demo action
+The page explains that the app does not determine:
+Trafficking or victim status
+Credibility
+Guilt or innocence
+Legal eligibility
+Non-punishment eligibility
+Case priority
+Legal strategy
+Prosecution or sentencing outcome
+No account or upload is required.
+5. Persistent case workspace
+Routes under /case/demo/* share one workspace shell.
+TASK-039’s latest design includes:
+Synthetic-training warning
+Compact case information
+Case ID and fixture version
+Current case status
+Plain-language analysis status
+Horizontal progress navigation:
+Purpose
+Documents
+Review
+Export
+Reset Case
+Skip-to-content accessibility link
+Provider names, model names, release identifiers and provider controls are removed from the practitioner interface.
+Reset Case clears the browser-session case and returns to Purpose.
+6. Purpose Brief
+Route: /case/demo/purpose
+The practitioner records why the case is being reviewed.
+Fields
+Practitioner role
+Organization type
+Authorized purpose
+Intended recipient
+Recipient category
+Fictional jurisdiction
+Source language
+Translation status
+Requested handoff:
+Full practitioner handoff
+Minimum-necessary safe share
+Required boundaries
+The user must confirm that:
+The material is the bundled synthetic fixture
+The system cannot verify their authority
+Consequential decisions remain outside system support
+Cooperation with authorities is not required for analysis
+The prototype does not accept real or private case data
+The local replay is frozen synthetic output, not live AI
+Analysis behaviour after TASK-039
+The user does not choose a provider or model.
+The app automatically accepts analysis only when exactly one service is available and it is:
+Bundled local replay
+prepared-replay-v1
+providerTransmission: false
+The app fails closed when:
+No service is available
+Multiple services are unexpectedly available
+The only available service is live AI
+Availability cannot be verified
+Saving the Purpose Brief does not start analysis.
+Prepared checkpoint
+A separate Load prepared checkpoint action loads a trusted synthetic review state.
+It is:
+Not a previous user session
+Not live AI
+Not another provider
+Not a fallback result
+A fixed, versioned local demonstration state
+7. Documents, processing and coverage
+Route: /case/demo/intake
+The bundled demo contains:
+Seven synthetic PDF documents
+Seventeen expected pages
+Sixteen available pages
+One explicitly missing page
+Twenty-eight canonical source segments
+No upload control
+Document features
+Each document card shows:
+Document ID and type
+Language
+Page count
+Page availability
+Processing state
+Missing or unavailable pages
+Browser-local processing
+The user selects Process bundled PDFs locally.
+Eight stages are displayed:
+Intake validation
+Text extraction
+Coverage calculation
+Identifier masking
+Candidate extraction
+Citation validation
+Timeline and Nexus assembly
+Safety and export-gate checks
+Processing uses the bundled PDF.js worker locally in the browser.
+The app visibly distinguishes:
+Processed
+Missing
+Unreadable
+Image-only
+Skipped
+Manually excluded
+Extraction failed
+Segment mismatch
+Missingness is never silently treated as success.
+8. Masking and redacted source review
+The system suggests masks for supported identifier classes such as:
+Person names from explicitly declared sensitive terms
+Email addresses
+Phone numbers
+Passport identifiers
+Bank-account identifiers
+Addresses
+Dates of birth
+The practitioner can:
+Approve a mask
+Edit its replacement token
+Reject a suggestion
+Remove a false positive
+Add a manual range mask
+Review the final redacted derivative
+The original source remains unchanged.
+Analysis is blocked until:
+Masking review is approved
+Mask ranges are valid
+Masks do not overlap incorrectly
+Replacement tokens are safe
+The deterministic leak scan passes
+Sources are redacted by default.
+Opening the synthetic original requires:
+An intentional reveal action
+A warning
+Confirmation
+A safe audit event
+Instruction-like text found inside a document is treated as inert evidence, not as an instruction to the application.
+9. Starting analysis
+When all prerequisites pass, the user sees Start analysis.
+Prerequisites include:
+Completed Purpose Brief
+Selected canonical source segments
+Completed document processing
+Reviewed coverage
+Approved masking
+Passed leak scan
+Valid local replay availability
+In the current public prototype, Start analysis:
+Runs deterministic replay locally
+Dispatches exactly one canonical command
+Makes no provider request
+Performs no provider transmission
+Produces one validated analysis run
+Never merges outputs
+The synthetic run creates:
+Fourteen canonical candidates
+Twenty-three unique citations
+Timeline events
+Nexus relationships
+Review-lane items
+Context-gap questions
+10. Review workspace
+Route: /case/demo/review
+The Review page can show:
+Analysis preparing
+No accepted run
+Safe analysis failure
+Coverage warning
+Full prepared review workspace
+Review summary
+The user sees counts for:
+Remaining review
+Reviewed items
+Invalidated items
+Citation problems
+Export blockers
+Source-linked timeline
+The timeline organizes events by:
+Recruitment
+Movement
+Control
+Alleged conduct
+Legal process
+Protection or urgency
+It supports:
+Exact or approximate dates
+Date ranges
+Unknown dates
+Conflicting chronology
+Coverage limitations
+Direct source opening
+The app never silently chooses one conflicting version.
+11. Charge-Coercion Nexus
+This is the main product artifact.
+It connects:
+Alleged offence or sanction
+Recruitment
+Movement
+Represented work conditions
+Control or coercion
+Compelled tasks or conduct
+Timing
+Supporting evidence
+Contrary evidence
+Missing evidence
+Protection or procedural urgency
+Every relationship shows:
+Current wording
+Evidence nature
+Item origin
+Support status
+Review status
+Exact source dependencies
+Limitations and unknowns
+The Nexus does not declare that trafficking occurred or that someone qualifies for non-punishment.
+12. Three review lanes
+Lane A: Trafficking indicators for review
+May organize indications involving:
+Recruitment
+Movement
+Deception
+Document control
+Threats
+Debt
+Restriction
+Compelled service
+Lane B: Non-punishment relevance for review
+Organizes:
+Timing between possible exploitation and alleged conduct
+Dependencies
+Contrary evidence
+Context gaps
+Relevant international guidance
+It always requires domestic legal verification.
+Lane C: Protection, remedy and procedural urgency
+May surface:
+Hearing dates
+Interpreter status
+Counsel status
+Safety questions
+Detention or return status
+Privacy concerns
+Time-sensitive gaps
+The app never contacts another organization automatically.
+13. Individual candidate review
+Every candidate is reviewed separately.
+The practitioner can:
+Accept the suggestion
+Edit the wording
+Reject it with a reason
+Mark it uncertain
+Confirm that it is unknown
+Record a limitation
+Withdraw critical supporting evidence
+There is no bulk approval.
+Editing preserves:
+Original wording
+New human wording
+Reviewer action
+Timestamp
+Run provenance
+Dependencies
+14. Context gaps
+The app presents questions created by missing or conflicting information.
+Examples:
+Which arrival date is supported?
+Is the task log’s provenance known?
+Is an interpreter arranged?
+Is document custody independently supported?
+The practitioner can:
+Answer with separately labelled human context
+Defer the question
+Preserve it as unknown
+Mark it outside scope
+Unknown is a valid result. It is not converted into an adverse inference.
+15. Exact-source drawer
+Opening a citation displays a contextual source drawer.
+It shows:
+Exact masked quote
+Document and page
+Segment
+Source authority
+Language
+Translation status
+Extraction quality
+Citation-validation status
+Source limitations
+Behaviour:
+Desktop: side drawer
+Tablet: overlay
+Mobile: modal dialog
+Escape or Close restores focus
+Background becomes inert on mobile
+Original synthetic text requires intentional audited reveal
+If the same quote occurs more than once in the same canonical segment, the practitioner can resolve the bounded ambiguity manually.
+Cross-segment or unsafe ambiguity remains blocked.
+16. Review queue
+The queue can filter by:
+Pending
+Accepted
+Edited
+Rejected
+Uncertain
+Conflict
+Citation problem
+Export blocker
+The queue links directly to the candidate that requires attention.
+17. Strongest interaction: evidence withdrawal
+The practitioner withdraws CAND-TASK-0402, which previously supported an alleged task-to-coercion relationship.
+The system then:
+Shows the affected dependencies
+Requires a withdrawal reason
+Preserves the historical evidence and decision
+Marks only reachable dependent Nexus items unresolved
+Preserves unrelated decisions
+Revokes export readiness
+Requires renewed human review
+The practitioner then records the required limitation:
+Insufficient evidence to support a link between the 2025-04-02 alleged communication and an assigned task.
+This demonstrates that the system does not preserve a conclusion after its evidence is removed.
+18. Export gate
+Route: /case/demo/export
+The practitioner first selects Review export gate.
+The gate checks:
+Purpose completeness
+Authority and synthetic-data acknowledgements
+Document coverage
+Individual human review
+Citation validity
+Dependency resolution
+Mask approval
+Leak scan
+Processing status
+Guidance limitations
+Jurisdiction warning
+Purpose scope
+Minimum necessity
+Active-run freshness
+Export-gate freshness
+If blocked, the app shows:
+Every blocker
+Affected candidate IDs
+Plain-language explanation
+Direct remediation link
+There is no override or bypass.
+19. Export types
+Full practitioner handoff
+May contain:
+Purpose summary
+Reviewed timeline
+Reviewed Nexus
+Supporting and contrary evidence
+Context gaps
+Coverage limitations
+Protection or urgency information
+Exact citations
+Human decisions
+Guidance metadata
+Run provenance
+Limitations
+Minimum-necessary safe share
+Includes only practitioner-selected, recipient-eligible reviewed information.
+It requires:
+Explicit candidate selection
+Included and excluded ID preview
+Minimum-necessity confirmation
+Raw documents and unnecessary identifiers are excluded.
+20. Export generation
+After the gate becomes ready, the practitioner selects Create canonical handoff.
+One immutable manifest produces:
+Semantic HTML preview
+Canonical structured JSON
+Local PDF
+The JSON and PDF contain the same:
+Manifest ID
+Reviewed-state hash
+Case revision
+Run ID
+Candidate IDs
+Citations
+Context gaps
+Labels
+Limitations
+Redaction status
+Provenance
+PDF generation is loaded only after the user requests it.
+Downloads happen locally in the browser.
+The app does not:
+Email the handoff
+Upload it
+File it
+Report it
+Refer the person
+Send it to law enforcement
+21. Trust and Safety
+Route: /trust
+System Card
+Shows:
+Intended uses
+Prohibited uses
+Synthetic-data boundary
+Known limitations
+Human-review requirements
+Unsupported conditions
+Replay and checkpoint provenance
+Provider admission status
+Data-flow disclosures
+Retention and training limitations
+Safety Lab
+Shows:
+Synthetic evaluation variants
+Deterministic test results
+Citation and abstention checks
+Prompt-injection containment
+Masking checks
+Cooperation-neutrality checks
+Export-gate tests
+Replay-continuity evidence
+It does not present an overall accuracy or effectiveness score.
+Guidance
+Six reviewed guidance cards provide:
+Issuer
+Source
+Version
+Scope
+Approved use
+Limitations
+Local legal-verification warning
+Guidance remains separate from case evidence.
+Audit history
+Records safe metadata for actions such as:
+Purpose saved
+Mask reviewed
+Source revealed
+Analysis started
+Candidate reviewed
+Evidence withdrawn
+Dependencies changed
+Export gate evaluated
+Handoff created
+Case reset
+Raw case text is not placed in application logs.
+Unsafe-output report
+The user can record a local report using:
+A safe predefined category
+An existing entity ID
+There is no free-text reporting field and nothing is transmitted externally.
+22. Browser state and persistence
+The app has one canonical case-state owner.
+All changes pass through validated commands with:
+Case revision
+Command ID
+Idempotency key
+Actor
+Timestamp
+Stable state is stored in versioned browser sessionStorage.
+The app does not have:
+A production database
+Durable server-side case storage
+Production authentication
+Automatic cloud synchronization
+Reset clears the local case session.
+23. Accessibility and security
+Implemented protections include:
+Keyboard navigation
+Skip links
+Visible focus
+Focused error summaries
+Semantic headings and landmarks
+Screen-reader labels
+Status communicated with text and shape, not colour alone
+Responsive source drawer
+Focus restoration
+Reduced-motion support
+44px control targets
+Mobile reflow
+Automated Axe accessibility tests
+Restrictive security headers
+Same-origin analysis API
+Server-only credentials
+Safe error objects
+Safe allowlisted logging
+No raw HTML rendering of evidence
+The project does not claim complete WCAG conformance without full manual testing.
+24. Current public AI status
+The current public application is replay-only.
+OpenAI: disabled and non-selectable
+Gemini: disabled and non-selectable
+Mistral: disabled and non-selectable
+Bundled replay: available
+Provider transmission: false
+TASK-040 will later implement managed server-side routing:
+OpenAI → Gemini → Mistral → separately evaluated fourth provider
+That routing is not implemented yet. It will remain invisible to practitioners and will require evaluation, admission, credentials and explicit approval before public activation.
+25. Best hackathon demonstration
+The strongest short demo is:
+Start demo.
+Load prepared checkpoint.
+Open an exact masked source.
+Show the timeline and Nexus.
+Attempt export and show that it is blocked.
+Withdraw CAND-TASK-0402.
+Show dependent Nexus items becoming unresolved.
+Record the insufficiency limitation.
+Renew the affected reviews.
+Re-evaluate the export gate.
+Create the canonical handoff.
+Preview JSON.
+Generate and download the local PDF.
+Open Trust.
+Confirm deterministic replay and providerTransmission: false.
+This complete definition is grounded in [PROJECT_BRIEF.md](/Users/rajpatil/Documents/call for code-hack26/contextfirst-nexus/PROJECT_BRIEF.md), [PRODUCT_SPEC.md](/Users/rajpatil/Documents/call for code-hack26/contextfirst-nexus/docs/PRODUCT_SPEC.md), and the latest TASK-039 worktree.
+
