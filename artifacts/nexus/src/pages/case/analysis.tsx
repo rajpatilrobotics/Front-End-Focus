@@ -1,43 +1,70 @@
 import React, { useState } from 'react';
-import { MOCK_FINDINGS, Finding } from '@/data/mock-case';
+import { MOCK_FINDINGS, MOCK_CONTEXT_GAPS, Finding, ContextGap, Citation, ReviewLane } from '@/data/mock-case';
 import { EvidenceNatureBadge, OriginBadge, SupportStatusBadge, ReviewStatusBadge } from '@/components/badges';
-import { FileText, AlertTriangle, XCircle, ShieldAlert, Check } from 'lucide-react';
+import { SourceDrawer } from '@/components/source-drawer';
+import { FileText, AlertTriangle, XCircle, ShieldAlert, Check, HelpCircle, MessageSquare, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type FilterStatus = 'all' | 'pending' | 'accepted' | 'edited' | 'rejected' | 'uncertain' | 'conflict' | 'export-blocker';
+type ActiveLane = 'A' | 'B' | 'C';
+
+const LANE_META: Record<ActiveLane, { label: string; subLabel: string; color: string; activeColor: string }> = {
+  A: { label: 'Lane A', subLabel: 'Trafficking Indicators', color: 'text-purple-700', activeColor: 'border-purple-500 text-purple-700 bg-purple-50' },
+  B: { label: 'Lane B', subLabel: 'Non-Punishment Relevance', color: 'text-blue-700', activeColor: 'border-blue-500 text-blue-700 bg-blue-50' },
+  C: { label: 'Lane C', subLabel: 'Protection & Urgency', color: 'text-orange-700', activeColor: 'border-orange-500 text-orange-700 bg-orange-50' },
+};
+
+const GAP_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+  unanswered: { label: 'Unanswered', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+  answered: { label: 'Answered', color: 'bg-teal-50 text-teal-700 border-teal-200' },
+  deferred: { label: 'Deferred', color: 'bg-slate-50 text-slate-600 border-slate-200' },
+  unknown: { label: 'Unknown (Valid)', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  'out-of-scope': { label: 'Out of Scope', color: 'bg-muted text-muted-foreground border-border' },
+};
+
 export default function CaseAnalysis() {
   const [findings, setFindings] = useState<Finding[]>(MOCK_FINDINGS);
-  const [selectedId, setSelectedId] = useState<string | null>(MOCK_FINDINGS[0].id);
+  const [gaps, setGaps] = useState<ContextGap[]>(MOCK_CONTEXT_GAPS);
+  const [selectedId, setSelectedId] = useState<string | null>(MOCK_FINDINGS.filter(f => f.lane === 'A')[0]?.id || null);
+  const [activeLane, setActiveLane] = useState<ActiveLane>('A');
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
   const [showCascadeModal, setShowCascadeModal] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerCitation, setDrawerCitation] = useState<Citation | null>(null);
+  const [showGaps, setShowGaps] = useState(false);
 
   const selected = findings.find(f => f.id === selectedId);
   const pendingCount = findings.filter(f => f.reviewStatus === 'pending').length;
+
+  const lanedFindings = findings.filter(f => f.lane === activeLane);
+  const filteredFindings = lanedFindings.filter(f => {
+    if (filterStatus === 'all') return true;
+    if (filterStatus === 'conflict') return f.supportStatus === 'conflicting';
+    if (filterStatus === 'export-blocker') return f.supportStatus === 'unresolved';
+    return f.reviewStatus === filterStatus;
+  });
 
   const handleWithdraw = (id: string) => {
     setWithdrawingId(id);
     const finding = findings.find(f => f.id === id);
     if (finding?.dependencies && finding.dependencies.length > 0) {
       setShowCascadeModal(true);
-    } else {
-      executeWithdraw(id);
-    }
+    } else { executeWithdraw(id); }
   };
 
   const executeWithdraw = (id: string) => {
     setFindings(prev => {
       const updated = [...prev];
-      const targetIndex = updated.findIndex(f => f.id === id);
-      if (targetIndex > -1) {
-        updated[targetIndex] = { ...updated[targetIndex], reviewStatus: 'pending' };
-        const dependencies = updated[targetIndex].dependencies || [];
-        dependencies.forEach(depId => {
-          const depIndex = updated.findIndex(f => f.id === depId);
-          if (depIndex > -1) {
-            updated[depIndex] = { ...updated[depIndex], supportStatus: 'unresolved', reviewStatus: 'pending' };
-          }
+      const idx = updated.findIndex(f => f.id === id);
+      if (idx > -1) {
+        updated[idx] = { ...updated[idx], reviewStatus: 'pending' };
+        (updated[idx].dependencies || []).forEach(depId => {
+          const di = updated.findIndex(f => f.id === depId);
+          if (di > -1) updated[di] = { ...updated[di], supportStatus: 'unresolved', reviewStatus: 'pending' };
         });
       }
       return updated;
@@ -50,6 +77,15 @@ export default function CaseAnalysis() {
     setFindings(prev => prev.map(f => f.id === id ? { ...f, reviewStatus: action } : f));
   };
 
+  const handleGapAction = (id: string, status: ContextGap['status']) => {
+    setGaps(prev => prev.map(g => g.id === id ? { ...g, status } : g));
+  };
+
+  const openDrawer = (citation: Citation) => {
+    setDrawerCitation(citation);
+    setDrawerOpen(true);
+  };
+
   const getTypeColor = (type: string) => {
     const map: Record<string, string> = {
       'coercion': 'border-purple-200 bg-purple-50 text-purple-700',
@@ -58,197 +94,325 @@ export default function CaseAnalysis() {
       'contradiction': 'border-red-200 bg-red-50 text-red-700',
       'evidence-gap': 'border-slate-200 bg-slate-50 text-slate-600',
       'protection-urgency': 'border-orange-200 bg-orange-50 text-orange-700',
+      'timeline-link': 'border-indigo-200 bg-indigo-50 text-indigo-700',
     };
     return map[type] || 'border-border text-muted-foreground bg-muted';
   };
 
+  const FILTERS: { key: FilterStatus; label: string }[] = [
+    { key: 'all', label: 'All' },
+    { key: 'pending', label: 'Pending' },
+    { key: 'accepted', label: 'Accepted' },
+    { key: 'edited', label: 'Edited' },
+    { key: 'rejected', label: 'Rejected' },
+    { key: 'uncertain', label: 'Uncertain' },
+    { key: 'conflict', label: 'Conflict' },
+    { key: 'export-blocker', label: 'Blocker' },
+  ];
+
+  const laneGaps = gaps.filter(g => {
+    if (activeLane === 'A') return g.category === 'Evidence Corroboration' || g.category === 'Source Authority' || g.category === 'Missing Evidence';
+    if (activeLane === 'B') return g.category === 'Chronology' || g.category === 'Source Authority' || g.category === 'Missing Evidence';
+    if (activeLane === 'C') return g.category === 'Procedural Urgency';
+    return false;
+  });
+
   return (
     <div className="h-full bg-background flex flex-col overflow-hidden">
-      {/* Banner */}
-      <div className="bg-card border-b border-border px-6 py-3 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <h2 className="font-semibold text-foreground">Structured Analysis</h2>
+      {/* Top banner */}
+      <div className="bg-card border-b border-border px-5 py-2.5 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-3">
+          <h2 className="font-semibold text-foreground text-sm">Structured Analysis</h2>
           {pendingCount > 0 && (
             <span className="text-xs font-mono bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-sm">
-              {pendingCount} PENDING REVIEW
+              {pendingCount} PENDING
             </span>
           )}
         </div>
-        <div className="text-xs text-muted-foreground font-mono">
-          Last analysis run: 2 hours ago
+        <div className="text-xs text-muted-foreground font-mono">Last analysis run: 2 hours ago · REPLAY-V1</div>
+      </div>
+
+      {/* Lane tabs */}
+      <div className="border-b border-border bg-card/50 px-5 flex items-end gap-0 shrink-0">
+        {(Object.entries(LANE_META) as [ActiveLane, typeof LANE_META[ActiveLane]][]).map(([lane, meta]) => {
+          const count = findings.filter(f => f.lane === lane).length;
+          return (
+            <button
+              key={lane}
+              onClick={() => { setActiveLane(lane); setSelectedId(null); setFilterStatus('all'); }}
+              className={cn(
+                "flex flex-col items-start px-4 py-2.5 border-b-2 text-left transition-colors min-w-[140px]",
+                activeLane === lane ? `border-current ${meta.color}` : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <div className="flex items-center gap-1.5">
+                <span className={cn("text-xs font-bold font-mono", activeLane === lane ? meta.color : '')}>{meta.label}</span>
+                <span className="text-[10px] font-mono bg-muted border border-border px-1 rounded text-muted-foreground">{count}</span>
+              </div>
+              <span className="text-[10px] text-muted-foreground mt-0.5">{meta.subLabel}</span>
+            </button>
+          );
+        })}
+        <div className="ml-auto pb-2">
+          <button
+            onClick={() => setShowGaps(v => !v)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border transition-colors",
+              showGaps ? "bg-amber-50 border-amber-200 text-amber-700" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            Context Gaps
+            {laneGaps.filter(g => g.status === 'unanswered').length > 0 && (
+              <span className="bg-amber-500 text-white text-[9px] font-bold px-1 rounded">{laneGaps.filter(g => g.status === 'unanswered').length}</span>
+            )}
+          </button>
         </div>
       </div>
 
-      <PanelGroup direction="horizontal" className="flex-1">
-        {/* Left List */}
-        <Panel defaultSize={45} minSize={30} className="flex flex-col border-r border-border bg-muted/20">
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {findings.map(finding => (
-              <motion.div 
-                layout
-                key={finding.id}
+      {/* Context gaps panel */}
+      <AnimatePresence>
+        {showGaps && laneGaps.length > 0 && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="shrink-0 overflow-hidden border-b border-border bg-amber-50/30"
+          >
+            <div className="p-4 space-y-2">
+              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3">Context Gaps — {activeLane === 'A' ? 'Evidence & Source' : activeLane === 'B' ? 'Chronology & Missing Evidence' : 'Procedural Urgency'}</div>
+              {laneGaps.map(gap => (
+                <div key={gap.id} className="flex items-start gap-3 p-3 bg-card border border-border rounded-md shadow-sm">
+                  <HelpCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-foreground leading-relaxed">{gap.question}</p>
+                    <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                      <span className="text-[10px] font-mono text-muted-foreground">{gap.category}</span>
+                      {gap.relatedFindingIds.map(fid => (
+                        <span key={fid} className="text-[10px] font-mono bg-muted border border-border px-1.5 py-0.5 rounded cursor-pointer hover:bg-primary/5" onClick={() => setSelectedId(fid)}>{fid}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    {(['answered', 'deferred', 'unknown', 'out-of-scope'] as const).map(s => (
+                      <button
+                        key={s}
+                        onClick={() => handleGapAction(gap.id, s)}
+                        className={cn(
+                          "text-[9px] font-mono uppercase px-1.5 py-0.5 rounded border transition-colors",
+                          gap.status === s ? GAP_STATUS_CONFIG[s].color : "border-border text-muted-foreground hover:border-foreground/20"
+                        )}
+                      >
+                        {s.replace('-', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                  <span className={cn("text-[9px] font-mono uppercase px-2 py-0.5 rounded border shrink-0", GAP_STATUS_CONFIG[gap.status].color)}>
+                    {GAP_STATUS_CONFIG[gap.status].label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <PanelGroup direction="horizontal" className="flex-1 overflow-hidden">
+        {/* Left — findings list */}
+        <Panel defaultSize={42} minSize={28} className="flex flex-col border-r border-border bg-muted/10 overflow-hidden">
+          {/* Filter bar */}
+          <div className="px-3 py-2 border-b border-border bg-card/50 flex items-center gap-1 overflow-x-auto shrink-0">
+            {FILTERS.map(f => (
+              <button
+                key={f.key}
+                onClick={() => setFilterStatus(f.key)}
+                className={cn(
+                  "shrink-0 px-2.5 py-1 text-[10px] font-mono uppercase rounded border transition-colors",
+                  filterStatus === f.key
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                )}
+              >
+                {f.label}
+                {f.key === 'pending' && pendingCount > 0 && (
+                  <span className="ml-1 text-[9px] bg-blue-600 text-white px-1 rounded">{pendingCount}</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {filteredFindings.length === 0 && (
+              <div className="text-center py-10 text-muted-foreground text-sm font-mono">No items match this filter.</div>
+            )}
+            {filteredFindings.map(finding => (
+              <motion.div
+                layout key={finding.id}
                 onClick={() => setSelectedId(finding.id)}
                 className={cn(
-                  "p-4 rounded-sm border cursor-pointer transition-all duration-200",
-                  selectedId === finding.id 
-                    ? "bg-primary/5 border-primary/25 shadow-sm" 
-                    : "bg-card border-border hover:border-foreground/20 hover:bg-muted/30",
+                  "p-3.5 rounded-sm border cursor-pointer transition-all",
+                  selectedId === finding.id
+                    ? "bg-primary/5 border-primary/25 shadow-sm"
+                    : "bg-card border-border hover:border-foreground/15 hover:bg-muted/20",
                   finding.supportStatus === 'unresolved' && "ring-1 ring-amber-400 border-amber-300"
                 )}
               >
-                <div className="flex justify-between items-start mb-3">
-                  <span className={cn("text-[10px] uppercase font-mono px-2 py-0.5 rounded-sm border", getTypeColor(finding.type))}>
-                    {finding.type.replace('-', ' ')}
+                <div className="flex justify-between items-start mb-2">
+                  <span className={cn("text-[9px] uppercase font-mono px-1.5 py-0.5 rounded-sm border", getTypeColor(finding.type))}>
+                    {finding.type.replace(/-/g, ' ')}
                   </span>
                   <ReviewStatusBadge status={finding.reviewStatus} />
                 </div>
-                
-                <h3 className="font-medium text-foreground mb-1 leading-tight">{finding.title}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">{finding.description}</p>
-                
-                <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/50">
+                <h3 className="font-medium text-foreground text-sm mb-1 leading-tight">{finding.title}</h3>
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{finding.description}</p>
+                <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
                   <SupportStatusBadge status={finding.supportStatus} />
-                  <span className="text-border">&bull;</span>
+                  <span className="text-border text-xs">·</span>
                   <OriginBadge origin={finding.origin} />
-                  <span className="text-border">&bull;</span>
-                  <EvidenceNatureBadge nature={finding.evidenceNature} />
                 </div>
               </motion.div>
             ))}
 
-            <div className="mt-8 pt-4 border-t border-dashed border-border">
-              <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3">Limitations & Abstentions</h4>
-              <div className="bg-muted border border-border p-3 rounded-sm text-sm text-muted-foreground space-y-2">
-                <p className="flex items-start gap-2"><AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" /> AI abstained from analyzing document d-5 due to handwriting illegibility.</p>
-                <p className="flex items-start gap-2"><ShieldAlert className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" /> Legal conclusions regarding trafficking statute 18 U.S.C. § 1589 explicitly excluded from model capability.</p>
+            {/* Limitations */}
+            <div className="mt-6 pt-4 border-t border-dashed border-border">
+              <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2">AI Limitations &amp; Abstentions</h4>
+              <div className="bg-muted border border-border p-3 rounded-sm text-xs text-muted-foreground space-y-2">
+                <p className="flex items-start gap-2"><AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />AI abstained from d-5 (handwriting illegibility).</p>
+                <p className="flex items-start gap-2"><ShieldAlert className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />Legal conclusions on 18 U.S.C. § 1589 excluded from model scope.</p>
               </div>
             </div>
           </div>
         </Panel>
 
-        <PanelResizeHandle className="w-1 bg-border hover:bg-foreground/20 transition-colors cursor-col-resize" />
+        <PanelResizeHandle className="w-0.5 bg-border hover:bg-primary/30 transition-colors cursor-col-resize" />
 
-        {/* Right Details Panel */}
-        <Panel minSize={30} className="flex flex-col bg-card relative">
+        {/* Right — detail panel */}
+        <Panel minSize={30} className="flex flex-col bg-card relative overflow-hidden">
           <AnimatePresence mode="wait">
             {selected ? (
-              <motion.div 
+              <motion.div
                 key={selected.id}
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: 16 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, x: -16 }}
+                transition={{ duration: 0.18 }}
                 className="flex-1 overflow-y-auto flex flex-col h-full"
               >
-                <div className="p-8 pb-32">
-                  <div className="flex items-center gap-3 mb-6">
-                    <span className={cn("text-xs uppercase font-mono px-2 py-1 rounded-sm border", getTypeColor(selected.type))}>
-                      {selected.type.replace('-', ' ')}
+                <div className="p-7 pb-28 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <span className={cn("text-[10px] uppercase font-mono px-2 py-1 rounded-sm border", getTypeColor(selected.type))}>
+                      {selected.type.replace(/-/g, ' ')}
                     </span>
-                    <span className="text-muted-foreground font-mono text-xs">ID: {selected.id}</span>
+                    <span className={cn("text-[10px] font-mono px-2 py-0.5 rounded-sm border font-semibold", LANE_META[selected.lane].activeColor)}>
+                      {LANE_META[selected.lane].label} · {LANE_META[selected.lane].subLabel}
+                    </span>
+                    <span className="text-muted-foreground font-mono text-xs ml-auto">ID: {selected.id}</span>
                   </div>
 
-                  <h2 className="text-2xl font-bold text-foreground mb-4">{selected.title}</h2>
-                  <p className="text-lg text-foreground/80 mb-8 leading-relaxed">{selected.description}</p>
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground mb-3">{selected.title}</h2>
+                    <p className="text-base text-foreground/80 leading-relaxed">{selected.description}</p>
+                  </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-10">
-                    <div className="bg-muted border border-border p-4 rounded-sm">
-                      <div className="text-xs font-mono text-muted-foreground uppercase mb-2">Evidence Nature</div>
-                      <EvidenceNatureBadge nature={selected.evidenceNature} className="text-sm px-3 py-1" />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-muted border border-border p-3.5 rounded-sm">
+                      <div className="text-[10px] font-mono text-muted-foreground uppercase mb-2">Evidence Nature</div>
+                      <EvidenceNatureBadge nature={selected.evidenceNature} />
                     </div>
-                    <div className="bg-muted border border-border p-4 rounded-sm">
-                      <div className="text-xs font-mono text-muted-foreground uppercase mb-2">Origin</div>
-                      <OriginBadge origin={selected.origin} className="text-sm px-3 py-1" />
+                    <div className="bg-muted border border-border p-3.5 rounded-sm">
+                      <div className="text-[10px] font-mono text-muted-foreground uppercase mb-2">Origin</div>
+                      <OriginBadge origin={selected.origin} />
                     </div>
                   </div>
 
-                  <div className="space-y-6">
-                    <h3 className="text-sm font-mono text-muted-foreground uppercase tracking-widest border-b border-border pb-2">Source Citations</h3>
-                    {selected.citations.length > 0 ? (
-                      selected.citations.map((cit, idx) => (
-                        <div key={idx} className="bg-card border border-border rounded-sm overflow-hidden shadow-sm">
-                          <div className="bg-muted px-4 py-2 flex justify-between items-center border-b border-border">
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-foreground">Doc {cit.documentId}</span>
-                            </div>
-                            <span className="text-xs font-mono text-muted-foreground bg-background px-2 py-0.5 rounded border border-border">PAGE {cit.page}</span>
+                  {/* Citations with drawer trigger */}
+                  <div className="space-y-3">
+                    <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest border-b border-border pb-2">Source Citations</h3>
+                    {selected.citations.length > 0 ? selected.citations.map((cit, idx) => (
+                      <div key={idx} className="bg-card border border-border rounded-sm overflow-hidden shadow-sm">
+                        <div className="bg-muted px-4 py-2 flex justify-between items-center border-b border-border">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span className="text-sm font-medium text-foreground">{cit.sourceAuthority || `Doc ${cit.documentId}`}</span>
                           </div>
-                          <div className="p-4 font-mono text-sm text-foreground/80 leading-relaxed border-l-2 border-teal-500 ml-4 my-4 pl-4 bg-teal-50/50">
-                            "{cit.text}"
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono text-muted-foreground">PAGE {cit.page}</span>
+                            <button
+                              onClick={() => openDrawer(cit)}
+                              className="text-[10px] font-mono text-primary hover:text-primary/80 border border-primary/30 bg-primary/5 hover:bg-primary/10 px-2 py-0.5 rounded transition-colors"
+                            >
+                              View Source ↗
+                            </button>
                           </div>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-muted-foreground font-mono text-sm italic">No direct citations linked.</div>
+                        <div className="p-4 font-mono text-sm text-foreground/80 leading-relaxed border-l-2 border-primary/40 ml-4 my-3 pl-4 bg-primary/3">
+                          "{cit.text}"
+                        </div>
+                        {cit.limitations && (
+                          <div className="mx-4 mb-3 flex items-start gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 p-2 rounded">
+                            <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5" />{cit.limitations}
+                          </div>
+                        )}
+                      </div>
+                    )) : (
+                      <p className="text-muted-foreground font-mono text-sm italic">No direct citations linked.</p>
                     )}
                   </div>
 
-                  {selected.contradictions && (
-                    <div className="mt-8 space-y-4">
-                      <h3 className="text-sm font-mono text-red-600 uppercase tracking-widest border-b border-red-200 pb-2 flex items-center gap-2">
-                        <XCircle className="w-4 h-4" /> Contradictory Evidence
-                      </h3>
-                      {selected.contradictions.map((c, idx) => (
-                        <div key={idx} className="p-3 bg-red-50 border border-red-200 rounded-sm text-red-800 text-sm">
-                          {c}
+                  {selected.missingContext && selected.missingContext.length > 0 && (
+                    <div className="space-y-2">
+                      <h3 className="text-[10px] font-mono text-amber-700 uppercase tracking-widest border-b border-amber-200 pb-2">Missing Evidence</h3>
+                      {selected.missingContext.map((m, i) => (
+                        <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <HelpCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />{m}
                         </div>
                       ))}
                     </div>
                   )}
 
+                  {selected.contradictions && (
+                    <div className="space-y-2">
+                      <h3 className="text-[10px] font-mono text-red-600 uppercase tracking-widest border-b border-red-200 pb-2 flex items-center gap-2">
+                        <XCircle className="w-3.5 h-3.5" /> Contradictory Evidence
+                      </h3>
+                      {selected.contradictions.map((c, i) => (
+                        <div key={i} className="p-3 bg-red-50 border border-red-200 rounded-sm text-red-800 text-sm">{c}</div>
+                      ))}
+                    </div>
+                  )}
+
                   {selected.dependencies && selected.dependencies.length > 0 && (
-                    <div className="mt-8 p-4 bg-muted border border-border rounded-sm">
-                      <h3 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3">Dependency Chain</h3>
-                      <p className="text-sm text-muted-foreground mb-2">This finding supports {selected.dependencies.length} downstream nodes in the Nexus.</p>
-                      <div className="flex gap-2">
+                    <div className="p-4 bg-muted border border-border rounded-sm">
+                      <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Dependency Chain</h3>
+                      <p className="text-sm text-muted-foreground mb-2">Supports {selected.dependencies.length} downstream Nexus item(s).</p>
+                      <div className="flex gap-2 flex-wrap">
                         {selected.dependencies.map(dep => (
-                          <span key={dep} className="text-xs font-mono bg-secondary text-foreground px-2 py-1 rounded border border-border">{dep}</span>
+                          <span key={dep} onClick={() => setSelectedId(dep)} className="text-xs font-mono bg-secondary text-foreground px-2 py-1 rounded border border-border cursor-pointer hover:bg-primary/5">{dep}</span>
                         ))}
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Review Action Bar */}
+                {/* Review action bar */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 bg-card/95 backdrop-blur-md border-t border-border z-10 shadow-lg">
-                  <div className="max-w-3xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground font-mono">STATUS:</span>
-                      <ReviewStatusBadge status={selected.reviewStatus} className="text-sm" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground font-mono">STATUS:</span>
+                      <ReviewStatusBadge status={selected.reviewStatus} />
                     </div>
-                    
                     <div className="flex gap-2">
                       {selected.reviewStatus === 'accepted' ? (
-                        <Button 
-                          variant="outline" 
-                          className="bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-800"
-                          onClick={() => handleWithdraw(selected.id)}
-                        >
-                          Withdraw Acceptance
+                        <Button variant="outline" size="sm" className="bg-amber-50 border-amber-300 text-amber-700 hover:bg-amber-100 text-xs" onClick={() => handleWithdraw(selected.id)}>
+                          Withdraw
                         </Button>
                       ) : (
                         <>
-                          <Button 
-                            variant="outline" 
-                            className="bg-card border-border text-foreground hover:bg-muted"
-                            onClick={() => handleAction(selected.id, 'rejected')}
-                          >
-                            Reject
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
-                            onClick={() => handleAction(selected.id, 'uncertain')}
-                          >
-                            Mark Uncertain
-                          </Button>
-                          <Button 
-                            className="bg-teal-600 hover:bg-teal-700 text-white font-medium min-w-[120px]"
-                            onClick={() => handleAction(selected.id, 'accepted')}
-                          >
-                            <Check className="w-4 h-4 mr-2" />
-                            Accept
+                          <Button variant="outline" size="sm" className="bg-card border-border text-foreground hover:bg-muted text-xs" onClick={() => handleAction(selected.id, 'rejected')}>Reject</Button>
+                          <Button variant="outline" size="sm" className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 text-xs" onClick={() => handleAction(selected.id, 'uncertain')}>Uncertain</Button>
+                          <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs min-w-[90px]" onClick={() => handleAction(selected.id, 'accepted')}>
+                            <Check className="w-3.5 h-3.5 mr-1.5" />Accept
                           </Button>
                         </>
                       )}
@@ -257,7 +421,7 @@ export default function CaseAnalysis() {
                 </div>
               </motion.div>
             ) : (
-              <div className="flex-1 flex items-center justify-center text-muted-foreground font-mono">
+              <div className="flex-1 flex items-center justify-center text-muted-foreground font-mono text-sm">
                 Select a finding to review
               </div>
             )}
@@ -265,51 +429,44 @@ export default function CaseAnalysis() {
         </Panel>
       </PanelGroup>
 
-      {/* Dependency Cascade Modal */}
+      {/* Cascade modal */}
       {showCascadeModal && selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <motion.div 
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-card border border-border w-full max-w-lg rounded-md shadow-2xl overflow-hidden"
-          >
-            <div className="p-6 border-b border-border">
-              <h3 className="text-xl font-bold text-amber-700 flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-6 h-6" />
-                Dependency Cascade Warning
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                Withdrawing acceptance for <strong className="text-foreground">{selected.title}</strong> will immediately destabilize downstream findings in the Nexus.
-              </p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+          <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-card border border-border w-full max-w-lg rounded-md shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-border">
+              <h3 className="text-lg font-bold text-amber-700 flex items-center gap-2 mb-2"><AlertTriangle className="w-5 h-5" />Dependency Cascade Warning</h3>
+              <p className="text-muted-foreground text-sm">Withdrawing <strong className="text-foreground">{selected.title}</strong> will destabilize downstream Nexus items.</p>
             </div>
-            
-            <div className="p-6 bg-muted/30">
-              <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3">Affected Items (Will revert to Unresolved)</h4>
-              <ul className="space-y-2">
-                {selected.dependencies?.map(depId => {
-                  const dep = findings.find(f => f.id === depId);
-                  return dep ? (
-                    <li key={depId} className="flex items-center gap-3 p-3 bg-background border border-border rounded-sm">
-                      <span className="text-xs font-mono text-muted-foreground">{depId}</span>
-                      <span className="text-sm text-foreground">{dep.title}</span>
-                    </li>
-                  ) : null;
-                })}
-              </ul>
-              
-              <div className="mt-6 flex items-start gap-3 p-3 bg-red-50 border border-red-200 rounded-sm">
-                <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-red-800">This action will automatically block the Export Gate until all affected findings are re-reviewed.</p>
+            <div className="p-5 bg-muted/30 space-y-2">
+              {selected.dependencies?.map(depId => {
+                const dep = findings.find(f => f.id === depId);
+                return dep ? (
+                  <div key={depId} className="flex items-center gap-3 p-2.5 bg-background border border-border rounded-sm">
+                    <span className="text-xs font-mono text-muted-foreground">{depId}</span>
+                    <span className="text-sm text-foreground">{dep.title}</span>
+                  </div>
+                ) : null;
+              })}
+              <div className="mt-4 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-sm">
+                <ShieldAlert className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-red-800">This will block the Export Gate until affected findings are re-reviewed.</p>
               </div>
             </div>
-            
-            <div className="p-4 border-t border-border flex justify-end gap-3 bg-card">
-              <Button variant="outline" className="border-border text-foreground" onClick={() => setShowCascadeModal(false)}>Cancel</Button>
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white" onClick={() => executeWithdraw(selected.id)}>Proceed with Withdrawal</Button>
+            <div className="p-4 border-t border-border flex justify-end gap-2 bg-card">
+              <Button variant="outline" size="sm" onClick={() => setShowCascadeModal(false)}>Cancel</Button>
+              <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" onClick={() => selected && executeWithdraw(selected.id)}>Proceed with Withdrawal</Button>
             </div>
           </motion.div>
         </div>
       )}
+
+      {/* Source drawer */}
+      <SourceDrawer
+        open={drawerOpen}
+        citation={drawerCitation}
+        onClose={() => setDrawerOpen(false)}
+        onReveal={() => setDrawerOpen(false)}
+      />
     </div>
   );
 }

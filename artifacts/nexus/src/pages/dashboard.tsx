@@ -1,7 +1,7 @@
 import React from 'react';
 import { Case, MOCK_CASES } from '@/data/mock-case';
 import { Link } from 'wouter';
-import { FileText, ShieldAlert, CheckCircle2, Clock, Plus, Activity } from 'lucide-react';
+import { FileText, ShieldAlert, CheckCircle2, Clock, Plus, Activity, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -14,12 +14,15 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <header className="border-b border-border bg-card/80 px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
         <div className="flex items-center gap-3">
+          <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
           <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center border border-border">
             <Activity className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold tracking-tight text-foreground">ContextFirst Nexus</h1>
-            <p className="text-xs text-muted-foreground font-mono">Forensic Legal Workspace</p>
+            <h1 className="text-lg font-semibold tracking-tight text-foreground">Case Dashboard</h1>
+            <p className="text-xs text-muted-foreground font-mono">ContextFirst Nexus · Synthetic Fixture</p>
           </div>
         </div>
         <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-sm font-medium">

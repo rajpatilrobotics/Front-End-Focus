@@ -4,7 +4,9 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 
+import Landing from '@/pages/landing';
 import Dashboard from '@/pages/dashboard';
+import TrustAndSafety from '@/pages/trust';
 import CaseLayout from '@/pages/case/layout';
 
 const queryClient = new QueryClient();
@@ -12,8 +14,9 @@ const queryClient = new QueryClient();
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Dashboard} />
-      {/* The CaseLayout component handles its own nested routing via the /case/:id wildcard approach, or we just map everything starting with /case to CaseLayout */}
+      <Route path="/" component={Landing} />
+      <Route path="/cases" component={Dashboard} />
+      <Route path="/trust" component={TrustAndSafety} />
       <Route path="/case/:id/*?" component={CaseLayout} />
       <Route component={NotFound} />
     </Switch>
