@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_URGENT_NEEDS, UrgentNeed, UrgentNeedStatus, UrgentNeedUrgency } from '@/data/mock-case';
-import { AlertTriangle, Phone, ShieldAlert, Plus, CheckCircle2, Clock, User, MessageSquare } from 'lucide-react';
+import { AlertTriangle, Phone, ShieldAlert, Plus, CheckCircle2, Clock, User, MessageSquare, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -42,7 +42,18 @@ export default function CaseSafety() {
   const actionCount = needs.filter(n => n.status === 'action-required').length;
 
   const setStatus = (id: string, status: UrgentNeedStatus) => {
-    setNeeds(prev => prev.map(n => n.id === id ? { ...n, status } : n));
+    const now = new Date().toISOString();
+    setNeeds(prev => prev.map(n => n.id === id
+      ? {
+          ...n,
+          status,
+          auditHistory: [
+            ...(n.auditHistory ?? []),
+            { timestamp: now, actor: 'M. Chen', action: `Status changed to ${STATUS_CONFIG[status].label}` },
+          ],
+        }
+      : n
+    ));
   };
 
   return (
@@ -210,6 +221,24 @@ export default function CaseSafety() {
                     </div>
                   )}
 
+                  {/* Audit history */}
+                  {selected.auditHistory && selected.auditHistory.length > 0 && (
+                    <div>
+                      <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2 flex items-center gap-1.5">
+                        <History className="w-3.5 h-3.5" /> Audit History
+                      </h3>
+                      <div className="space-y-2">
+                        {selected.auditHistory.map((entry, i) => (
+                          <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground">
+                            <span className="font-mono shrink-0 text-[10px]">{new Date(entry.timestamp).toLocaleString()}</span>
+                            <span className="font-medium text-foreground shrink-0">{entry.actor}</span>
+                            <span>{entry.action}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Safety separation notice */}
                   <div className="border border-dashed border-border rounded-sm p-3 text-xs text-muted-foreground flex items-start gap-2">
                     <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-muted-foreground/60" />
@@ -257,7 +286,8 @@ export default function CaseSafety() {
                           <option key={k} value={k}>{v.label}</option>
                         ))}
                       </select>
-                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs rounded-sm h-8">
+                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs rounded-sm h-8"
+                        onClick={() => setStatus(selected.id, 'completed')}>
                         <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />Mark Completed
                       </Button>
                     </div>

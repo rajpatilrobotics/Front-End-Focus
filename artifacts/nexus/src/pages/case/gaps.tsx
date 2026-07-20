@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_EVIDENCE_GAPS, EvidenceGap, GapStatus } from '@/data/mock-case';
-import { AlertTriangle, HelpCircle, CheckCircle2, Clock, Plus, ArrowRight, FileText, ChevronRight, XCircle, RotateCcw } from 'lucide-react';
+import { AlertTriangle, HelpCircle, CheckCircle2, Clock, Plus, ArrowRight, FileText, ChevronRight, XCircle, RotateCcw, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -30,11 +30,14 @@ const EVIDENCE_STATUS_CONFIG = {
 
 type FilterKey = 'all' | 'open' | 'investigating' | 'high' | 'export-blocker';
 
+type ResolveModal = { open: boolean; gapId: string; reason: string; evidence: string };
+
 export default function CaseGaps() {
   const [gaps, setGaps] = useState<EvidenceGap[]>(MOCK_EVIDENCE_GAPS);
   const [selectedId, setSelectedId] = useState<string | null>(MOCK_EVIDENCE_GAPS[0]?.id ?? null);
   const [filter, setFilter] = useState<FilterKey>('all');
   const [convertedActions, setConvertedActions] = useState<Set<string>>(new Set(['sa-1']));
+  const [resolveModal, setResolveModal] = useState<ResolveModal>({ open: false, gapId: '', reason: '', evidence: '' });
 
   const selected = gaps.find(g => g.id === selectedId);
 
@@ -55,6 +58,28 @@ export default function CaseGaps() {
 
   const setStatus = (id: string, status: GapStatus) => {
     setGaps(prev => prev.map(g => g.id === id ? { ...g, status } : g));
+  };
+
+  const openResolveModal = (gapId: string) => {
+    setResolveModal({ open: true, gapId, reason: '', evidence: '' });
+  };
+
+  const confirmResolve = () => {
+    if (!resolveModal.reason.trim()) return;
+    const now = new Date().toISOString();
+    setGaps(prev => prev.map(g => g.id === resolveModal.gapId
+      ? {
+          ...g,
+          status: 'resolved' as GapStatus,
+          resolutionEvidence: resolveModal.evidence || undefined,
+          auditHistory: [
+            ...g.auditHistory,
+            { timestamp: now, actor: 'M. Chen', action: `Marked Resolved. Reason: ${resolveModal.reason}${resolveModal.evidence ? ` · Evidence: ${resolveModal.evidence}` : ''}` },
+          ],
+        }
+      : g
+    ));
+    setResolveModal({ open: false, gapId: '', reason: '', evidence: '' });
   };
 
   const FILTERS: { key: FilterKey; label: string; count?: number }[] = [
@@ -203,8 +228,14 @@ export default function CaseGaps() {
                     <p className="text-sm text-red-800 leading-relaxed">{selected.consequence}</p>
                   </div>
 
-                  {/* Linked items */}
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Responsible person + linked items */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-muted border border-border rounded-sm p-3">
+                      <div className="text-[10px] font-mono text-muted-foreground uppercase mb-1.5">Responsible Person</div>
+                      <div className="text-sm text-foreground font-medium flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-muted-foreground" />{selected.responsiblePerson}
+                      </div>
+                    </div>
                     <div className="bg-muted border border-border rounded-sm p-3">
                       <div className="text-[10px] font-mono text-muted-foreground uppercase mb-2">Related Findings</div>
                       <div className="flex flex-wrap gap-1.5">
@@ -271,15 +302,19 @@ export default function CaseGaps() {
                   {/* Audit history */}
                   <div>
                     <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">Audit History</h3>
-                    <div className="space-y-2">
-                      {selected.auditHistory.map((entry, i) => (
-                        <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground">
-                          <span className="font-mono shrink-0">{new Date(entry.timestamp).toLocaleString()}</span>
-                          <span className="font-medium text-foreground shrink-0">{entry.actor}</span>
-                          <span>{entry.action}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {selected.auditHistory.length === 0 ? (
+                      <p className="text-xs text-muted-foreground italic">No audit entries yet.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {selected.auditHistory.map((entry, i) => (
+                          <div key={i} className="flex items-start gap-3 text-xs text-muted-foreground">
+                            <span className="font-mono shrink-0 text-[10px]">{new Date(entry.timestamp).toLocaleString()}</span>
+                            <span className="font-medium text-foreground shrink-0">{entry.actor}</span>
+                            <span>{entry.action}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -302,7 +337,12 @@ export default function CaseGaps() {
                           <option key={k} value={k}>{v.label}</option>
                         ))}
                       </select>
-                      <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs rounded-sm h-8">
+                      <Button
+                        size="sm"
+                        className="bg-teal-600 hover:bg-teal-700 text-white text-xs rounded-sm h-8"
+                        onClick={() => openResolveModal(selected.id)}
+                        disabled={selected.status === 'resolved'}
+                      >
                         <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />Mark Resolved
                       </Button>
                     </div>
@@ -317,6 +357,72 @@ export default function CaseGaps() {
           </AnimatePresence>
         </Panel>
       </PanelGroup>
+
+      {/* Resolve modal */}
+      <AnimatePresence>
+        {resolveModal.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-card border border-border w-full max-w-md rounded-md shadow-2xl overflow-hidden"
+            >
+              <div className="p-5 border-b border-border">
+                <h3 className="font-bold text-foreground mb-1">Mark Gap as Resolved</h3>
+                <p className="text-sm text-muted-foreground">
+                  {gaps.find(g => g.id === resolveModal.gapId)?.title}
+                </p>
+              </div>
+              <div className="p-5 space-y-4">
+                <div>
+                  <label className="text-xs font-mono text-muted-foreground uppercase block mb-1.5">
+                    Reason for Resolution <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    className="w-full text-sm border border-border rounded-sm p-2.5 bg-muted resize-none h-20 focus:outline-none focus:border-primary/50"
+                    placeholder="How was this gap resolved? What confirms the resolution?"
+                    value={resolveModal.reason}
+                    onChange={e => setResolveModal(m => ({ ...m, reason: e.target.value }))}
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-mono text-muted-foreground uppercase block mb-1.5">
+                    Supporting Evidence <span className="text-muted-foreground/60">(optional)</span>
+                  </label>
+                  <input
+                    className="w-full text-sm border border-border rounded-sm p-2.5 bg-muted focus:outline-none focus:border-primary/50"
+                    placeholder="Document ID, note reference, or description of evidence"
+                    value={resolveModal.evidence}
+                    onChange={e => setResolveModal(m => ({ ...m, evidence: e.target.value }))}
+                  />
+                </div>
+                {!resolveModal.reason.trim() && (
+                  <p className="text-xs text-red-600">A resolution reason is required before marking resolved.</p>
+                )}
+              </div>
+              <div className="p-4 border-t border-border flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setResolveModal({ open: false, gapId: '', reason: '', evidence: '' })}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-teal-600 hover:bg-teal-700 text-white text-xs"
+                  disabled={!resolveModal.reason.trim()}
+                  onClick={confirmResolve}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />Confirm Resolution
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

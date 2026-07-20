@@ -398,7 +398,7 @@ export default function CaseExportGate() {
                                 )}>
                                   {n.urgency.replace(/-/g, ' ')}
                                 </span>
-                                <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{n.needDescription}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{n.description}</p>
                               </div>
                             </button>
                           ))}
@@ -459,6 +459,7 @@ export default function CaseExportGate() {
                 ['reviewedStateHash',    'sha256:7f3a9b…'],
                 ['candidateIds',         `[${(isSafeShare ? [...selectedFindingCandidates] : FINDING_SAFE_SHARE_CANDIDATES.map(f => f.id)).join(', ')}]`],
                 ['urgentNeedIds',        isSafeShare ? `[${[...selectedNeedCandidates].join(', ') || '—'}]` : '—'],
+               ['referralSummaryCount', String(URGENT_NEED_SAFE_SHARE_CANDIDATES.filter(n => n.status === 'referral-accepted').length)],
                 ['citationCount',        '23'],
                 ['redactionStatus',      'masked'],
                 ['providerTransmission', 'false'],

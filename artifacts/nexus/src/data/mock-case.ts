@@ -71,7 +71,8 @@ export type TimelineEvent = {
   id: string;
   description: string;
   date: string;
-  dateType: 'exact' | 'approximate' | 'unknown';
+  dateEnd?: string;
+  dateType: 'exact' | 'approximate' | 'unknown' | 'range';
   dateConflict: boolean;
   evidenceNature: EvidenceNature;
   supportStatus: SupportStatus;
@@ -126,18 +127,21 @@ export type UrgentNeed = {
   followUpTime?: string;
   status: UrgentNeedStatus;
   notes?: string;
+  auditHistory?: { timestamp: string; actor: string; action: string }[];
 };
 
-export type InterviewQuestionStatus = 'pending-review' | 'kept' | 'edited' | 'removed' | 'deferred';
+export type InterviewQuestionStatus = 'pending-review' | 'kept' | 'edited' | 'removed' | 'deferred' | 'inappropriate';
 
 export type InterviewQuestion = {
   id: string;
   questionText: string;
   addressesGapId?: string;
   relatedFindingId?: string;
+  citations?: string[];
   reason: string;
   sensitivityNote: string;
   reviewStatus: InterviewQuestionStatus;
+  practitionerNote?: string;
 };
 
 export type TaskStatus = 'to-do' | 'in-progress' | 'waiting' | 'blocked' | 'completed' | 'cancelled';
@@ -153,7 +157,11 @@ export type CaseTask = {
   priority: 'high' | 'medium' | 'low';
   dueDate?: string;
   status: TaskStatus;
+  dependencies?: string[];
+  reminder?: string;
   notes?: string;
+  completionEvidence?: string;
+  auditHistory?: { timestamp: string; actor: string; action: string }[];
 };
 
 export type NoteType = 'practitioner-observation' | 'interview-note' | 'legal-research' | 'safety-note' | 'referral-note' | 'review-rationale' | 'case-strategy' | 'general';
@@ -621,6 +629,18 @@ export const MOCK_TIMELINE: TimelineEvent[] = [
     supportStatus: 'insufficient',
     reviewStatus: 'pending',
     citation: { documentId: 'd-5', page: 3, text: 'Client mentioned being pushed by manager early on.', sourceAuthority: 'Support Provider Notes', language: 'English', translationStatus: 'original', extractionQuality: 'low', validationStatus: 'unverified' }
+  },
+  {
+    id: 't-6',
+    description: 'Excessive unpaid overtime period — shift extensions recorded across multiple weeks.',
+    date: '2024-01-10',
+    dateEnd: '2024-02-28',
+    dateType: 'range',
+    dateConflict: false,
+    evidenceNature: 'documented',
+    supportStatus: 'partially-supported',
+    reviewStatus: 'pending',
+    citation: { documentId: 'd-4', page: 2, text: 'Repeated shift extension entries between Jan 10 and Feb 28.', sourceAuthority: 'Operational Task Log', language: 'English', translationStatus: 'original', extractionQuality: 'medium', validationStatus: 'unverified', limitations: 'Log is self-reported by supervisor; dates may not be precise.' }
   }
 ];
 
@@ -726,6 +746,10 @@ export const MOCK_URGENT_NEEDS: UrgentNeed[] = [
     followUpTime: '2024-03-25T09:00:00Z',
     status: 'action-required',
     notes: 'Linked to support provider note p.4. Eviction date not fully confirmed — verify before escalating.',
+    auditHistory: [
+      { timestamp: '2024-03-24T08:50:00Z', actor: 'system', action: 'Need recorded from document-supported source (d-5, p.4)' },
+      { timestamp: '2024-03-24T09:30:00Z', actor: 'M. Chen', action: 'Status set to Action Required. Follow-up time set for 2024-03-25 09:00.' },
+    ],
   },
   {
     id: 'un-2',
@@ -738,6 +762,10 @@ export const MOCK_URGENT_NEEDS: UrgentNeed[] = [
     actionRequired: 'Confirm hearing date and request interpreter through appropriate channel.',
     status: 'confirming',
     notes: 'Hearing date is redacted in support notes. Clarify before submitting interpreter request.',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:00:00Z', actor: 'system', action: 'Need identified: interpreter not confirmed for hearing (linked eg-4)' },
+      { timestamp: '2024-03-24T10:00:00Z', actor: 'M. Chen', action: 'Status set to Confirming. Hearing date pending clarification.' },
+    ],
   },
   {
     id: 'un-3',
@@ -749,6 +777,9 @@ export const MOCK_URGENT_NEEDS: UrgentNeed[] = [
     assignedPractitioner: 'M. Chen',
     actionRequired: 'Identify eligible duty counsel or legal aid referral and record outcome.',
     status: 'newly-recorded',
+    auditHistory: [
+      { timestamp: '2024-03-24T10:10:00Z', actor: 'M. Chen', action: 'Need recorded from practitioner observation. Status: Newly Recorded.' },
+    ],
   },
   {
     id: 'un-4',
@@ -761,6 +792,10 @@ export const MOCK_URGENT_NEEDS: UrgentNeed[] = [
     assignedPractitioner: 'M. Chen',
     actionRequired: 'Establish and document a safe contact protocol with client before next contact attempt.',
     status: 'in-progress',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:45:00Z', actor: 'M. Chen', action: 'Need recorded. Phone monitoring risk identified from d-2 content.' },
+      { timestamp: '2024-03-24T10:15:00Z', actor: 'M. Chen', action: 'Status updated to In Progress. Safe contact protocol discussion initiated.' },
+    ],
   },
 ];
 
@@ -770,6 +805,7 @@ export const MOCK_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     questionText: 'What do you remember about the time between when you signed the contract and when you travelled?',
     addressesGapId: 'eg-1',
     relatedFindingId: 'f-6',
+    citations: ['f-6', 'eg-1'],
     reason: 'The 45-day gap between the contract date and the travel record is unexplained. Open-ended recall may clarify without leading.',
     sensitivityNote: 'Avoid asking about specific dates initially. Allow the person to orient freely before follow-up.',
     reviewStatus: 'kept',
@@ -779,6 +815,7 @@ export const MOCK_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     questionText: 'What happened with your travel documents when you arrived?',
     addressesGapId: 'eg-2',
     relatedFindingId: 'f-1',
+    citations: ['f-1', 'eg-2'],
     reason: 'Passport retention is documented in only one source. Non-leading recall about documents may surface corroborating detail.',
     sensitivityNote: 'This topic may relate to a point of control. Do not press if the person shows distress. Note any hesitation.',
     reviewStatus: 'pending-review',
@@ -787,6 +824,7 @@ export const MOCK_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     id: 'iq-3',
     questionText: 'Can you tell me about your working hours and how they were decided?',
     relatedFindingId: 'f-3',
+    citations: ['f-3'],
     reason: 'Compelled work hours claim is supported by a supervisor-authored log only. Person\'s own account of scheduling is absent.',
     sensitivityNote: 'Frame around their experience of the schedule, not around the legal concept of forced labour.',
     reviewStatus: 'kept',
@@ -796,6 +834,7 @@ export const MOCK_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     questionText: 'Was there anything about the payment arrangements that was different from what you expected?',
     addressesGapId: 'eg-3',
     relatedFindingId: 'f-2',
+    citations: ['f-2', 'f-8', 'eg-3'],
     reason: 'Wage deduction records are incomplete. Person\'s recollection of payment expectations vs. reality may support or qualify the debt claim.',
     sensitivityNote: 'Financial topics may carry shame or confusion. Use neutral language and allow long silences.',
     reviewStatus: 'pending-review',
@@ -804,6 +843,7 @@ export const MOCK_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     id: 'iq-5',
     questionText: 'Is there anything important about your situation right now that you think I should know about?',
     addressesGapId: 'un-1',
+    citations: [],
     reason: 'Open-ended welfare question. May surface urgent needs not yet recorded.',
     sensitivityNote: 'Ask near the start of any session. If immediate safety is indicated, follow safeguarding protocol before continuing.',
     reviewStatus: 'kept',
@@ -866,6 +906,10 @@ export const MOCK_TASKS: CaseTask[] = [
     dueDate: '2024-03-24',
     status: 'in-progress',
     notes: 'Coordinator contacted. Awaiting callback.',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:00:00Z', actor: 'system', action: 'Task auto-generated from urgent need un-1 (Emergency Accommodation)' },
+      { timestamp: '2024-03-24T10:30:00Z', actor: 'M. Chen', action: 'Status set to In Progress. Housing coordinator called.' },
+    ],
   },
   {
     id: 'ct-6',
@@ -876,7 +920,12 @@ export const MOCK_TASKS: CaseTask[] = [
     assignee: 'M. Chen',
     priority: 'medium',
     status: 'waiting',
+    dependencies: ['ct-4'],
     notes: 'Waiting on legal team to advise on disclosure request options.',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:10:00Z', actor: 'system', action: 'Task auto-generated from evidence gap eg-3 (Wage records absent)' },
+      { timestamp: '2024-03-24T11:00:00Z', actor: 'M. Chen', action: 'Status set to Waiting — legal team consultation required.' },
+    ],
   },
   {
     id: 'ct-7',
