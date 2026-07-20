@@ -191,7 +191,8 @@ function TimelineNode({
   const hasConflict = event.dateConflict;
   const isApproximate = event.dateType === 'approximate';
   const isUnknown = event.dateType === 'unknown';
-  const dateCfg = DATE_TYPE_CONFIG[event.dateType];
+  const dateCfg = DATE_TYPE_CONFIG[event.dateType as keyof typeof DATE_TYPE_CONFIG]
+    ?? { label: event.dateType, color: 'text-muted-foreground', indicator: '' };
 
   return (
     <div className="relative flex flex-col md:flex-row md:items-start gap-4 md:gap-8 group">
