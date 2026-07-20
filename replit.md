@@ -1,19 +1,21 @@
-# [Project name]
+# ContextFirst Nexus
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An AI-assisted case-preparation workspace for qualified legal and support practitioners working with possible trafficking-related forced-criminality cases. Helps practitioners understand what case records document, identify coercion indicators, and produce safe, source-grounded handoffs — with a human making every consequential decision.
 
 ## Run & Operate
 
+- `pnpm --filter @workspace/nexus run dev` — run the frontend (port from `$PORT`)
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string (not yet configured; app runs in demo/fixture mode without it)
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
+- pnpm workspaces, Node.js, TypeScript 5.9
+- Frontend: React + Vite + Tailwind CSS + shadcn/ui + Framer Motion + wouter
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
@@ -22,24 +24,34 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/nexus/` — React/Vite frontend (landing, case dashboard, timeline, trust & safety)
+- `artifacts/api-server/` — Express 5 API server
+- `artifacts/mockup-sandbox/` — Vite-based component mockup/design sandbox
+- `lib/db/` — Drizzle ORM schema (source of truth for DB shape)
+- `lib/api-spec/openapi.yaml` — OpenAPI spec (source of truth for API contracts)
+- `lib/api-client-react/` — generated React Query hooks
+- `lib/api-zod/` — generated Zod schemas
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Deterministic replay fixture bundled in the frontend — the app works as a demo without a live DB or AI provider.
+- AI provider adapters are server-only; practitioners cannot choose or configure models.
+- Evidence origin, nature, support status, and human-review state are kept as separate dimensions — never collapsed into a single score.
+- Dependency graph: rejecting evidence automatically invalidates dependent findings and blocks export.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+ContextFirst Nexus helps practitioners answer: what does the case packet actually document about the relationship between alleged conduct and possible coercion — and what needs human review before a safe handoff?
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Focus is on UI design, not backend functionality.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `DATABASE_URL` is required for the API server and DB push; the frontend demo runs without it.
+- `PORT` and `BASE_PATH` env vars are injected automatically by Replit per artifact.
 
 ## Pointers
 
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
