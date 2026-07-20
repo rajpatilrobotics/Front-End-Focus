@@ -87,6 +87,90 @@ export type AuditEvent = {
   summary: string;
 };
 
+// ── Feature Types ───────────────────────────────────────────────────────────
+
+export type GapStatus = 'open' | 'investigating' | 'waiting-external' | 'partially-resolved' | 'resolved' | 'unable-to-resolve' | 'outside-scope';
+
+export type EvidenceGap = {
+  id: string;
+  title: string;
+  whyMatters: string;
+  relatedFindingIds: string[];
+  sourceDocumentIds: string[];
+  evidenceStatus: 'missing' | 'conflicting' | 'insufficient';
+  consequence: string;
+  suggestedActions: { id: string; label: string; convertedToTask?: boolean }[];
+  responsiblePerson: string;
+  priority: 'high' | 'medium' | 'low';
+  dueDate?: string;
+  status: GapStatus;
+  practitionerNotes?: string;
+  resolutionEvidence?: string;
+  auditHistory: { timestamp: string; actor: string; action: string }[];
+};
+
+export type UrgentNeedUrgency = 'immediate' | 'within-24h' | 'within-72h' | 'ongoing';
+export type UrgentNeedStatus = 'newly-recorded' | 'confirming' | 'action-required' | 'referral-offered' | 'referral-accepted' | 'referral-declined' | 'in-progress' | 'completed' | 'unable-to-complete';
+
+export type UrgentNeed = {
+  id: string;
+  category: string;
+  description: string;
+  urgency: UrgentNeedUrgency;
+  source: 'practitioner-observation' | 'person-reported' | 'document-supported' | 'unknown';
+  consentRestrictions?: string;
+  safeContactMethod?: string;
+  assignedPractitioner: string;
+  actionRequired: string;
+  referral?: string;
+  followUpTime?: string;
+  status: UrgentNeedStatus;
+  notes?: string;
+};
+
+export type InterviewQuestionStatus = 'pending-review' | 'kept' | 'edited' | 'removed' | 'deferred';
+
+export type InterviewQuestion = {
+  id: string;
+  questionText: string;
+  addressesGapId?: string;
+  relatedFindingId?: string;
+  reason: string;
+  sensitivityNote: string;
+  reviewStatus: InterviewQuestionStatus;
+};
+
+export type TaskStatus = 'to-do' | 'in-progress' | 'waiting' | 'blocked' | 'completed' | 'cancelled';
+export type TaskSource = 'evidence-gap' | 'urgent-need' | 'referral' | 'incomplete-masking' | 'pending-review' | 'missing-document' | 'dependency-change' | 'export-blocker' | 'manual';
+
+export type CaseTask = {
+  id: string;
+  title: string;
+  description: string;
+  linkedItem?: string;
+  source: TaskSource;
+  assignee: string;
+  priority: 'high' | 'medium' | 'low';
+  dueDate?: string;
+  status: TaskStatus;
+  notes?: string;
+};
+
+export type NoteType = 'practitioner-observation' | 'interview-note' | 'legal-research' | 'safety-note' | 'referral-note' | 'review-rationale' | 'case-strategy' | 'general';
+
+export type CaseNote = {
+  id: string;
+  type: NoteType;
+  title: string;
+  content: string;
+  author: string;
+  createdAt: string;
+  lastEditedAt: string;
+  visibility: 'internal' | 'export-eligible' | 'safe-share-eligible';
+  linkedItems: string[];
+  isEvidence: boolean;
+};
+
 // ── Synthetic Data ──────────────────────────────────────────────────────────
 
 export const MOCK_CASES: Case[] = [
@@ -538,6 +622,324 @@ export const MOCK_TIMELINE: TimelineEvent[] = [
     reviewStatus: 'pending',
     citation: { documentId: 'd-5', page: 3, text: 'Client mentioned being pushed by manager early on.', sourceAuthority: 'Support Provider Notes', language: 'English', translationStatus: 'original', extractionQuality: 'low', validationStatus: 'unverified' }
   }
+];
+
+export const MOCK_EVIDENCE_GAPS: EvidenceGap[] = [
+  {
+    id: 'eg-1',
+    title: 'Arrival date cannot be reconciled between contract and travel record',
+    whyMatters: 'The 45-day gap between the contract start date and the border entry stamp is unexplained. Activities during this period are undocumented and may be relevant to the control timeline.',
+    relatedFindingIds: ['f-6', 'f-1'],
+    sourceDocumentIds: ['d-1', 'd-3'],
+    evidenceStatus: 'conflicting',
+    consequence: 'Non-punishment timeline assessment cannot be completed. Export gate blocked.',
+    suggestedActions: [
+      { id: 'sa-1', label: 'Request clearer copy of travel record page 1', convertedToTask: true },
+      { id: 'sa-2', label: 'Verify border entry stamp with independent record' },
+      { id: 'sa-3', label: 'Ask non-leading follow-up about the period between contract signing and travel' },
+    ],
+    responsiblePerson: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-04-01',
+    status: 'investigating',
+    practitionerNotes: 'Client mentioned transit through a third country but no documentation obtained.',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:00:00Z', actor: 'system', action: 'Gap identified from conflicting citations in f-6' },
+      { timestamp: '2024-03-24T10:00:00Z', actor: 'M. Chen', action: 'Status set to Investigating. Note added.' },
+    ],
+  },
+  {
+    id: 'eg-2',
+    title: 'Passport retention independently corroborated by only one source',
+    whyMatters: 'Passport retention is a central coercion indicator. The only citation is from the recruiter communication log; no physical custody record or independent witness account exists.',
+    relatedFindingIds: ['f-1', 'f-5'],
+    sourceDocumentIds: ['d-2', 'd-5'],
+    evidenceStatus: 'insufficient',
+    consequence: 'Finding f-1 support status may need to be downgraded. Nexus dependency chain affected.',
+    suggestedActions: [
+      { id: 'sa-4', label: 'Request any written receipt or acknowledgement of document custody' },
+      { id: 'sa-5', label: 'Compare support provider notes for corroborating reference' },
+      { id: 'sa-6', label: 'Record why additional corroboration cannot be obtained if none exists' },
+    ],
+    responsiblePerson: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-30',
+    status: 'open',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:05:00Z', actor: 'system', action: 'Gap identified: insufficient corroboration for f-1' },
+    ],
+  },
+  {
+    id: 'eg-3',
+    title: 'Wage payment records entirely absent',
+    whyMatters: 'Without payment records, the recruitment fee debt calculation in f-2 cannot be independently verified. Debt servitude claim is partially supported at best.',
+    relatedFindingIds: ['f-2', 'f-8'],
+    sourceDocumentIds: ['d-7'],
+    evidenceStatus: 'missing',
+    consequence: 'f-2 and f-8 remain partially supported or unprocessed. Export may require limitation statement.',
+    suggestedActions: [
+      { id: 'sa-7', label: 'Request bank transfer records or wage stubs from relevant period' },
+      { id: 'sa-8', label: 'Request employer payroll documentation via legal process if available' },
+      { id: 'sa-9', label: 'Record why wage records cannot be obtained' },
+    ],
+    responsiblePerson: 'M. Chen',
+    priority: 'medium',
+    status: 'open',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:10:00Z', actor: 'system', action: 'Gap identified: no wage records in case packet' },
+    ],
+  },
+  {
+    id: 'eg-4',
+    title: 'Interpreter status for upcoming hearing unconfirmed',
+    whyMatters: 'A hearing date has been identified without confirmed interpreter access. Source documents include Spanish-language content.',
+    relatedFindingIds: ['f-10'],
+    sourceDocumentIds: ['d-5'],
+    evidenceStatus: 'missing',
+    consequence: 'Procedural urgency finding f-10 remains unresolved. Hearing readiness at risk.',
+    suggestedActions: [
+      { id: 'sa-10', label: 'Verify interpreter availability with court/hearing authority' },
+      { id: 'sa-11', label: 'Confirm language(s) required with client if safe to do so' },
+    ],
+    responsiblePerson: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-27',
+    status: 'open',
+    practitionerNotes: 'Hearing date is redacted. Confirm date before interpreter request.',
+    auditHistory: [
+      { timestamp: '2024-03-24T09:15:00Z', actor: 'system', action: 'Gap linked to f-10 (interpreter not confirmed)' },
+    ],
+  },
+];
+
+export const MOCK_URGENT_NEEDS: UrgentNeed[] = [
+  {
+    id: 'un-1',
+    category: 'Emergency Accommodation',
+    description: 'Eviction notice effective Friday. No documented alternative housing or referral in place.',
+    urgency: 'immediate',
+    source: 'document-supported',
+    consentRestrictions: 'Client has not consented to sharing address with any third party.',
+    safeContactMethod: 'Organisation mobile (M. Chen) only',
+    assignedPractitioner: 'M. Chen',
+    actionRequired: 'Contact emergency housing coordinator and record offer made to client.',
+    followUpTime: '2024-03-25T09:00:00Z',
+    status: 'action-required',
+    notes: 'Linked to support provider note p.4. Eviction date not fully confirmed — verify before escalating.',
+  },
+  {
+    id: 'un-2',
+    category: 'Interpreter / Language Access',
+    description: 'Upcoming legal hearing requires Spanish interpreter. No arrangement documented in case packet.',
+    urgency: 'within-24h',
+    source: 'document-supported',
+    safeContactMethod: 'Through legal aid office only',
+    assignedPractitioner: 'M. Chen',
+    actionRequired: 'Confirm hearing date and request interpreter through appropriate channel.',
+    status: 'confirming',
+    notes: 'Hearing date is redacted in support notes. Clarify before submitting interpreter request.',
+  },
+  {
+    id: 'un-3',
+    category: 'Legal Representation',
+    description: 'No legal representative confirmed for upcoming hearing. Case involves potential criminal charge.',
+    urgency: 'within-72h',
+    source: 'practitioner-observation',
+    safeContactMethod: 'Via NGO office number',
+    assignedPractitioner: 'M. Chen',
+    actionRequired: 'Identify eligible duty counsel or legal aid referral and record outcome.',
+    status: 'newly-recorded',
+  },
+  {
+    id: 'un-4',
+    category: 'Safe Communications',
+    description: 'Client\'s personal phone may be monitored based on communication log content. Safe messaging channel not established.',
+    urgency: 'ongoing',
+    source: 'practitioner-observation',
+    consentRestrictions: 'Do not contact on personal number without confirming safety.',
+    safeContactMethod: 'Organisation office only during specified hours',
+    assignedPractitioner: 'M. Chen',
+    actionRequired: 'Establish and document a safe contact protocol with client before next contact attempt.',
+    status: 'in-progress',
+  },
+];
+
+export const MOCK_INTERVIEW_QUESTIONS: InterviewQuestion[] = [
+  {
+    id: 'iq-1',
+    questionText: 'What do you remember about the time between when you signed the contract and when you travelled?',
+    addressesGapId: 'eg-1',
+    relatedFindingId: 'f-6',
+    reason: 'The 45-day gap between the contract date and the travel record is unexplained. Open-ended recall may clarify without leading.',
+    sensitivityNote: 'Avoid asking about specific dates initially. Allow the person to orient freely before follow-up.',
+    reviewStatus: 'kept',
+  },
+  {
+    id: 'iq-2',
+    questionText: 'What happened with your travel documents when you arrived?',
+    addressesGapId: 'eg-2',
+    relatedFindingId: 'f-1',
+    reason: 'Passport retention is documented in only one source. Non-leading recall about documents may surface corroborating detail.',
+    sensitivityNote: 'This topic may relate to a point of control. Do not press if the person shows distress. Note any hesitation.',
+    reviewStatus: 'pending-review',
+  },
+  {
+    id: 'iq-3',
+    questionText: 'Can you tell me about your working hours and how they were decided?',
+    relatedFindingId: 'f-3',
+    reason: 'Compelled work hours claim is supported by a supervisor-authored log only. Person\'s own account of scheduling is absent.',
+    sensitivityNote: 'Frame around their experience of the schedule, not around the legal concept of forced labour.',
+    reviewStatus: 'kept',
+  },
+  {
+    id: 'iq-4',
+    questionText: 'Was there anything about the payment arrangements that was different from what you expected?',
+    addressesGapId: 'eg-3',
+    relatedFindingId: 'f-2',
+    reason: 'Wage deduction records are incomplete. Person\'s recollection of payment expectations vs. reality may support or qualify the debt claim.',
+    sensitivityNote: 'Financial topics may carry shame or confusion. Use neutral language and allow long silences.',
+    reviewStatus: 'pending-review',
+  },
+  {
+    id: 'iq-5',
+    questionText: 'Is there anything important about your situation right now that you think I should know about?',
+    addressesGapId: 'un-1',
+    reason: 'Open-ended welfare question. May surface urgent needs not yet recorded.',
+    sensitivityNote: 'Ask near the start of any session. If immediate safety is indicated, follow safeguarding protocol before continuing.',
+    reviewStatus: 'kept',
+  },
+];
+
+export const MOCK_TASKS: CaseTask[] = [
+  {
+    id: 'ct-1',
+    title: 'Obtain clearer copy of travel record page 1',
+    description: 'Border entry stamp on p.1 of d-3 is partially legible. A clearer copy is needed to resolve the arrival date conflict.',
+    linkedItem: 'eg-1',
+    source: 'evidence-gap',
+    assignee: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-28',
+    status: 'in-progress',
+  },
+  {
+    id: 'ct-2',
+    title: 'Approve masking for d-5 (Support Provider Notes)',
+    description: 'Masking review for document d-5 is pending practitioner approval. This is blocking the Export Gate.',
+    linkedItem: 'd-5',
+    source: 'incomplete-masking',
+    assignee: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-26',
+    status: 'to-do',
+  },
+  {
+    id: 'ct-3',
+    title: 'Verify interpreter availability for upcoming hearing',
+    description: 'Linked to urgent need un-2. Hearing date must be confirmed before interpreter request can be submitted.',
+    linkedItem: 'un-2',
+    source: 'urgent-need',
+    assignee: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-25',
+    status: 'to-do',
+  },
+  {
+    id: 'ct-4',
+    title: 'Review 4 pending analysis findings (Lane A and B)',
+    description: 'Findings f-4, f-5, f-6, f-9 remain in pending review status. All are required before export gate can clear.',
+    linkedItem: 'analysis',
+    source: 'pending-review',
+    assignee: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-27',
+    status: 'to-do',
+  },
+  {
+    id: 'ct-5',
+    title: 'Contact emergency housing coordinator re: eviction notice',
+    description: 'Eviction notice effective Friday. Record whether housing offer was made and client response.',
+    linkedItem: 'un-1',
+    source: 'urgent-need',
+    assignee: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-24',
+    status: 'in-progress',
+    notes: 'Coordinator contacted. Awaiting callback.',
+  },
+  {
+    id: 'ct-6',
+    title: 'Record why additional wage records cannot be obtained',
+    description: 'If no payment records can be sourced, this limitation must be documented before export.',
+    linkedItem: 'eg-3',
+    source: 'evidence-gap',
+    assignee: 'M. Chen',
+    priority: 'medium',
+    status: 'waiting',
+    notes: 'Waiting on legal team to advise on disclosure request options.',
+  },
+  {
+    id: 'ct-7',
+    title: 'Confirm legal representation before hearing date',
+    description: 'No duty counsel or legal aid representative confirmed. Urgent need un-3.',
+    linkedItem: 'un-3',
+    source: 'urgent-need',
+    assignee: 'M. Chen',
+    priority: 'high',
+    dueDate: '2024-03-27',
+    status: 'to-do',
+  },
+];
+
+export const MOCK_NOTES: CaseNote[] = [
+  {
+    id: 'cn-1',
+    type: 'practitioner-observation',
+    title: 'Observation: client appeared distressed when contract was mentioned',
+    content: 'During initial intake, the client became visibly distressed when the employment contract was referenced. This was noted without further probing. May be relevant to trauma-informed interview planning.',
+    author: 'M. Chen',
+    createdAt: '2024-03-24T08:45:00Z',
+    lastEditedAt: '2024-03-24T08:45:00Z',
+    visibility: 'internal',
+    linkedItems: ['f-2', 'd-1'],
+    isEvidence: false,
+  },
+  {
+    id: 'cn-2',
+    type: 'review-rationale',
+    title: 'Rationale: accepted f-1 (Passport Retention) with reservation',
+    content: 'Accepted finding f-1 on the basis of the citation from d-2 p.5. However, corroboration is single-source. If passport retention is a pivotal claim in any eventual handoff, independent corroboration should be sought before reliance. This note records the reservation accompanying acceptance.',
+    author: 'M. Chen',
+    createdAt: '2024-03-24T09:20:00Z',
+    lastEditedAt: '2024-03-24T09:22:00Z',
+    visibility: 'export-eligible',
+    linkedItems: ['f-1', 'eg-2'],
+    isEvidence: false,
+  },
+  {
+    id: 'cn-3',
+    type: 'legal-research',
+    title: 'Research note: non-punishment provisions — jurisdiction TBC',
+    content: 'Initial research suggests non-punishment provisions may be relevant in the applicable jurisdiction. This note is a research reminder only and does not constitute legal advice. Domestic counsel must verify before any representation is made. Jurisdiction has not been confirmed in the purpose brief.',
+    author: 'M. Chen',
+    createdAt: '2024-03-24T10:00:00Z',
+    lastEditedAt: '2024-03-24T10:05:00Z',
+    visibility: 'internal',
+    linkedItems: ['f-9'],
+    isEvidence: false,
+  },
+  {
+    id: 'cn-4',
+    type: 'safety-note',
+    title: 'Safe contact protocol — do not contact on personal number',
+    content: 'Client personal phone may be accessible to a third party based on content in d-2. Agreed protocol: contact via organisation office number only, between 10:00–16:00. Client will use a code word to indicate if contact is unsafe to continue. Do not leave voicemail.',
+    author: 'M. Chen',
+    createdAt: '2024-03-24T10:15:00Z',
+    lastEditedAt: '2024-03-24T10:15:00Z',
+    visibility: 'internal',
+    linkedItems: ['un-4'],
+    isEvidence: false,
+  },
 ];
 
 export const MOCK_AUDIT: AuditEvent[] = [
