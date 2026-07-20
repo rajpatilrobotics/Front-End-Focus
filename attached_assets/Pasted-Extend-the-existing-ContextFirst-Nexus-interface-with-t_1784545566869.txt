@@ -1,0 +1,635 @@
+Extend the existing ContextFirst Nexus interface with the features described below.
+
+Important scope:
+
+- Modify the existing UI prototype; do not create multiple design directions.
+- Produce one cohesive desktop web-app experience.
+- Preserve the useful existing areas: Documents, Structured Analysis, Charge–Coercion Nexus, Timeline, Export Gate, masking, intentional reveal, citations, human review and audit history.
+- You have full creative control over layout, navigation, component appearance, typography, spacing and visual hierarchy.
+- Do not copy another product’s design.
+- Do not add model selectors or expose OpenAI, Gemini, Mistral or technical provider choices to practitioners.
+- Do not claim that an AI suggestion is verified.
+- Do not present legal conclusions, victim-status determinations, guilt decisions, credibility scores or risk scores.
+- Clearly separate source facts, reported statements, AI suggestions, practitioner decisions, unknowns, limitations and guidance.
+- Every generated suggestion must remain reviewable, editable and attributable to its source.
+- This prompt requests UI/UX design and interaction states. Do not invent claims that an unavailable backend capability is already operational.
+
+PRODUCT CONTEXT
+
+ContextFirst Nexus is a case-preparation workspace for qualified legal and victim-support practitioners handling complex trafficking, forced-labour and forced-criminality matters.
+
+Practitioners may receive disorganized documents such as:
+
+- employment offers and contracts;
+- recruiter communications;
+- travel records;
+- identity and passport records;
+- payment and task logs;
+- procedural notices;
+- practitioner notes;
+- support-provider notes;
+- scanned PDFs;
+- arbitrary supporting documents.
+
+The product helps users organize and review those materials. It does not decide whether trafficking occurred and does not replace legal advice, safeguarding professionals, emergency services or practitioner judgment.
+
+EXISTING CORE FLOW
+
+1. Create or open a case.
+2. Record the purpose, practitioner role and authorization boundary.
+3. Upload one or more arbitrary documents.
+4. Extract readable text or identify pages requiring OCR/manual attention.
+5. Detect and mask sensitive identifiers.
+6. Permit intentional, reason-based, audited reveal.
+7. Generate source-linked candidate findings for human review.
+8. Show evidence relationships in the Charge–Coercion Nexus.
+9. Reconstruct a source-linked chronology.
+10. Prevent export until consequential review and masking requirements pass.
+11. Generate a purpose-bound full handoff or minimum-necessary safe share.
+
+Add the following practical features to this flow.
+
+FEATURE 1 — EVIDENCE GAP & ACTION PLANNER
+
+Purpose:
+
+Turn unresolved, conflicting, missing or weakly supported evidence into a practical investigation and case-preparation plan.
+
+The system should create a gap only when the available evidence cannot answer a relevant factual question. A gap must not be presented as proof that an event did not occur.
+
+Each gap should contain:
+
+- stable gap ID;
+- short question or missing-information title;
+- why the information matters;
+- related candidate findings;
+- related Nexus nodes;
+- source documents already reviewed;
+- missing, conflicting or insufficient evidence status;
+- consequence if unresolved;
+- suggested next actions;
+- responsible person;
+- priority;
+- due date;
+- status;
+- practitioner notes;
+- resolution evidence;
+- audit history.
+
+Possible statuses:
+
+- Open
+- Investigating
+- Waiting on external information
+- Partially resolved
+- Resolved
+- Unable to resolve
+- Outside scope
+
+Suggested actions may include:
+
+- request a missing page;
+- obtain a clearer copy;
+- verify a date;
+- confirm a sender’s identity or authority;
+- request payment records;
+- ask a non-leading follow-up question;
+- verify interpreter availability;
+- compare two conflicting records;
+- record why additional evidence cannot be obtained.
+
+Required interactions:
+
+- Open a gap from Analysis, Timeline or Nexus.
+- Convert a suggested action into a case task.
+- Link new documents or citations to a gap.
+- Mark a gap resolved only with a reason and supporting evidence.
+- Keep unresolved gaps visible in Export.
+- Show which gaps block export and which are preserved only as limitations.
+
+Do not:
+
+- assume missing evidence means the allegation is false;
+- automatically resolve gaps;
+- hide unresolved gaps from exported outputs.
+
+FEATURE 2 — URGENT NEEDS & SAFETY PLAN
+
+Purpose:
+
+Allow the practitioner to record immediate needs discovered during intake or document review and create an accountable response plan.
+
+This is practitioner-recorded operational information, not an AI risk score.
+
+Need categories may include:
+
+- immediate physical safety;
+- emergency accommodation;
+- food or essential supplies;
+- urgent medical care;
+- mental-health support;
+- interpreter or language access;
+- legal representation;
+- immigration support;
+- safe communications;
+- transportation;
+- document recovery;
+- child or dependent safeguarding;
+- digital/account safety;
+- other practitioner-defined need.
+
+Each need should contain:
+
+- need ID;
+- category;
+- practitioner-written description;
+- urgency: immediate, within 24 hours, within 72 hours or ongoing;
+- source: practitioner observation, person-reported, document-supported or unknown;
+- related citations where applicable;
+- consent or contact restrictions;
+- safe-contact method;
+- assigned practitioner;
+- action required;
+- referral, if any;
+- follow-up time;
+- status;
+- notes;
+- audit history.
+
+Possible statuses:
+
+- Newly recorded
+- Confirming
+- Action required
+- Referral offered
+- Referral accepted
+- Referral declined
+- In progress
+- Completed
+- Unable to complete
+
+Required interactions:
+
+- Add an urgent need manually from any case area.
+- Optionally convert an unresolved evidence item into a need for practitioner consideration.
+- Never create or dispatch a referral automatically.
+- Require the practitioner to confirm urgency and action.
+- Clearly display emergency language telling users to contact appropriate local emergency services when immediate danger exists.
+- Keep safety information separate from legal findings and the Nexus.
+- Prevent sensitive safety-plan details from appearing in safe-share exports unless explicitly selected and permitted.
+
+Do not:
+
+- generate a probability-of-harm score;
+- label a person high-risk using AI;
+- claim the system contacted emergency services;
+- automatically contact organizations.
+
+FEATURE 3 — SERVICE & REFERRAL NAVIGATOR
+
+Purpose:
+
+Help practitioners find relevant services based on the case location, service need, eligibility information and safe-contact requirements.
+
+Service categories:
+
+- emergency accommodation;
+- victim advocacy;
+- legal aid;
+- immigration legal services;
+- healthcare;
+- mental-health services;
+- translation and interpretation;
+- transportation;
+- food and essential support;
+- employment and labour-rights assistance;
+- financial counselling;
+- digital safety;
+- child and family services;
+- government and nonprofit victim services.
+
+Search and filter information:
+
+- country;
+- state or territory;
+- county or city;
+- distance or service area;
+- service category;
+- language;
+- accessibility;
+- remote/in-person support;
+- operating hours;
+- eligibility;
+- cost;
+- safe-contact options.
+
+Each result should display:
+
+- organization name;
+- service type;
+- coverage area;
+- phone, website and address where available;
+- hours;
+- languages;
+- eligibility notes;
+- accessibility information;
+- information source;
+- last verified date;
+- warning that listing does not guarantee eligibility, capacity or current availability.
+
+Referral workflow:
+
+1. Practitioner reviews the organization.
+2. Practitioner checks consent and safe-contact requirements.
+3. Practitioner records whether information was offered.
+4. Practitioner may record accepted, declined or follow-up required.
+5. No data is transmitted to the provider unless an explicitly implemented and separately confirmed integration exists.
+6. Referral activity enters the audit history.
+
+The production implementation should eventually rely on verified directories or official data sources. Do not fill the product with invented service providers and present them as real.
+
+FEATURE 4 — TRAUMA-INFORMED INTERVIEW PLANNER
+
+Purpose:
+
+Help practitioners prepare non-leading, respectful follow-up questions based on unresolved evidence gaps.
+
+Questions may be suggested from:
+
+- missing dates;
+- unclear sequences;
+- unidentified roles;
+- disputed locations;
+- unclear control or dependency relationships;
+- missing payment information;
+- communication ambiguity;
+- document-authorship uncertainty;
+- immediate service needs;
+- translation or accessibility requirements.
+
+Each suggested question must show:
+
+- question text;
+- the evidence gap it addresses;
+- related candidate or Nexus node;
+- citations that led to the question;
+- reason the question may be useful;
+- sensitivity note;
+- practitioner review status.
+
+Actions:
+
+- Keep
+- Edit
+- Remove
+- Mark inappropriate
+- Defer
+- Convert response into a practitioner note
+
+Planning controls:
+
+- interview purpose;
+- topics to avoid;
+- language/interpreter requirement;
+- accessibility accommodation;
+- safe-contact constraint;
+- intended interviewer;
+- session notes;
+- consent confirmed;
+- pause/stop considerations.
+
+Non-negotiable rules:
+
+- Do not suggest accusatory or coercive questions.
+- Avoid assuming allegations are true.
+- Prefer open prompts such as “What happened next?” or “What do you remember about…?”
+- Do not repeatedly request traumatic details without a stated case-preparation reason.
+- Questions are planning aids, not mandatory scripts.
+- The practitioner must approve questions before use.
+- Never interpret a person’s refusal, uncertainty or inconsistent memory as proof of dishonesty.
+
+FEATURE 5 — CASE TASKS & DEADLINE TRACKER
+
+Purpose:
+
+Give the practitioner one operational view of everything that still requires action.
+
+Tasks may originate from:
+
+- evidence gaps;
+- urgent needs;
+- referrals;
+- incomplete masking;
+- pending candidate review;
+- unresolved citations;
+- missing documents;
+- dependency changes;
+- interview preparation;
+- export blockers;
+- manual practitioner creation.
+
+Each task should contain:
+
+- task ID;
+- title;
+- description;
+- linked case item;
+- source of task;
+- assignee;
+- priority;
+- due date;
+- status;
+- dependencies;
+- reminder;
+- notes;
+- completion evidence;
+- audit history.
+
+Statuses:
+
+- To do
+- In progress
+- Waiting
+- Blocked
+- Completed
+- Cancelled
+
+Useful views:
+
+- My tasks
+- Due soon
+- Overdue
+- Waiting on others
+- Export blockers
+- Safety-related
+- Completed
+
+Deadline rules:
+
+- User-entered deadlines are allowed.
+- Suggested legal or procedural deadlines must display their jurisdiction, authority, rule version and verification date.
+- A suggested deadline must be confirmed by the practitioner.
+- Never invent a deadline.
+- Never claim universal legal validity.
+- Clearly distinguish operational reminders from legally prescribed deadlines.
+
+FEATURE 6 — CASE DASHBOARD AND WORKSPACE SUMMARY
+
+Purpose:
+
+Give practitioners a clear starting point and show what requires attention across cases.
+
+Dashboard information:
+
+- open cases;
+- cases needing human review;
+- cases with urgent-needs actions;
+- overdue tasks;
+- unresolved evidence gaps;
+- export-ready cases;
+- recently active cases.
+
+Each case summary may show:
+
+- case reference;
+- practitioner/assignee;
+- document count;
+- analysis status;
+- review status;
+- urgent-needs indicator;
+- open-gap count;
+- task count;
+- export status;
+- last activity.
+
+Provide a clear New Case action.
+
+Do not expose sensitive names or case details unnecessarily on the dashboard.
+
+FEATURE 7 — SOURCE QUALITY AND DOCUMENT HEALTH
+
+Purpose:
+
+Explain whether uploaded material is usable instead of showing vague processing failures.
+
+For every uploaded document and page, distinguish:
+
+- text extracted successfully;
+- OCR required;
+- OCR completed;
+- partially readable;
+- password protected;
+- corrupt or unsupported;
+- blank page;
+- missing page;
+- language not supported;
+- manual review required.
+
+Show:
+
+- actual uploaded filename;
+- page count;
+- readable-page count;
+- OCR-page count;
+- failed-page count;
+- extraction method;
+- detected language;
+- coverage limitations;
+- retry or replace action.
+
+Do not require a fixed seven-document packet. Users may upload one or many documents.
+
+Do not automatically rename arbitrary uploads as D01–D07 fixture records. Stable internal IDs may be assigned, but the user-facing filename and document title must remain visible.
+
+FEATURE 8 — CASE NOTES AND DECISION JOURNAL
+
+Purpose:
+
+Let practitioners record reasoning that is not itself evidence.
+
+Note types:
+
+- practitioner observation;
+- interview note;
+- legal-research reminder;
+- safety note;
+- referral note;
+- review rationale;
+- case-strategy note;
+- general note.
+
+Every note should show:
+
+- author;
+- creation time;
+- last edited time;
+- visibility/export setting;
+- linked sources or case items;
+- whether it is evidence, commentary or guidance.
+
+A note must never silently become a verified fact.
+
+FEATURE 9 — ENHANCED CHARGE–COERCION NEXUS
+
+Preserve the existing visual relationship map and extend it so that it can represent:
+
+- candidate facts;
+- recruitment relationships;
+- movement or travel;
+- control/coercion indicators;
+- compelled tasks;
+- alleged-offence timing;
+- urgency needs;
+- contradictions;
+- evidence gaps;
+- dependencies;
+- supporting citations;
+- withdrawn or invalidated findings.
+
+Every node should expose:
+
+- stable ID;
+- human-readable label;
+- type;
+- review status;
+- support status;
+- origin;
+- exact citations;
+- limitations;
+- dependency relationships;
+- practitioner actions.
+
+Required behavior:
+
+- Selecting a node opens its details.
+- Filters can reduce visual complexity.
+- Users can distinguish supports, depends on, conflicts with, supersedes and invalidates.
+- Graph updates follow human review decisions.
+- A withdrawal warns about affected downstream nodes.
+- It is explicitly labelled as a relationship map, not a legal conclusion or trafficking determination.
+- Provide a non-graph accessible representation of the same relationships.
+
+FEATURE 10 — ENHANCED TIMELINE
+
+Preserve chronological reconstruction and add:
+
+- exact dates;
+- approximate dates;
+- date ranges;
+- conflicting dates;
+- unknown dates;
+- document-sourced events;
+- person-reported events;
+- practitioner-entered events;
+- support status;
+- review status;
+- source citations;
+- limitations.
+
+Users should be able to:
+
+- filter event categories;
+- view conflicts only;
+- view pending-review events;
+- open the exact masked source;
+- record or revise a decision;
+- create an evidence gap;
+- add a practitioner note;
+- compare conflicting sources.
+
+Never make an approximate date appear exact.
+
+FEATURE 11 — EXPORT AND HANDOFF ENHANCEMENTS
+
+Preserve the existing fail-closed Export Gate.
+
+Exports must remain unavailable when critical requirements are unresolved.
+
+Possible blockers:
+
+- consequential candidate not reviewed;
+- unresolved citation;
+- incomplete masking;
+- unsafe output;
+- stale analysis;
+- unresolved active dependency;
+- missing purpose or authorization;
+- safe-share selection not confirmed.
+
+Output types:
+
+1. Full practitioner handoff.
+2. Minimum-necessary safe share.
+
+Output content may include:
+
+- purpose;
+- reviewed findings;
+- exact citations;
+- source labels;
+- Timeline;
+- Nexus relationships;
+- evidence gaps;
+- limitations;
+- urgent-needs information only when explicitly permitted;
+- referral summary only when explicitly permitted;
+- human decisions;
+- audit provenance;
+- run identity;
+- reviewed-state hash;
+- redaction status.
+
+The same immutable manifest should drive semantic preview, canonical JSON and local PDF.
+
+Do not allow an override that bypasses critical export blockers.
+
+GLOBAL WORKFLOW REQUIREMENTS
+
+The enhanced practitioner flow should be understandable as:
+
+Dashboard
+→ Case purpose
+→ Upload and prepare documents
+→ Review masking
+→ Analyze source-linked candidates
+→ Review Urgent Needs
+→ Resolve Evidence Gaps
+→ Plan follow-up interview
+→ Find and record services/referrals
+→ Review Nexus
+→ Review Timeline
+→ Complete Tasks
+→ Pass Export Gate
+→ Create Handoff
+
+Users should always understand:
+
+- where they are;
+- what has been completed;
+- what needs attention;
+- what action comes next;
+- what is evidence;
+- what is only a suggestion;
+- what requires human confirmation;
+- what prevents export.
+
+GLOBAL TRUTH AND SAFETY RULES
+
+- AI suggestions must never silently become accepted findings.
+- Every factual candidate must link to exact source material.
+- Unknown must remain a valid state.
+- Missing evidence is not negative evidence.
+- Reported, documented, alleged and practitioner-entered information must remain distinguishable.
+- Never provide a legal determination.
+- Never score victim credibility.
+- Never rank people by cooperation.
+- Do not imply referral availability is guaranteed.
+- Do not automatically contact a service provider.
+- Do not present unverified jurisdictional guidance as law.
+- Sensitive identifiers are masked by default.
+- Revealing sensitive data requires an explicit reason and audit event.
+- Human decisions, edits, withdrawals and exports must be auditable.
+- Errors and limitations must remain visible.
+- The product must not visually imply that an unavailable backend feature is already operational.
+
+Deliver one integrated extension of the current Replit interface. Do not generate three alternatives. Do not ask me to choose a design style unless a genuinely blocking product decision is missing.
