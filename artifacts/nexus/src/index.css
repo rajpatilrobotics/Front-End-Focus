@@ -143,14 +143,14 @@
   --app-font-mono: 'Spline Sans Mono', monospace;
   --radius: 0.375rem;
 
-  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.05);
-  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.07);
-  --shadow-sm: 0px 1px 3px 0px rgba(0,0,0,0.07), 0px 1px 2px -1px rgba(0,0,0,0.05);
-  --shadow: 0px 2px 4px 0px rgba(0,0,0,0.07), 0px 1px 2px -1px rgba(0,0,0,0.05);
-  --shadow-md: 0px 4px 8px -1px rgba(0,0,0,0.09), 0px 2px 4px -2px rgba(0,0,0,0.05);
-  --shadow-lg: 0px 8px 16px -2px rgba(0,0,0,0.09), 0px 4px 6px -3px rgba(0,0,0,0.05);
-  --shadow-xl: 0px 16px 24px -4px rgba(0,0,0,0.10), 0px 8px 10px -4px rgba(0,0,0,0.05);
-  --shadow-2xl: 0px 24px 40px -6px rgba(0,0,0,0.12);
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.06);
+  --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.08);
+  --shadow-sm: 0px 1px 4px 0px rgba(0,0,0,0.08), 0px 1px 2px -1px rgba(0,0,0,0.05);
+  --shadow: 0px 2px 6px 0px rgba(0,0,0,0.09), 0px 1px 3px -1px rgba(0,0,0,0.06);
+  --shadow-md: 0px 4px 12px -1px rgba(0,0,0,0.11), 0px 2px 5px -2px rgba(0,0,0,0.06);
+  --shadow-lg: 0px 8px 20px -2px rgba(0,0,0,0.12), 0px 4px 8px -3px rgba(0,0,0,0.07);
+  --shadow-xl: 0px 16px 32px -4px rgba(0,0,0,0.13), 0px 8px 12px -4px rgba(0,0,0,0.07);
+  --shadow-2xl: 0px 24px 48px -6px rgba(0,0,0,0.16);
 
   --tracking-normal: 0em;
   --spacing: 0.25rem;
