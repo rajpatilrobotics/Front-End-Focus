@@ -21,10 +21,10 @@ type RunPhase = 'idle' | 'running' | 'complete' | 'replay-loaded';
 
 // ── Existing config ───────────────────────────────────────────────────────────
 
-const LANE_META: Record<ActiveLane, { label: string; subLabel: string; color: string; activeColor: string }> = {
-  A: { label: 'Lane A', subLabel: 'Trafficking Indicators',   color: 'text-purple-700', activeColor: 'border-purple-500 text-purple-700 bg-purple-50' },
-  B: { label: 'Lane B', subLabel: 'Non-Punishment Relevance', color: 'text-blue-700',   activeColor: 'border-blue-500 text-blue-700 bg-blue-50' },
-  C: { label: 'Lane C', subLabel: 'Protection & Urgency',     color: 'text-orange-700', activeColor: 'border-orange-500 text-orange-700 bg-orange-50' },
+  const LANE_META: Record<ActiveLane, { label: string; subLabel: string; color: string; activeColor: string }> = {
+  A: { label: 'Lane A', subLabel: 'Trafficking Indicators',   color: 'text-primary', activeColor: 'border-primary text-primary bg-primary/5' },
+  B: { label: 'Lane B', subLabel: 'Non-Punishment Relevance', color: 'text-emerald-500',   activeColor: 'border-emerald-500 text-emerald-700 bg-emerald-50' },
+  C: { label: 'Lane C', subLabel: 'Protection & Urgency',     color: 'text-purple-500', activeColor: 'border-purple-500 text-purple-700 bg-purple-50' },
 };
 
 const GAP_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
@@ -485,8 +485,8 @@ export default function CaseAnalysis() {
                   key={lane}
                   onClick={() => { setActiveLane(lane); setSelectedId(null); setFilterStatus('all'); }}
                   className={cn(
-                    "flex flex-col items-start px-4 py-2.5 border-b-2 text-left transition-colors min-w-[140px]",
-                    activeLane === lane ? `border-current ${meta.color}` : "border-transparent text-muted-foreground hover:text-foreground"
+                    "flex flex-col items-start px-4 py-2.5 border-l-4 border-b-2 text-left transition-colors min-w-[140px]",
+                    activeLane === lane ? `${meta.activeColor}` : "border-b-transparent border-l-transparent text-muted-foreground hover:text-foreground"
                   )}
                 >
                   <div className="flex items-center gap-1.5">

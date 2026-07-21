@@ -111,7 +111,7 @@ export default function CaseTimeline() {
       <div className="flex-1 overflow-y-auto px-6 py-8 md:px-12 relative">
         <div className="max-w-4xl mx-auto relative">
           {/* Timeline axis */}
-          <div className="absolute left-8 md:left-32 top-0 bottom-0 w-px bg-border" />
+          <div className="absolute left-8 md:left-[142px] top-0 bottom-0 w-1 bg-gradient-to-b from-primary/60 via-primary/30 to-transparent -translate-x-[1.5px]" />
 
           {/* Uncertainty notice */}
           {filter !== 'conflicting' && (
@@ -200,11 +200,11 @@ function TimelineNode({
       <div className="md:w-32 flex-shrink-0 md:text-right pt-1 pl-12 md:pl-0">
         {event.dateType !== 'unknown' ? (
           <div className={cn("font-mono text-sm", hasConflict ? "text-amber-600 font-semibold" : dateCfg.color)}>
-            {isApproximate && <span className="mr-0.5">~</span>}
+            {isApproximate && <span className="mr-1 inline-block bg-amber-100 text-amber-800 rounded px-1 text-xs">~</span>}
             {event.date}
           </div>
         ) : (
-          <div className="font-mono text-sm text-muted-foreground/50 italic">unknown</div>
+          <div className="font-mono text-sm text-muted-foreground/50 italic flex items-center justify-end md:justify-end gap-1"><span className="inline-block bg-amber-100 text-amber-800 rounded px-1 text-xs not-italic">?</span> unknown</div>
         )}
         <div className="text-[9px] font-mono text-muted-foreground/50 mt-0.5 md:text-right">
           {dateCfg.label}
@@ -213,7 +213,7 @@ function TimelineNode({
 
       {/* Axis marker */}
       <div className={cn(
-        "absolute left-8 md:left-[136px] top-1.5 w-3 h-3 rounded-full border-2 z-10 bg-background transition-colors",
+        "absolute left-8 md:left-[142px] top-1.5 w-3 h-3 rounded-full border-2 z-10 bg-background transition-colors -translate-x-[5px] hover:ring-2 hover:ring-primary/30",
         hasConflict
           ? "border-amber-500 ring-4 ring-amber-500/20"
           : event.reviewStatus === 'accepted'
@@ -222,10 +222,13 @@ function TimelineNode({
               ? "border-dashed border-muted-foreground/40"
               : "border-border group-hover:border-foreground/40"
       )} />
+      
+      {/* Faint horizontal line */}
+      <div className="absolute left-8 md:left-[142px] top-[10px] w-4 md:w-8 h-px bg-border/40 z-0" />
 
       {/* Content card */}
       <div className={cn(
-        "flex-1 bg-card border rounded-md ml-12 md:ml-0 transition-all shadow-sm",
+        "flex-1 bg-card border rounded-md ml-12 md:ml-8 transition-all shadow-sm z-10 relative",
         hasConflict ? "border-amber-300 bg-amber-50/20" : "border-border hover:border-foreground/20 hover:shadow-md"
       )}>
         {/* Card header */}
@@ -237,8 +240,8 @@ function TimelineNode({
 
           {/* Conflict banner */}
           {hasConflict && (
-            <div className="mb-3 bg-amber-50 border border-amber-200 rounded-sm p-3 text-sm text-amber-800 flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <div className="mb-3 bg-amber-50 border border-amber-200 border-l-4 border-l-amber-500 rounded-sm p-3 text-sm text-amber-800 flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5 animate-pulse" />
               <div>
                 <strong className="block text-amber-700 mb-1">Date Conflict — Manual Verification Required</strong>
                 Source documents disagree on the date of this event. Both sources are shown. The conflict cannot be resolved automatically.

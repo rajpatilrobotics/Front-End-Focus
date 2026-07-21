@@ -19,15 +19,20 @@ export function PageHeader({
   badges?: React.ReactNode;
 }) {
   return (
-    <div className="bg-card border-b border-border px-6 py-5 flex items-start justify-between shrink-0 shadow-sm relative overflow-hidden">
+    <div className="bg-card px-6 py-5 flex items-start justify-between shrink-0 shadow-sm relative overflow-hidden" style={{ backgroundImage: 'linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--accent)/0.4) 100%)' }}>
+      <div className="absolute bottom-0 left-0 right-0 h-px" style={{ backgroundImage: 'linear-gradient(to right, transparent, hsl(var(--border)), transparent)' }} />
       <div className="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-muted/50 to-transparent pointer-events-none" />
       <div className="relative z-10 max-w-3xl">
-        <div className="flex items-center gap-3 mb-1.5 flex-wrap">
-          {Icon && <Icon className="w-5 h-5 text-primary" />}
+        <div className="flex items-center gap-3 mb-2 flex-wrap">
+          {Icon && (
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20 flex items-center justify-center">
+              <Icon className="w-4 h-4 text-primary" />
+            </div>
+          )}
           <h2 className="text-xl font-bold text-foreground tracking-tight">{title}</h2>
           {badges}
         </div>
-        <p className="text-sm text-muted-foreground leading-relaxed">
+        <p className="text-xs font-mono text-muted-foreground/80 uppercase tracking-wider leading-relaxed">
           {description}
         </p>
       </div>

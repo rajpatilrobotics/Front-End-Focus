@@ -200,29 +200,29 @@ export default function CaseTasks() {
       </div>
 
       {/* ── Status summary bar ── */}
-      <div className="bg-muted/30 border-b border-border px-5 py-3 flex items-center gap-3 shrink-0 flex-wrap">
+      <div className="bg-muted/30 border-b border-border px-5 py-4 flex items-center gap-3 shrink-0 flex-wrap">
         <SummaryCard
           label="Urgent"
           count={counts.urgent}
-          color="bg-red-50 border-red-200 text-red-700"
+          color="bg-red-50 border-y-red-200 border-r-red-200 border-l-4 border-l-red-500 text-red-700 shadow-sm"
           icon={<AlertTriangle className="w-4 h-4 text-red-500" />}
         />
         <SummaryCard
           label="In Progress"
           count={counts.inProgress}
-          color="bg-blue-50 border-blue-200 text-blue-700"
+          color="bg-blue-50 border-y-blue-200 border-r-blue-200 border-l-4 border-l-blue-500 text-blue-700 shadow-sm"
           icon={<Loader2 className="w-4 h-4 text-blue-500" />}
         />
         <SummaryCard
           label="Blocked"
           count={counts.blocked}
-          color="bg-orange-50 border-orange-200 text-orange-700"
+          color="bg-orange-50 border-y-orange-200 border-r-orange-200 border-l-4 border-l-orange-500 text-orange-700 shadow-sm"
           icon={<XCircle className="w-4 h-4 text-orange-500" />}
         />
         <SummaryCard
           label="Completed"
           count={counts.completed}
-          color="bg-teal-50 border-teal-200 text-teal-700"
+          color="bg-teal-50 border-y-teal-200 border-r-teal-200 border-l-4 border-l-teal-500 text-teal-700 shadow-sm"
           icon={<CheckCircle2 className="w-4 h-4 text-teal-500" />}
         />
         <div className="ml-auto text-[10px] font-mono text-muted-foreground">
@@ -282,10 +282,11 @@ export default function CaseTasks() {
                   key={task.id}
                   onClick={() => setSelectedId(task.id)}
                   className={cn(
-                    "p-3.5 rounded-sm border cursor-pointer transition-all",
+                    "p-3.5 rounded-sm border cursor-pointer transition-all border-l-4",
+                    task.priority === 'high' ? 'border-l-red-500' : task.priority === 'medium' ? 'border-l-amber-500' : 'border-l-blue-500',
                     isSelected
-                      ? "bg-primary/5 border-primary/30 shadow-sm"
-                      : cn("hover:border-foreground/15", status.row)
+                      ? "bg-primary/5 border-r-primary/30 border-y-primary/30 shadow-sm"
+                      : cn("hover:border-r-foreground/15 hover:border-y-foreground/15", status.row)
                   )}
                 >
                   {/* Title row */}
@@ -477,11 +478,12 @@ export default function CaseTasks() {
 
               {/* Safety disclosure note */}
               {selected.isSafetySensitive && (
-                <div className="border border-dashed border-red-200 rounded-sm p-3 text-xs text-red-700 bg-red-50/40 flex items-start gap-2">
-                  <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
-                  <span>
-                    This task is marked safety-sensitive. It involves information relevant to the client's immediate safety or wellbeing. Handle with trauma-informed care. Do not record identifying details beyond what is necessary.
-                  </span>
+                <div className="border border-amber-200 rounded-sm p-4 text-sm text-amber-900 bg-amber-50 shadow-sm flex items-start gap-3">
+                  <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
+                  <div>
+                    <strong className="block font-semibold mb-1">Safety-Sensitive Task</strong>
+                    This task involves information relevant to the client's immediate safety or wellbeing. Handle with trauma-informed care. Do not record identifying details beyond what is necessary.
+                  </div>
                 </div>
               )}
 

@@ -277,7 +277,7 @@ export default function CaseDocuments() {
                           ? <CheckCircle2 className="w-4 h-4" />
                           : isRunning
                             ? <div className="w-3 h-3 rounded-full bg-primary animate-ping" />
-                            : <span className="text-[9px] font-bold text-muted-foreground">{stage.id}</span>}
+                            : <span className="text-[9px] font-mono font-bold text-muted-foreground">0{stage.id}</span>}
                       </div>
                       <span className={cn("text-[9px] font-mono uppercase leading-tight",
                         isDone ? "text-teal-700" : isRunning ? "text-primary" : "text-muted-foreground"
@@ -386,8 +386,9 @@ export default function CaseDocuments() {
                       <span className={cn("text-[10px] font-mono", tierCfg.text)}>{tierCfg.label}</span>
                       <span className={cn("text-[10px] font-mono font-bold", tierCfg.text)}>{q.score}%</span>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                      <div className={cn("h-full rounded-full transition-all", tierCfg.bar)} style={{ width: `${q.score}%` }} />
+                    <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                      <div className={cn("h-full rounded-full bg-gradient-to-r from-transparent to-current opacity-20", tierCfg.bar)} style={{ width: `${q.score}%` }} />
+                      <div className={cn("h-full rounded-full transition-all -mt-3 relative z-10", tierCfg.bar)} style={{ width: `${q.score}%`, backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 100%)' }} />
                     </div>
                   </div>
 
@@ -397,9 +398,12 @@ export default function CaseDocuments() {
                       {doc.pages.map(p => (
                         <div
                           key={p.page}
-                          title={`Page ${p.page}: ${PAGE_STATUS_CONFIG[p.status as PageStatus]?.label || p.status}`}
-                          className={cn("w-3.5 h-1.5 rounded-sm", PAGE_STATUS_CONFIG[p.status as PageStatus]?.dot || 'bg-border')}
-                        />
+                          className={cn("w-3.5 h-1.5 rounded-sm group relative", PAGE_STATUS_CONFIG[p.status as PageStatus]?.dot || 'bg-border')}
+                        >
+                          <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-foreground text-background text-[10px] font-mono whitespace-nowrap rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
+                            Page {p.page}: {PAGE_STATUS_CONFIG[p.status as PageStatus]?.label || p.status}
+                          </div>
+                        </div>
                       ))}
                       {doc.pageCount > doc.pages.length && (
                         <span className="text-[9px] text-muted-foreground ml-1">+{doc.pageCount - doc.pages.length} more</span>

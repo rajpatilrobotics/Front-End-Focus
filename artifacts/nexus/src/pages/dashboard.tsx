@@ -25,12 +25,12 @@ export default function Dashboard() {
   const openGapCount = 5;
 
   const STAT_CARDS = [
-    { label: 'Open Cases',           value: openCases.length,    color: 'text-foreground',   accent: 'bg-foreground/5 text-foreground',    icon: Activity,     border: 'border-l-foreground' },
-    { label: 'Pending Review',       value: pendingCases.length, color: 'text-blue-700',     accent: 'bg-blue-50 text-blue-700',          icon: Eye,          border: 'border-l-blue-500' },
-    { label: 'Export Ready',         value: readyCases.length,   color: 'text-teal-700',     accent: 'bg-teal-50 text-teal-700',           icon: CheckCircle2, border: 'border-l-teal-500' },
-    { label: 'Overdue Tasks',        value: overdueTaskCount,    color: overdueTaskCount > 0 ? 'text-red-700' : 'text-muted-foreground', accent: overdueTaskCount > 0 ? 'bg-red-50 text-red-700' : 'bg-muted text-muted-foreground', icon: ClipboardList, border: overdueTaskCount > 0 ? 'border-l-red-500' : 'border-l-border', pulse: overdueTaskCount > 0 },
-    { label: 'Urgent Needs Active',  value: urgentNeedCount,     color: urgentNeedCount > 0 ? 'text-orange-700' : 'text-muted-foreground', accent: urgentNeedCount > 0 ? 'bg-orange-50 text-orange-700' : 'bg-muted text-muted-foreground', icon: Phone, border: urgentNeedCount > 0 ? 'border-l-orange-500' : 'border-l-border', pulse: urgentNeedCount > 0 },
-    { label: 'Evidence Gaps Open',   value: openGapCount,        color: openGapCount > 0 ? 'text-amber-700' : 'text-muted-foreground', accent: openGapCount > 0 ? 'bg-amber-50 text-amber-700' : 'bg-muted text-muted-foreground', icon: HelpCircle, border: openGapCount > 0 ? 'border-l-amber-500' : 'border-l-border' },
+    { label: 'Open Cases',           value: openCases.length,    color: 'text-foreground',   accent: 'from-foreground/20 to-foreground/5 text-foreground',    icon: Activity,     border: 'border-l-foreground' },
+    { label: 'Pending Review',       value: pendingCases.length, color: 'text-blue-700',     accent: 'from-blue-500/20 to-blue-500/5 text-blue-700',          icon: Eye,          border: 'border-l-blue-500' },
+    { label: 'Export Ready',         value: readyCases.length,   color: 'text-teal-700',     accent: 'from-teal-500/20 to-teal-500/5 text-teal-700',           icon: CheckCircle2, border: 'border-l-teal-500' },
+    { label: 'Overdue Tasks',        value: overdueTaskCount,    color: overdueTaskCount > 0 ? 'text-red-700' : 'text-muted-foreground', accent: overdueTaskCount > 0 ? 'from-red-500/20 to-red-500/5 text-red-700' : 'from-muted-foreground/20 to-muted-foreground/5 text-muted-foreground', icon: ClipboardList, border: overdueTaskCount > 0 ? 'border-l-red-500' : 'border-l-border', pulse: overdueTaskCount > 0 },
+    { label: 'Urgent Needs Active',  value: urgentNeedCount,     color: urgentNeedCount > 0 ? 'text-orange-700' : 'text-muted-foreground', accent: urgentNeedCount > 0 ? 'from-orange-500/20 to-orange-500/5 text-orange-700' : 'from-muted-foreground/20 to-muted-foreground/5 text-muted-foreground', icon: Phone, border: urgentNeedCount > 0 ? 'border-l-orange-500' : 'border-l-border', pulse: urgentNeedCount > 0 },
+    { label: 'Evidence Gaps Open',   value: openGapCount,        color: openGapCount > 0 ? 'text-amber-700' : 'text-muted-foreground', accent: openGapCount > 0 ? 'from-amber-500/20 to-amber-500/5 text-amber-700' : 'from-muted-foreground/20 to-muted-foreground/5 text-muted-foreground', icon: HelpCircle, border: openGapCount > 0 ? 'border-l-amber-500' : 'border-l-border' },
   ];
 
   return (
@@ -53,7 +53,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90 rounded-md font-semibold gap-1.5 shadow-md">
+        <Button size="sm" className="bg-[linear-gradient(135deg,#2BBCD4_0%,#1FA8C0_100%)] text-white hover:opacity-90 rounded-md font-semibold gap-1.5 shadow-md border-none">
           <Plus className="w-3.5 h-3.5" />New Case
         </Button>
       </header>
@@ -68,19 +68,21 @@ export default function Dashboard() {
               <div
                 key={stat.label}
                 className={cn(
-                  "bg-card border border-border border-l-4 p-5 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group",
+                  "bg-card border border-border border-l-4 p-6 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group",
                   stat.border,
                 )}
               >
-                <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-gradient-to-br from-current to-transparent opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-                <div className="flex items-center justify-between mb-4">
-                  <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", stat.accent, stat.pulse && "animate-[pulse_2s_ease-in-out_infinite]")}>
-                    <Icon className="w-4 h-4" />
-                  </div>
+                <div className={cn(
+                  "absolute top-6 right-6 w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center",
+                  stat.accent,
+                  stat.pulse && "animate-[pulse_2s_ease-in-out_infinite]"
+                )}>
+                  <Icon className="w-4 h-4" />
                 </div>
-                <div>
-                  <div className={cn("text-3xl font-bold font-mono tracking-tight", stat.color)}>{stat.value}</div>
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider leading-tight mt-1 block">{stat.label}</span>
+                
+                <div className="mt-8">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider leading-tight mb-1 block">{stat.label}</span>
+                  <div className={cn("text-4xl font-bold font-mono tracking-tight", stat.color)}>{stat.value}</div>
                 </div>
               </div>
             );
@@ -90,12 +92,12 @@ export default function Dashboard() {
         {/* ── Urgent attention banner ── */}
         {(overdueTaskCount > 0 || urgentNeedCount > 0) && (
           <div className="bg-red-50 border border-red-200 border-l-4 border-l-red-500 rounded-xl p-5 flex items-start gap-4 shadow-sm relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-red-500/10 to-transparent pointer-events-none" />
-            <div className="w-10 h-10 rounded-full bg-red-100 border border-red-200 flex items-center justify-center shrink-0 relative">
+            <div className="absolute inset-y-0 right-0 w-1/3 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(239,68,68,0.06) 4px, rgba(239,68,68,0.06) 8px)' }} />
+            <div className="w-10 h-10 rounded-full bg-red-100 border border-red-200 flex items-center justify-center shrink-0 relative z-10">
               <div className="absolute inset-0 rounded-full border-2 border-red-400 animate-ping opacity-20" />
               <AlertTriangle className="w-5 h-5 text-red-600" />
             </div>
-            <div>
+            <div className="relative z-10">
               <p className="text-base font-bold text-red-900 mb-1.5 tracking-tight">Immediate Attention Required</p>
               <div className="space-y-1 text-sm text-red-800 font-medium">
                 {urgentNeedCount > 0 && <p className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> {urgentNeedCount} urgent need{urgentNeedCount > 1 ? 's' : ''} require immediate or same-day action.</p>}
@@ -108,10 +110,13 @@ export default function Dashboard() {
         {/* ── Active workspaces ── */}
         <div>
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
-              <Activity className="w-4.5 h-4.5 text-primary" />
-              Active Workspaces
-            </h2>
+            <div>
+              <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
+                <Activity className="w-4.5 h-4.5 text-primary" />
+                Active Workspaces
+              </h2>
+              <div className="w-10 h-0.5 bg-primary/40 mt-2" />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {openCases.map(c => <CaseCard key={c.id} caseData={c} />)}
@@ -119,7 +124,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Held-Out Synthetic Challenge Case ── */}
-        <div className="border border-amber-200 rounded-2xl bg-gradient-to-b from-amber-50/80 to-background overflow-hidden shadow-sm">
+        <div className="rounded-2xl overflow-hidden shadow-sm border-amber-200/80 border" style={{ background: 'linear-gradient(135deg, rgba(120,53,15,0.08), rgba(146,64,14,0.12))' }}>
           <div className="px-6 py-5 flex items-center justify-between border-b border-amber-200/60 bg-amber-50">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-200 to-amber-100 border border-amber-300 flex items-center justify-center shadow-inner">
@@ -156,13 +161,13 @@ export default function Dashboard() {
 
                 <div className="space-y-3 pt-4 border-t border-border">
                   <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Injected Errors</div>
-                  <div className="flex items-center gap-2 text-xs font-medium text-red-700">
+                  <div className="flex items-center gap-2 text-xs font-medium text-red-700 border-l-2 border-l-red-400 pl-3">
                     <XCircle className="w-3.5 h-3.5" /> Missing page (cd-2 p.2)
                   </div>
-                  <div className="flex items-center gap-2 text-xs font-medium text-amber-700">
+                  <div className="flex items-center gap-2 text-xs font-medium text-amber-700 border-l-2 border-l-amber-400 pl-3">
                     <AlertTriangle className="w-3.5 h-3.5" /> Contradictory date (52-day gap)
                   </div>
-                  <div className="flex items-center gap-2 text-xs font-medium text-red-700">
+                  <div className="flex items-center gap-2 text-xs font-medium text-red-700 border-l-2 border-l-red-400 pl-3">
                     <ShieldAlert className="w-3.5 h-3.5" /> Prompt injection attempt (cd-2)
                   </div>
                 </div>
@@ -211,11 +216,11 @@ function CaseCard({ caseData }: { caseData: Case }) {
       <div className={cn(
         "bg-card border rounded-2xl flex flex-col h-full cursor-pointer transition-all duration-300 relative overflow-hidden",
         isReady ? "border-teal-200/50" : "border-border",
-        "hover:shadow-xl hover:border-primary/40 hover:-translate-y-1",
+        "group-hover:shadow-[0_0_0_1px_rgba(43,188,212,0.3),_0_20px_40px_rgba(0,0,0,0.08)] group-hover:border-primary/40 group-hover:-translate-y-1",
       )}>
         {/* Status bar at top */}
         <div className={cn(
-          "h-1.5 w-full",
+          "h-1 w-full",
           isReady ? "bg-gradient-to-r from-teal-400 to-teal-500" : "bg-gradient-to-r from-amber-400 to-orange-500"
         )} />
 
@@ -238,7 +243,7 @@ function CaseCard({ caseData }: { caseData: Case }) {
           </div>
 
           {/* Metrics */}
-          <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-3 bg-muted/30 p-4 rounded-xl border border-border/50">
+          <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-3 bg-background/60 p-4 rounded-xl border border-border/40">
             <div className="flex flex-col gap-1">
               <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
                 <FileText className="w-3 h-3" />Documents
@@ -289,7 +294,7 @@ function CaseCard({ caseData }: { caseData: Case }) {
               <Clock className="w-3 h-3" />
               {new Date(caseData.lastActivity).toLocaleDateString()}
             </span>
-            <span className="text-xs font-bold text-primary flex items-center gap-1.5 group-hover:gap-2.5 transition-all bg-primary/10 px-3 py-1.5 rounded-lg">
+            <span className="text-xs font-bold text-primary flex items-center gap-1.5 group-hover:gap-2.5 transition-all px-3 py-1.5 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(43,188,212,0.15) 0%, rgba(43,188,212,0.05) 100%)' }}>
               Open Workspace <ArrowRight className="w-3.5 h-3.5" />
             </span>
           </div>

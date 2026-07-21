@@ -325,7 +325,7 @@ function IntegrityTraceFlow({ findingId }: { findingId: string }) {
       </div>
       <div className="relative pl-3">
         {/* vertical rail */}
-        <div className="absolute left-[5px] top-2 bottom-2 w-px bg-border" />
+        <div className="absolute left-[5px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-primary/60 via-primary/30 to-transparent" />
         <div className="space-y-0">
           {steps.map((step, i) => {
             const Icon = step.icon;

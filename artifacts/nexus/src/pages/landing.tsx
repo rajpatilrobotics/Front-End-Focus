@@ -75,14 +75,14 @@ export default function Landing() {
       {/* ── Dark hero ── */}
       <section
         className="relative overflow-hidden border-b border-border min-h-[85vh] flex items-center"
-        style={{ background: 'linear-gradient(140deg, #0B1629 0%, #0E2040 60%, #0B1629 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #060D1A 0%, #0B1E3D 50%, #091526 100%)' }}
       >
         {/* Animated Dot grid */}
         <div
           className="absolute inset-0 pointer-events-none animate-[pulse_8s_ease-in-out_infinite]"
           style={{
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
           }}
         />
         {/* Moving Glow blobs */}
@@ -91,15 +91,15 @@ export default function Landing() {
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-20 md:py-28">
           {/* Audience pill */}
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono border border-emerald-500/30 bg-emerald-500/15 text-emerald-300 px-4 py-2 rounded-full mb-8 shadow-sm backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 text-[11px] font-mono border-2 border-emerald-500/30 bg-emerald-500/15 text-emerald-300 px-4 py-2 rounded-full mb-8 shadow-sm backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             For qualified legal practitioners — not survivors, hotlines, or law enforcement
           </div>
 
           {/* Headline */}
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white mb-6 leading-[1.0]">
             Source-grounded case preparation
-            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2BBCD4] to-[#8BE9F5]">
+            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2BBCD4] via-[#5EDFEF] to-[#2BBCD4]">
               for forced-criminality matters
             </span>
           </h1>
@@ -128,15 +128,15 @@ export default function Landing() {
           </div>
 
           {/* Hero stats */}
-          <div className="mt-16 grid grid-cols-3 gap-8 border-t border-white/10 pt-10 max-w-2xl">
+          <div className="mt-16 flex flex-wrap gap-8 border-t border-white/8 pt-10 max-w-2xl">
             {[
               { value: '11/11', label: 'Safety tests passing' },
               { value: 'false', label: 'Provider transmission' },
               { value: 'Local', label: 'Processing location' },
-            ].map(s => (
-              <div key={s.label} className="group">
-                <div className="text-3xl font-bold font-mono text-[#2BBCD4] group-hover:text-white transition-colors">{s.value}</div>
-                <div className="text-[11px] text-slate-400 mt-1 font-mono uppercase tracking-wider leading-tight">{s.label}</div>
+            ].map((s, idx) => (
+              <div key={s.label} className={cn("group pr-8", idx !== 2 && "border-r border-white/10")}>
+                <div className="text-4xl font-bold font-mono text-[#2BBCD4] group-hover:text-white transition-colors">{s.value}</div>
+                <div className="text-[10px] text-slate-400 mt-1 font-mono uppercase tracking-wider leading-tight">{s.label}</div>
               </div>
             ))}
           </div>
@@ -157,9 +157,8 @@ export default function Landing() {
             {WHAT_IT_DOES.map(({ icon: Icon, title, text }) => (
               <div
                 key={title}
-                className="relative p-6 bg-card border border-border rounded-xl shadow-sm hover:shadow-xl hover:border-primary/40 hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
+                className="p-6 bg-card border border-border border-l-4 border-l-transparent rounded-xl shadow-sm hover:shadow-xl group-hover:border-l-primary hover:border-l-primary hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent transition-all duration-300 group overflow-hidden"
               >
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary/0 group-hover:bg-primary transition-colors duration-300" />
                 <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary group-hover:border-primary transition-colors duration-300">
                   <Icon className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" />
                 </div>
@@ -195,13 +194,13 @@ export default function Landing() {
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-6">Prohibited determinations</h2>
             <div className="bg-card border border-red-200 rounded-xl overflow-hidden shadow-sm">
-              <div className="bg-red-50 px-5 py-3 border-b border-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-600" />
-                <p className="text-xs font-mono text-red-800 uppercase tracking-wider font-bold">Always outside system scope</p>
+              <div className="bg-red-950/80 px-5 py-3 border-b border-red-800 flex items-center gap-2 text-red-200">
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+                <p className="text-xs font-mono uppercase tracking-wider font-bold">Always outside system scope</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-0">
                 {PROHIBITED_DECISIONS.map((item, i) => (
-                  <div key={i} className={cn("flex items-center gap-3 px-5 py-3 hover:bg-red-50/50 transition-colors", i < PROHIBITED_DECISIONS.length - 1 && "border-b border-border/60")}>
+                  <div key={i} className={cn("flex items-center gap-3 px-5 py-3 hover:bg-red-50/30 transition-colors", i < PROHIBITED_DECISIONS.length - 1 && "border-b border-border/60")}>
                     <XCircle className="w-4 h-4 text-red-500 shrink-0" />
                     <span className="text-sm font-medium text-foreground">{item}</span>
                   </div>
@@ -220,7 +219,7 @@ export default function Landing() {
             <div className="space-y-3">
               {['Legal-aid practitioners', 'Defence or public-defender teams', 'Court-navigation practitioners', 'NGO legal teams', 'Qualified supervisors or pilot evaluators'].map(role => (
                 <div key={role} className="flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/40 hover:shadow-md transition-all group">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-gradient-to-br group-hover:from-primary group-hover:to-primary/70 transition-all">
                     <User className="w-4 h-4 text-primary group-hover:text-white transition-colors" />
                   </div>
                   <span className="text-sm font-bold text-foreground">{role}</span>
@@ -245,13 +244,12 @@ export default function Landing() {
           <h2 className="text-3xl font-bold text-foreground mb-16 text-center">Six-step case preparation</h2>
 
           <div className="relative">
-            <div className="absolute top-6 left-[8%] right-[8%] h-0.5 bg-border hidden lg:block" />
-            <div className="absolute top-6 left-[8%] right-[8%] h-0.5 bg-primary origin-left scale-x-0 hidden lg:block" />
+            <div className="absolute top-6 left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-border to-transparent hidden lg:block" />
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 lg:gap-3">
               {FLOW_STEPS.map((step, i) => (
                 <div key={step.label} className="relative flex flex-col items-center text-center group">
-                  <div className="w-12 h-12 rounded-full bg-card border-2 border-border flex items-center justify-center mb-4 group-hover:border-primary group-hover:bg-primary transition-all shadow-md relative z-10 group-hover:scale-110 duration-300">
+                  <div className="w-12 h-12 rounded-full bg-card border-2 border-border flex items-center justify-center mb-4 group-hover:border-primary group-hover:bg-primary transition-all shadow-md relative z-10 group-hover:drop-shadow-lg duration-300">
                     <span className="text-sm font-bold font-mono text-muted-foreground group-hover:text-white transition-colors duration-300">{step.n}</span>
                   </div>
                   <span className="text-sm font-bold text-foreground leading-snug group-hover:text-primary transition-colors">{step.label}</span>
@@ -263,27 +261,27 @@ export default function Landing() {
       </section>
 
       {/* ── Bottom CTA ── */}
-      <section className="px-6 py-24 bg-card border-b border-border" style={{ background: 'linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--muted)/0.3) 100%)' }}>
+      <section className="px-6 py-24 border-b border-border" style={{ background: 'linear-gradient(180deg, #060D1A 0%, #0B1E3D 100%)' }}>
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">Experience the workspace.</h2>
-          <p className="text-lg text-muted-foreground mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Experience the workspace.</h2>
+          <p className="text-lg text-slate-300 mb-10">
             Open the fully-populated synthetic fixture. No account, no uploads, and no external processing.
           </p>
           <div className="flex flex-col items-center gap-4">
             <Link href="/cases">
               <Button
                 size="lg"
-                className="text-white font-bold px-12 h-16 text-lg rounded-xl gap-2 shadow-xl hover:scale-105 transition-all duration-300"
+                className="text-white font-bold px-12 h-16 text-lg rounded-xl gap-2 shadow-xl hover:scale-105 transition-all duration-300 ring-4 ring-primary/30 animate-pulse"
                 style={{ background: 'linear-gradient(135deg, #2BBCD4 0%, #1FA8C0 100%)', boxShadow: '0 8px 32px rgba(43,188,212,0.3)' }}
               >
                 Load Case Workspace <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono mt-4">
+            <div className="flex items-center gap-4 text-xs text-slate-400 font-mono mt-4">
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> No account needed</span>
-              <span className="text-border">•</span>
+              <span className="text-white/20">•</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Synthetic data only</span>
-              <span className="text-border">•</span>
+              <span className="text-white/20">•</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Local processing</span>
             </div>
           </div>
@@ -291,7 +289,7 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-border px-6 py-5 flex items-center justify-between text-xs text-muted-foreground font-mono bg-card">
+      <footer className="px-6 py-5 flex items-center justify-between text-xs text-muted-foreground font-mono bg-card relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-primary/20 before:to-transparent">
         <div className="flex items-center gap-2">
           <Activity className="w-3.5 h-3.5 text-primary" />
           <span>ContextFirst Nexus · Synthetic Fixture v1 · providerTransmission: false</span>

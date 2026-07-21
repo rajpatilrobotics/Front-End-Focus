@@ -1,12 +1,12 @@
 import React from 'react';
 import { EvidenceNature, Origin, SupportStatus, ReviewStatus } from '@/data/mock-case';
-import { FileText, MessageSquare, User, HelpCircle, Bot, CheckCircle, AlertTriangle, Eye, EyeOff, XCircle } from 'lucide-react';
+import { FileText, MessageSquare, User, HelpCircle, Bot, CheckCircle, AlertTriangle, Eye, EyeOff, XCircle, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function EvidenceNatureBadge({ nature, className }: { nature: EvidenceNature, className?: string }) {
   const config = {
-    'documented': { icon: FileText, label: 'Documented', color: 'text-blue-700 bg-blue-50 border-blue-200 shadow-blue-500/10' },
-    'reported': { icon: MessageSquare, label: 'Reported', color: 'text-amber-700 bg-amber-50 border-amber-200 shadow-amber-500/10' },
+    'documented': { icon: FileText, label: 'Documented', color: 'text-emerald-800 bg-emerald-50 border-emerald-200 shadow-emerald-500/10' },
+    'reported': { icon: MessageSquare, label: 'Reported', color: 'text-sky-800 bg-sky-50 border-sky-200 shadow-sky-500/10' },
     'reviewer-supplied': { icon: User, label: 'Reviewer-Supplied', color: 'text-purple-700 bg-purple-50 border-purple-200 shadow-purple-500/10' },
     'unknown': { icon: HelpCircle, label: 'Unknown', color: 'text-slate-600 bg-slate-50 border-slate-200 shadow-slate-500/10' }
   };
@@ -20,10 +20,10 @@ export function EvidenceNatureBadge({ nature, className }: { nature: EvidenceNat
   );
 }
 
-export function OriginBadge({ origin, className }: { origin: Origin, className?: string }) {
+export function OriginBadge({ origin, className }: { origin, className?: string }) {
   const config = {
     'source-extraction': { icon: FileText, label: 'Extracted', color: 'text-slate-700 border-slate-200 bg-slate-50 shadow-slate-500/10' },
-    'ai-suggestion': { icon: Bot, label: 'AI Suggested', color: 'text-teal-700 border-teal-200 bg-teal-50 shadow-teal-500/10' },
+    'ai-suggestion': { icon: Sparkles, label: 'AI Suggested', color: 'text-purple-800 border-purple-200 bg-purple-50 shadow-purple-500/10' },
     'human-created': { icon: User, label: 'Human Created', color: 'text-purple-700 border-purple-200 bg-purple-50 shadow-purple-500/10' }
   };
   const { icon: Icon, label, color } = config[origin];
@@ -57,7 +57,7 @@ export function SupportStatusBadge({ status, className }: { status: SupportStatu
 
 export function ReviewStatusBadge({ status, className }: { status: ReviewStatus, className?: string }) {
   const config = {
-    'pending': { label: 'Pending Review', color: 'bg-blue-50 text-blue-700 border-blue-200 shadow-blue-500/10' },
+    'pending': { label: 'Pending Review', color: 'bg-amber-50 text-amber-800 border-amber-200 shadow-amber-500/10' },
     'accepted': { label: 'Accepted', color: 'bg-teal-50 text-teal-700 border-teal-200 shadow-teal-500/10' },
     'edited': { label: 'Edited', color: 'bg-teal-50 text-teal-700 border-teal-200 shadow-teal-500/10' },
     'rejected': { label: 'Rejected', color: 'bg-red-50 text-red-700 border-red-200 shadow-red-500/10' },

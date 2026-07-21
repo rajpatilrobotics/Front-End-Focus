@@ -141,7 +141,7 @@ export default function CaseLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ── Sidebar ── */}
-        <aside className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col flex-shrink-0 z-20 shadow-xl">
+        <aside className="w-[260px] border-r border-sidebar-border bg-sidebar flex flex-col flex-shrink-0 z-20 shadow-xl" style={{ boxShadow: 'inset -1px 0 0 rgba(255,255,255,0.04)' }}>
 
           {/* Sidebar top – branding */}
           <div className="h-16 flex items-center px-5 border-b border-sidebar-border/50 gap-3">
@@ -156,17 +156,17 @@ export default function CaseLayout() {
           {/* Case identity */}
           <div className="px-5 py-5 border-b border-sidebar-border/50">
             <p className="text-[10px] font-mono text-primary font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><FileText className="w-3 h-3"/> Active Case</p>
-            <h2 className="font-mono text-lg font-bold text-sidebar-foreground truncate">{caseData.refId}</h2>
+            <h2 className="font-mono text-lg font-bold text-sidebar-foreground truncate tracking-widest">{caseData.refId}</h2>
             <p className="text-xs text-sidebar-foreground/60 mt-1 truncate">{caseData.practitioner}</p>
             <div className="flex items-center gap-2 mt-4">
               <span className="text-[10px] font-mono text-sidebar-foreground/50 bg-sidebar-accent px-2 py-0.5 rounded">{caseData.documentCount} DOCS</span>
               <span className={cn(
-                "text-[10px] font-mono font-bold px-2 py-0.5 rounded border flex items-center gap-1",
+                "text-[11px] px-2.5 py-1 font-mono font-bold rounded border flex items-center gap-1",
                 caseData.exportGateStatus === 'ready'
                   ? "text-teal-400 border-teal-500/30 bg-teal-500/10"
                   : "text-amber-400 border-amber-500/30 bg-amber-500/10"
               )}>
-                {caseData.exportGateStatus === 'ready' ? <Check className="w-3 h-3"/> : <AlertTriangle className="w-3 h-3"/>}
+                {caseData.exportGateStatus === 'ready' ? <Check className="w-3.5 h-3.5"/> : <AlertTriangle className="w-3.5 h-3.5"/>}
                 {caseData.exportGateStatus.toUpperCase()}
               </span>
             </div>
@@ -176,7 +176,7 @@ export default function CaseLayout() {
           <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border">
             {NAV_SECTIONS.map((section, idx) => (
               <div key={section.title} className={cn("relative", idx !== 0 && "pt-4 before:absolute before:top-0 before:left-4 before:right-4 before:h-px before:bg-sidebar-border/50")}>
-                <div className="text-[10px] font-mono font-semibold uppercase tracking-widest text-sidebar-foreground/40 px-3 mb-2 flex items-center gap-2">
+                <div className="text-[9px] font-mono font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/40 px-3 mb-2 flex items-center gap-2">
                   {section.title}
                 </div>
                 <div className="space-y-0.5">
@@ -187,10 +187,10 @@ export default function CaseLayout() {
                         <div className={cn(
                           "flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer group relative overflow-hidden",
                           active
-                            ? "bg-primary/10 text-primary"
+                            ? "bg-primary/15 text-primary"
                             : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         )}>
-                          {active && <motion.div layoutId="activeNav" className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />}
+                          {active && <motion.div layoutId="activeNav" className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary rounded-r-full" />}
                           <div className="flex items-center gap-3">
                             <item.icon className={cn("w-4 h-4 shrink-0 transition-colors", active ? "text-primary" : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70")} />
                             <span className="truncate text-xs font-semibold tracking-wide">{item.label}</span>
@@ -213,12 +213,12 @@ export default function CaseLayout() {
           </nav>
 
           {/* Sidebar footer */}
-          <div className="p-4 border-t border-sidebar-border/50 space-y-1 bg-sidebar-accent/30">
+          <div className="p-4 border-t border-sidebar-border/50 space-y-2 bg-sidebar-accent/30">
             <Link href={`/case/${id}/audit`}>
               <div className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer group",
                 currentPath === '/audit'
-                  ? "bg-primary/10 text-primary"
+                  ? "bg-primary/15 text-primary"
                   : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
               )}>
                 <History className="w-4 h-4 text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70" />
@@ -227,9 +227,9 @@ export default function CaseLayout() {
             </Link>
             <button
               onClick={() => setLocation('/cases')}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-sidebar-foreground/50 hover:bg-red-500/10 hover:text-red-400 transition-all group"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-all group"
             >
-              <RotateCcw className="w-4 h-4 text-sidebar-foreground/40 group-hover:text-red-400" />
+              <RotateCcw className="w-4 h-4 text-red-400/50 group-hover:text-red-400" />
               <span className="text-xs font-semibold tracking-wide">Reset Case</span>
             </button>
           </div>
@@ -239,15 +239,15 @@ export default function CaseLayout() {
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-muted/5">
 
           {/* Top header bar */}
-          <header className="h-14 border-b border-border bg-card/95 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10 shadow-sm">
+          <header className="h-16 border-b border-border bg-card/95 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10 shadow-sm">
             <div className="flex items-center gap-3">
               {caseData.exportGateStatus === 'ready' ? (
-                <div className="flex items-center gap-2 text-sm text-teal-800 font-bold bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-md shadow-sm">
-                  <ShieldCheck className="w-4 h-4 text-teal-600" />
+                <div className="flex items-center gap-2 text-sm text-emerald-900 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-md shadow-sm">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   Export Gate Ready
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-sm text-amber-800 font-bold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md shadow-sm">
+                <div className="flex items-center gap-2 text-sm text-amber-900 font-bold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md shadow-sm">
                   <ShieldAlert className="w-4 h-4 text-amber-600" />
                   Export Gate Blocked
                 </div>
@@ -268,7 +268,7 @@ export default function CaseLayout() {
           </header>
 
           {/* Progress stepper */}
-          <div className="h-14 border-b border-border bg-card flex items-center px-6 shrink-0 overflow-x-auto scrollbar-none shadow-sm">
+          <div className="h-16 border-b border-border bg-card flex items-center px-6 shrink-0 overflow-x-auto scrollbar-none shadow-sm">
             <div className="flex items-center gap-1">
               {PROGRESS_STEPS.map((step, i) => {
                 const active = step.key === activeStep;
@@ -285,13 +285,13 @@ export default function CaseLayout() {
                         active
                           ? "text-primary bg-primary/10 shadow-sm"
                           : completed
-                            ? "text-teal-700 hover:bg-teal-50"
+                            ? "text-emerald-700 hover:bg-emerald-50"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}>
-                        {active && <motion.div layoutId="activeStep" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-t-full" />}
+                        {active && <motion.div layoutId="activeStep" className="absolute bottom-0 left-2 right-2 h-[3px] bg-primary rounded-t-full" />}
                         {completed ? (
                           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                           </motion.div>
                         ) : (
                           <div className={cn(
@@ -305,7 +305,7 @@ export default function CaseLayout() {
                       </div>
                     </Link>
                     {i < PROGRESS_STEPS.length - 1 && (
-                      <div className={cn("w-6 h-0.5 mx-1 rounded-full transition-colors", completed ? "bg-teal-400" : "bg-border")} />
+                      <div className={cn("w-8 h-0.5 mx-1 rounded-full transition-colors", completed ? "bg-emerald-400" : "bg-border")} />
                     )}
                   </React.Fragment>
                 );

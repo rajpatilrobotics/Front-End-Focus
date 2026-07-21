@@ -186,7 +186,7 @@ function ExportEffectBadge({ severity, text }: { severity: 'blocks' | 'limits' |
   }[severity];
   const Icon = cfg.icon;
   return (
-    <div className={cn('flex items-start gap-2.5 p-3 rounded-md border text-xs', cfg.bg)}>
+    <div className={cn('flex items-start gap-2.5 p-3 rounded-md border text-xs shadow-sm', cfg.bg)}>
       <Icon className={cn('w-3.5 h-3.5 shrink-0 mt-0.5', cfg.iconColor)} />
       <div>
         <span className={cn('font-mono text-[9px] uppercase tracking-widest mr-2', cfg.iconColor)}>{cfg.label}</span>
@@ -368,10 +368,11 @@ export default function CaseGaps() {
                   layout key={gap.id}
                   onClick={() => setSelectedId(gap.id)}
                   className={cn(
-                    'p-3.5 rounded-md border cursor-pointer transition-all',
+                    'p-3.5 rounded-md border cursor-pointer transition-all border-l-4',
+                    gap.priority === 'high' ? 'border-l-red-500' : gap.priority === 'medium' ? 'border-l-amber-500' : 'border-l-blue-500',
                     isSelected
-                      ? 'bg-primary/5 border-primary/30 shadow-sm ring-1 ring-primary/10'
-                      : 'bg-card border-border hover:border-foreground/15 hover:bg-muted/20',
+                      ? 'bg-primary/5 border-r-primary/30 border-y-primary/30 shadow-sm ring-1 ring-primary/10'
+                      : 'bg-card border-r-border border-y-border hover:border-r-foreground/15 hover:border-y-foreground/15 hover:bg-muted/20',
                   )}
                 >
                   {/* Top row */}
