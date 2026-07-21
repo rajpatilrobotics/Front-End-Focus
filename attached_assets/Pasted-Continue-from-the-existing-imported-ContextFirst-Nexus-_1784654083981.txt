@@ -1,0 +1,44 @@
+Continue from the existing imported ContextFirst Nexus project at commit badbad4 or later.
+
+Before editing, inspect the relevant existing files. Extend the existing implementation; do not rebuild, replace, or broadly restyle completed pages. Do not duplicate cards, controls, routes, components, or mock records.
+
+The current project already contains substantial UI for Nexus, Structured Analysis, Documents, Export Gate, Dashboard, and Trust. Preserve those working visual designs and improve only the behavior required by this phase.
+
+Keep all 12 sidebar features separate and visible:
+
+1. Purpose Brief
+2. Documents
+3. Structured Analysis
+4. Urgent Needs
+5. Evidence Gaps
+6. Interview Planner
+7. Services & Referrals
+8. Case Tasks
+9. Notes & Journal
+10. Charge–Coercion Nexus
+11. Timeline
+12. Export Gate
+
+Also preserve Dashboard, Audit Trail, Trust/System Card, Reset Case, workflow progress, export status, and the synthetic-data banner.
+
+Use the existing React, Vite, Wouter, Tailwind, shadcn, and pnpm structure. Do not add another framework, state library, backend, database, live AI call, live OCR, API key, provider selector, or deployment.
+
+Use fictional synthetic adult-case data and local frontend state only. Clearly label simulated AI, OCR, services, evaluations, and downloads. Never add credibility, victim-status, trafficking, guilt, risk, case-strength, eligibility, prosecution, sentence, strategy, or legal-outcome scores or conclusions.
+
+Use one shared case state with stable IDs. Do not create separate copies of the same case data inside different pages.
+
+The full requirements remain available in:
+
+attached_assets/Pasted-You-are-redesigning-and-extending-the-existing-ContextF_1784648588339.txt
+
+Read global Sections 1–3 and 14–15, plus only the additional sections named in this phase.
+
+Work only on this phase. Do not start later phases.
+
+When finished:
+
+1. Run `pnpm --filter @workspace/nexus typecheck`.
+2. Run `pnpm --filter @workspace/nexus build`.
+3. Check the changed routes for console errors.
+4. Report files changed, interactions completed, simulated behavior, and unfinished limitations.
+5. Stop and wait for my next prompt.

@@ -1,0 +1,54 @@
+PHASE 1 OF 8 — SHARED STATE, DYNAMIC BADGES, AND RESET
+
+Also read Section 13 of the master requirements.
+
+Inspect App.tsx, case/layout.tsx, mock-case.ts, and the page-level useState implementations.
+
+The current problem is that pages maintain independent state. Create or refine a lightweight shared React state layer using the existing project pattern. Prefer React Context plus useReducer if no shared provider exists. Do not install a state-management dependency.
+
+Preserve existing fixture objects as initial data. The shared state must support:
+
+- Active synthetic case
+- Documents and page states
+- Evidence and review decisions
+- Nexus relationships and dependencies
+- Timeline events
+- Evidence gaps
+- Interview questions
+- Document requests
+- Tasks
+- Urgent needs and referrals
+- Analysis-run state
+- Export confirmations and blockers
+- Notes
+- Append-only session Audit Trail events
+
+Add clear named actions for later phases, including challenge relationship, withdraw evidence, create gap, create question, create task, preserve unknown, change analysis mode, select case, append audit event, and reset case.
+
+State must survive route navigation. Refresh persistence is optional, but navigation persistence is required.
+
+Connect the application shell to shared derived selectors:
+
+- Sidebar badge counts
+- Workflow progress
+- Header export status
+- Pending-review count
+- Export-blocker count
+
+Reset Case must restore the currently selected fixture to its original state—not merely navigate to /cases.
+
+Audit events may be append-only within the current session, but do not describe them as permanently stored because this prototype has no persistent backend.
+
+Do not redesign page bodies during this phase.
+
+Acceptance test:
+
+1. Open one case route.
+2. Change one harmless shared value.
+3. Navigate to another route and back.
+4. Confirm the state remains.
+5. Use Reset Case.
+6. Confirm values and badges return to their original fixture state.
+7. Confirm every route still opens.
+
+Stop after the shared foundation works.
