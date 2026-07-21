@@ -5,16 +5,16 @@ import { ExternalLink, Link2 } from 'lucide-react';
 import { EvidenceNature, SupportStatus, ReviewStatus, Origin } from '@/data/mock-case';
 import { EvidenceNatureBadge, SupportStatusBadge, ReviewStatusBadge, OriginBadge } from './badges';
 
-export function PageHeader({ 
-  title, 
-  description, 
-  icon: Icon, 
-  action, 
-  badges 
-}: { 
-  title: string; 
-  description: string; 
-  icon?: React.ElementType; 
+export function PageHeader({
+  title,
+  description,
+  icon: Icon,
+  action,
+  badges
+}: {
+  title: string;
+  description: string;
+  icon?: React.ElementType;
   action?: React.ReactNode;
   badges?: React.ReactNode;
 }) {
@@ -40,17 +40,17 @@ export function PageHeader({
   );
 }
 
-export function SourceCitation({ 
-  documentId, 
-  page, 
-  onClick 
-}: { 
-  documentId: string; 
-  page: number; 
+export function SourceCitation({
+  documentId,
+  page,
+  onClick
+}: {
+  documentId: string;
+  page: number;
   onClick?: () => void;
 }) {
   return (
-    <button 
+    <button
       onClick={(e) => { e.stopPropagation(); onClick?.(); }}
       className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/50 hover:bg-muted border border-border rounded text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors group shadow-2xs"
     >
