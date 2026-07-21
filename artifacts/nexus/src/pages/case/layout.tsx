@@ -7,10 +7,11 @@ import {
 import {
   FileText, BrainCircuit, Network, Clock, ShieldAlert, History, ArrowLeft,
   Download, ShieldCheck, RotateCcw, CheckCircle2, AlertTriangle, Phone,
-  HelpCircle, MessageSquare, ClipboardList, Users, Mic, Activity,
+  HelpCircle, MessageSquare, ClipboardList, Users, Mic, Activity, Check,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import CasePurpose from './purpose';
 import CaseDocuments from './documents';
@@ -123,9 +124,9 @@ export default function CaseLayout() {
 
   const getBadgeClass = (style?: string) => {
     switch (style) {
-      case 'urgent':  return 'border-red-400/50 text-red-400 bg-red-500/10';
-      case 'blocked': return 'border-amber-500/40 text-amber-400 bg-amber-500/10';
-      case 'warn':    return 'border-blue-400/40 text-blue-300 bg-blue-500/10';
+      case 'urgent':  return 'border-red-400/50 text-red-400 bg-red-500/20 font-bold';
+      case 'blocked': return 'border-amber-500/40 text-amber-400 bg-amber-500/20 font-bold';
+      case 'warn':    return 'border-blue-400/40 text-blue-300 bg-blue-500/20 font-bold';
       default:        return 'border-sidebar-border text-sidebar-foreground/50 bg-sidebar-border/20';
     }
   };
@@ -133,50 +134,49 @@ export default function CaseLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Synthetic warning banner */}
-      <div className="bg-amber-50 border-b border-amber-200 px-4 py-1.5 flex items-center justify-center gap-2 text-[11px] font-mono text-amber-800 shrink-0">
-        <AlertTriangle className="w-3 h-3 shrink-0" />
-        Synthetic training fixture only — not real case data · providerTransmission: false
+      <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center justify-center gap-2 text-[11px] font-mono text-amber-800 shrink-0 shadow-sm z-20">
+        <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+        <span className="font-semibold">Synthetic training fixture only</span> — not real case data · providerTransmission: false
       </div>
 
       <div className="flex flex-1 overflow-hidden">
         {/* ── Sidebar ── */}
-        <aside className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col flex-shrink-0 z-20">
+        <aside className="w-64 border-r border-sidebar-border bg-sidebar flex flex-col flex-shrink-0 z-20 shadow-xl">
 
           {/* Sidebar top – branding */}
-          <div className="h-14 flex items-center px-4 border-b border-sidebar-border gap-3">
-            <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
-              <Activity className="w-3.5 h-3.5 text-primary" />
-            </div>
-            <Link href="/cases" className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors flex items-center gap-2 text-sm font-medium">
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Dashboard
+          <div className="h-16 flex items-center px-5 border-b border-sidebar-border/50 gap-3">
+            <Link href="/cases" className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors flex items-center gap-2 text-sm font-medium group">
+              <div className="w-8 h-8 rounded-md bg-sidebar-accent border border-sidebar-accent-border flex items-center justify-center shrink-0 group-hover:bg-primary/20 group-hover:border-primary/30 transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+              </div>
+              <span className="font-semibold tracking-wide text-xs uppercase">Dashboard</span>
             </Link>
           </div>
 
           {/* Case identity */}
-          <div className="px-4 py-4 border-b border-sidebar-border">
-            <p className="text-[10px] font-mono text-sidebar-foreground/35 uppercase tracking-widest mb-1.5">Active Case</p>
-            <h2 className="font-mono text-sm font-bold text-sidebar-foreground truncate">{caseData.refId}</h2>
-            <p className="text-xs text-sidebar-foreground/50 mt-0.5 truncate">{caseData.practitioner}</p>
-            <div className="flex items-center gap-2 mt-3">
-              <span className="text-[10px] font-mono text-sidebar-foreground/40">{caseData.documentCount} DOCS</span>
-              <span className="text-sidebar-foreground/25">·</span>
+          <div className="px-5 py-5 border-b border-sidebar-border/50">
+            <p className="text-[10px] font-mono text-primary font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><FileText className="w-3 h-3"/> Active Case</p>
+            <h2 className="font-mono text-lg font-bold text-sidebar-foreground truncate">{caseData.refId}</h2>
+            <p className="text-xs text-sidebar-foreground/60 mt-1 truncate">{caseData.practitioner}</p>
+            <div className="flex items-center gap-2 mt-4">
+              <span className="text-[10px] font-mono text-sidebar-foreground/50 bg-sidebar-accent px-2 py-0.5 rounded">{caseData.documentCount} DOCS</span>
               <span className={cn(
-                "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border",
+                "text-[10px] font-mono font-bold px-2 py-0.5 rounded border flex items-center gap-1",
                 caseData.exportGateStatus === 'ready'
                   ? "text-teal-400 border-teal-500/30 bg-teal-500/10"
                   : "text-amber-400 border-amber-500/30 bg-amber-500/10"
               )}>
+                {caseData.exportGateStatus === 'ready' ? <Check className="w-3 h-3"/> : <AlertTriangle className="w-3 h-3"/>}
                 {caseData.exportGateStatus.toUpperCase()}
               </span>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-2 space-y-1.5 overflow-y-auto">
-            {NAV_SECTIONS.map(section => (
-              <div key={section.title}>
-                <div className="text-[9px] font-mono uppercase tracking-widest text-sidebar-foreground/25 px-3 pt-3 pb-1.5">
+          <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border">
+            {NAV_SECTIONS.map((section, idx) => (
+              <div key={section.title} className={cn("relative", idx !== 0 && "pt-4 before:absolute before:top-0 before:left-4 before:right-4 before:h-px before:bg-sidebar-border/50")}>
+                <div className="text-[10px] font-mono font-semibold uppercase tracking-widest text-sidebar-foreground/40 px-3 mb-2 flex items-center gap-2">
                   {section.title}
                 </div>
                 <div className="space-y-0.5">
@@ -185,18 +185,19 @@ export default function CaseLayout() {
                     return (
                       <Link key={item.path} href={`/case/${id}${item.path === '/' ? '' : item.path}`}>
                         <div className={cn(
-                          "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                          "flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer group relative overflow-hidden",
                           active
-                            ? "bg-white/10 text-sidebar-foreground shadow-sm"
-                            : "text-sidebar-foreground/55 hover:bg-white/5 hover:text-sidebar-foreground"
+                            ? "bg-primary/10 text-primary"
+                            : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         )}>
-                          <div className="flex items-center gap-2.5">
-                            <item.icon className={cn("w-3.5 h-3.5 shrink-0", active ? "text-primary" : "")} />
-                            <span className="truncate text-[13px]">{item.label}</span>
+                          {active && <motion.div layoutId="activeNav" className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />}
+                          <div className="flex items-center gap-3">
+                            <item.icon className={cn("w-4 h-4 shrink-0 transition-colors", active ? "text-primary" : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70")} />
+                            <span className="truncate text-xs font-semibold tracking-wide">{item.label}</span>
                           </div>
                           {item.badge && (
                             <span className={cn(
-                              "text-[9px] uppercase font-mono px-1.5 py-0.5 rounded border shrink-0 ml-1",
+                              "text-[9px] uppercase font-mono px-1.5 py-0.5 rounded shrink-0 ml-2",
                               getBadgeClass(item.badgeStyle)
                             )}>
                               {item.badge}
@@ -212,46 +213,42 @@ export default function CaseLayout() {
           </nav>
 
           {/* Sidebar footer */}
-          <div className="p-2 border-t border-sidebar-border space-y-0.5">
+          <div className="p-4 border-t border-sidebar-border/50 space-y-1 bg-sidebar-accent/30">
             <Link href={`/case/${id}/audit`}>
               <div className={cn(
-                "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer",
+                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer group",
                 currentPath === '/audit'
-                  ? "bg-white/10 text-sidebar-foreground"
-                  : "text-sidebar-foreground/40 hover:bg-white/5 hover:text-sidebar-foreground"
+                  ? "bg-primary/10 text-primary"
+                  : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground"
               )}>
-                <History className="w-3.5 h-3.5" />
-                Audit Trail
+                <History className="w-4 h-4 text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70" />
+                <span className="text-xs font-semibold tracking-wide">Audit Trail</span>
               </div>
             </Link>
             <button
               onClick={() => setLocation('/cases')}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-sidebar-foreground/30 hover:bg-red-500/10 hover:text-red-400 transition-all"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-sidebar-foreground/50 hover:bg-red-500/10 hover:text-red-400 transition-all group"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset Case
+              <RotateCcw className="w-4 h-4 text-sidebar-foreground/40 group-hover:text-red-400" />
+              <span className="text-xs font-semibold tracking-wide">Reset Case</span>
             </button>
           </div>
         </aside>
 
         {/* ── Main area ── */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-muted/5">
 
           {/* Top header bar */}
-          <header className="h-12 border-b border-border bg-card/90 backdrop-blur-sm flex items-center justify-between px-5 shrink-0 z-10">
-            <div className="flex items-center gap-2.5">
+          <header className="h-14 border-b border-border bg-card/95 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10 shadow-sm">
+            <div className="flex items-center gap-3">
               {caseData.exportGateStatus === 'ready' ? (
-                <div className="flex items-center gap-1.5 text-sm text-teal-700 font-semibold">
-                  <div className="w-5 h-5 rounded-md bg-teal-100 border border-teal-200 flex items-center justify-center">
-                    <ShieldCheck className="w-3 h-3 text-teal-600" />
-                  </div>
+                <div className="flex items-center gap-2 text-sm text-teal-800 font-bold bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-md shadow-sm">
+                  <ShieldCheck className="w-4 h-4 text-teal-600" />
                   Export Gate Ready
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 text-sm text-amber-700 font-semibold">
-                  <div className="w-5 h-5 rounded-md bg-amber-100 border border-amber-200 flex items-center justify-center">
-                    <ShieldAlert className="w-3 h-3 text-amber-600" />
-                  </div>
+                <div className="flex items-center gap-2 text-sm text-amber-800 font-bold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md shadow-sm">
+                  <ShieldAlert className="w-4 h-4 text-amber-600" />
                   Export Gate Blocked
                 </div>
               )}
@@ -260,19 +257,19 @@ export default function CaseLayout() {
               size="sm"
               disabled={caseData.exportGateStatus !== 'ready'}
               className={cn(
-                "font-semibold rounded-lg h-8 text-xs gap-1.5",
+                "font-bold rounded-md h-9 text-xs px-4 gap-2 transition-all shadow-md",
                 caseData.exportGateStatus === 'ready'
-                  ? "bg-teal-600 hover:bg-teal-700 text-white shadow-sm shadow-teal-600/20"
-                  : "bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60"
+                  ? "bg-teal-600 hover:bg-teal-700 text-white shadow-teal-600/30 hover:scale-105"
+                  : "bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60 shadow-none"
               )}
             >
-              <Download className="w-3.5 h-3.5" />Create Handoff
+              <Download className="w-4 h-4" />Create Handoff
             </Button>
           </header>
 
           {/* Progress stepper */}
-          <div className="h-11 border-b border-border bg-background flex items-center px-5 shrink-0 overflow-x-auto">
-            <div className="flex items-center gap-0">
+          <div className="h-14 border-b border-border bg-card flex items-center px-6 shrink-0 overflow-x-auto scrollbar-none shadow-sm">
+            <div className="flex items-center gap-1">
               {PROGRESS_STEPS.map((step, i) => {
                 const active = step.key === activeStep;
                 const stepOrder = PROGRESS_STEPS.map(s => s.key);
@@ -284,28 +281,31 @@ export default function CaseLayout() {
                   <React.Fragment key={step.key}>
                     <Link href={`/case/${id}${step.path}`}>
                       <div className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap",
+                        "flex items-center gap-2 px-3 py-2 text-xs font-bold rounded-md transition-all cursor-pointer whitespace-nowrap relative group overflow-hidden",
                         active
-                          ? "text-primary bg-primary/10 border border-primary/20"
+                          ? "text-primary bg-primary/10 shadow-sm"
                           : completed
                             ? "text-teal-700 hover:bg-teal-50"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}>
+                        {active && <motion.div layoutId="activeStep" className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-t-full" />}
                         {completed ? (
-                          <CheckCircle2 className="w-3 h-3 text-teal-600" />
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                            <CheckCircle2 className="w-4 h-4 text-teal-600" />
+                          </motion.div>
                         ) : (
                           <div className={cn(
-                            "w-4 h-4 rounded-full border-2 flex items-center justify-center text-[8px] font-bold",
-                            active ? "border-primary bg-primary text-white" : "border-current opacity-50"
+                            "w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-black transition-colors",
+                            active ? "border-primary bg-primary text-white" : "border-muted-foreground/40 group-hover:border-foreground/50"
                           )}>
                             {i + 1}
                           </div>
                         )}
-                        {step.label}
+                        <span className="tracking-wide">{step.label}</span>
                       </div>
                     </Link>
                     {i < PROGRESS_STEPS.length - 1 && (
-                      <div className={cn("w-4 h-px mx-0.5", completed ? "bg-teal-300" : "bg-border")} />
+                      <div className={cn("w-6 h-0.5 mx-1 rounded-full transition-colors", completed ? "bg-teal-400" : "bg-border")} />
                     )}
                   </React.Fragment>
                 );
@@ -313,26 +313,37 @@ export default function CaseLayout() {
             </div>
           </div>
 
-          {/* Page content */}
+          {/* Page content with AnimatePresence */}
           <main className="flex-1 overflow-hidden relative">
-            <Switch>
-              <Route path="/case/:id/purpose"    component={CasePurpose} />
-              <Route path="/case/:id"            component={CaseDocuments} />
-              <Route path="/case/:id/analysis"   component={CaseAnalysis} />
-              <Route path="/case/:id/gaps"       component={CaseGaps} />
-              <Route path="/case/:id/safety"     component={CaseSafety} />
-              <Route path="/case/:id/interview"  component={CaseInterview} />
-              <Route path="/case/:id/services"   component={CaseServices} />
-              <Route path="/case/:id/tasks"      component={CaseTasks} />
-              <Route path="/case/:id/notes"      component={CaseNotes} />
-              <Route path="/case/:id/nexus"      component={CaseNexus} />
-              <Route path="/case/:id/timeline"   component={CaseTimeline} />
-              <Route path="/case/:id/export"     component={CaseExportGate} />
-              <Route path="/case/:id/audit"      component={CaseAudit} />
-              <Route>
-                <div className="p-8 text-center text-muted-foreground font-mono">Select a section from the sidebar.</div>
-              </Route>
-            </Switch>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPath}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="h-full w-full"
+              >
+                <Switch>
+                  <Route path="/case/:id/purpose"    component={CasePurpose} />
+                  <Route path="/case/:id"            component={CaseDocuments} />
+                  <Route path="/case/:id/analysis"   component={CaseAnalysis} />
+                  <Route path="/case/:id/gaps"       component={CaseGaps} />
+                  <Route path="/case/:id/safety"     component={CaseSafety} />
+                  <Route path="/case/:id/interview"  component={CaseInterview} />
+                  <Route path="/case/:id/services"   component={CaseServices} />
+                  <Route path="/case/:id/tasks"      component={CaseTasks} />
+                  <Route path="/case/:id/notes"      component={CaseNotes} />
+                  <Route path="/case/:id/nexus"      component={CaseNexus} />
+                  <Route path="/case/:id/timeline"   component={CaseTimeline} />
+                  <Route path="/case/:id/export"     component={CaseExportGate} />
+                  <Route path="/case/:id/audit"      component={CaseAudit} />
+                  <Route>
+                    <div className="p-8 text-center text-muted-foreground font-mono">Select a section from the sidebar.</div>
+                  </Route>
+                </Switch>
+              </motion.div>
+            </AnimatePresence>
           </main>
         </div>
       </div>
