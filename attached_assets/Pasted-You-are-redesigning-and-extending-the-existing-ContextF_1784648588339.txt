@@ -1,0 +1,595 @@
+You are redesigning and extending the existing ContextFirst Nexus Replit frontend.
+
+IMPORTANT: Work inside the current Replit project. Do not create a new app from scratch.
+
+The goal is to produce a polished, interactive frontend prototype that we can later connect to the real application logic in Codex.
+
+This Replit version is a UI/UX prototype. Use realistic synthetic mock data and local frontend state. Do not claim that live AI, real OCR, real referrals, or a production backend exists when it does not.
+
+==================================================
+1. NON-NEGOTIABLE NAVIGATION REQUIREMENTS
+==================================================
+
+Keep all 12 existing sidebar features as separate navigation items.
+
+Do not merge, condense, remove, or hide any of these pages:
+
+1. Purpose Brief
+2. Documents
+3. Structured Analysis
+4. Urgent Needs
+5. Evidence Gaps
+6. Interview Planner
+7. Services & Referrals
+8. Case Tasks
+9. Notes & Journal
+10. Charge–Coercion Nexus
+11. Timeline
+12. Export Gate
+
+Also preserve:
+
+- Case Dashboard
+- Audit Trail
+- Trust/System Card
+- Reset Case
+- Synthetic-data disclosure
+- Export status in the header
+- Workflow progress indicator
+
+Keep the current sidebar groupings:
+
+- Intake
+- Analysis
+- Planning
+- Review
+- Export
+
+Scrolling is acceptable. Do not combine Nexus with Timeline. Do not combine Evidence Gaps, Interview Planner, or Case Tasks.
+
+==================================================
+2. PRESERVE AND IMPROVE THE CURRENT VISUAL STYLE
+==================================================
+
+Preserve the existing Replit design direction:
+
+- Dark navy/charcoal sidebar.
+- Warm white main workspace.
+- Teal as the primary action and supported-state color.
+- Amber for uncertainty, warnings, and pending review.
+- Red for blocked, failed, or immediate states.
+- Blue for informational and open-review states.
+- Inter for normal interface text.
+- Monospace typography for IDs, provenance, document metadata, and technical labels.
+- Serious, calm, professional legal-workspace appearance.
+- Desktop-first design at approximately 1440 × 1024.
+- Responsive sidebar drawer for smaller screens.
+
+Improve:
+
+- Spacing and information hierarchy.
+- Readability of dense evidence.
+- Consistency of badges, buttons, panels, tables, and drawers.
+- Keyboard focus and target sizes.
+- Empty, loading, processing, error, and blocked states.
+- Mobile and tablet layouts.
+
+Avoid:
+
+- Bright gradients.
+- Decorative illustrations.
+- Excessive shadows.
+- Cards nested inside cards.
+- Sensational trafficking imagery.
+- Generic chatbot styling.
+- Large areas of meaningless dashboard metrics.
+
+==================================================
+3. PRODUCT SAFETY AND LANGUAGE
+==================================================
+
+Use synthetic fictional adult-case data only.
+
+Keep a visible banner:
+
+“Synthetic training fixture only — not real case data.”
+
+The interface must never claim that the system determines:
+
+- Whether trafficking occurred.
+- Victim status.
+- Credibility.
+- Guilt.
+- Legal eligibility.
+- Case strength.
+- Dangerousness.
+- Risk level.
+- Prosecution or sentence.
+- Legal strategy or legal outcome.
+
+Never add:
+
+- Trafficking confidence scores.
+- Credibility scores.
+- Case-strength percentages.
+- Overall risk scores.
+- Bulk approval.
+- Automatic service contact.
+- Automatic law-enforcement contact.
+
+Use neutral evidence labels:
+
+Evidence nature:
+- Documented in source
+- Reported or alleged in source
+- Reviewer-supplied context
+- Unknown
+
+Origin:
+- Source extraction
+- AI suggestion
+- Human-created
+
+Support:
+- Exact-source supported
+- Partially supported
+- Conflicting
+- Insufficient evidence
+- Citation unresolved
+- Not processed
+
+Review:
+- Pending
+- Human accepted
+- Human edited
+- Rejected
+- Uncertain
+- Invalidated
+
+Technical percentages are permitted only for extraction coverage or processing quality, never for people, credibility, trafficking, or legal conclusions.
+
+==================================================
+4. NEW FEATURE: EVIDENCE INTEGRITY MAP
+==================================================
+
+Add the Evidence Integrity Map inside the existing Charge–Coercion Nexus page.
+
+Do not remove or rename the Charge–Coercion Nexus sidebar tab.
+
+The page should visually connect:
+
+Document
+→ exact source quotation
+→ extracted claim
+→ timeline event
+→ relationship
+→ human review decision
+→ export eligibility
+
+Create an interactive evidence graph or relationship workspace containing:
+
+- Alleged conduct or proceeding event.
+- Recruitment and represented work.
+- Movement and travel.
+- Control or coercion evidence.
+- Compelled activity.
+- Timing relationships.
+- Supporting evidence.
+- Contrary evidence.
+- Unknown or missing evidence.
+- Human-review status.
+- Dependency connections.
+
+Selecting a node or relationship should open a right-side detail panel showing:
+
+- Plain-language description.
+- Evidence nature.
+- Origin.
+- Support status.
+- Review status.
+- Exact citations.
+- Supporting items.
+- Contrary items.
+- Missing information.
+- Dependent timeline/Nexus items.
+- Audit history.
+- Open Source action.
+
+Do not show any overall conclusion or score.
+
+==================================================
+5. NEW FEATURE: EVIDENCE CHALLENGE MODE
+==================================================
+
+Add a “Challenge this relationship” action to the Charge–Coercion Nexus page.
+
+When activated, show:
+
+- Evidence supporting the relationship.
+- Contrary evidence.
+- Unverified assumptions.
+- Missing information.
+- Which conclusions depend on it.
+- Which timeline items depend on it.
+- What would happen to export eligibility if it were withdrawn.
+
+Include an “Impact Preview” before confirmation.
+
+Use one interactive synthetic scenario:
+
+- A practitioner challenges an operational task record.
+- The practitioner withdraws or rejects the supporting item.
+- Dependent relationships become unresolved or invalidated.
+- The related Timeline entry updates.
+- A new Evidence Gap appears.
+- Export becomes blocked.
+- The Audit Trail records the action.
+
+Synchronize this local prototype state across all relevant pages.
+
+==================================================
+6. NEW FEATURE: GAP-TO-ACTION WORKFLOW
+==================================================
+
+Keep Evidence Gaps, Interview Planner, and Case Tasks as separate sidebar pages, but connect them through shared local frontend state.
+
+Evidence Gaps page:
+
+Each gap should show:
+
+- Gap title.
+- Why the gap matters.
+- Related evidence.
+- Related relationship or timeline event.
+- Current status.
+- Source or dependency that created it.
+- Suggested next actions.
+- “Create interview question.”
+- “Create document request.”
+- “Create task.”
+- “Preserve as unknown.”
+
+Interview Planner page:
+
+Show trauma-informed, non-leading questions linked to gaps.
+
+Each question must include:
+
+- Exact linked gap.
+- Neutral suggested wording.
+- Why the question may help.
+- Topics to avoid.
+- Source context already known.
+- Edit action.
+- Approve action.
+- Defer action.
+- Mark inappropriate action.
+- Practitioner notes.
+
+Do not automatically ask questions or contact anybody.
+
+Case Tasks page:
+
+Each task should include:
+
+- Linked gap or urgent need.
+- Task title.
+- Practitioner-entered owner.
+- Practitioner-entered due date.
+- Status.
+- Priority expressed as Immediate, Time-sensitive, or Routine—not a risk score.
+- Source/document dependency.
+- Notes.
+- Completion evidence.
+- Audit history.
+
+Creating a question or task from Evidence Gaps must make it appear on the appropriate separate page.
+
+==================================================
+7. NEW FEATURE: TRUTHFUL SOURCE HEALTH
+==================================================
+
+Extend the existing Documents page and Source Quality sub-tab.
+
+Show truthful page-level states:
+
+- Readable
+- Partially readable
+- Missing
+- Blank or no text layer
+- OCR may be required
+- Extraction failed
+- Excluded by practitioner
+- Masking pending
+- Ready for analysis
+
+Do not label a page as successfully OCR-processed unless OCR actually occurred.
+
+For each document show:
+
+- Filename.
+- Source type.
+- Page count.
+- Language.
+- Translation status.
+- Extraction coverage.
+- Masking status.
+- Processing status.
+- Source provenance status.
+- Page-state strip.
+- Findings affected by missing or unreadable pages.
+- Retry or replace action.
+- Intentional source reveal.
+
+Add an “Impact on Analysis” panel:
+
+- Items supported by this document.
+- Items limited by unavailable pages.
+- Items blocked from acceptance.
+- Gaps created because of missing information.
+
+Original sensitive text should require an intentional reveal action and a user-entered reason.
+
+==================================================
+8. NEW FEATURE: LOCAL-FIRST PRIVACY BOUNDARY
+==================================================
+
+Add a consistent privacy and data-flow experience across:
+
+- Purpose Brief
+- Documents
+- Structured Analysis
+- Trust/System Card
+- Audit Trail
+
+Show four plain-language categories:
+
+1. Stays in this browser
+2. Masked before analysis
+3. Eligible for provider transmission
+4. Excluded from analysis and export
+
+Before starting analysis, show a Data Flow Preview containing:
+
+- Selected documents.
+- Selected redacted segments.
+- Excluded segments.
+- Masking status.
+- Leak-scan status.
+- Whether provider transmission will occur.
+- Run method: evaluated AI prototype state or prepared replay.
+- Purpose and intended recipient.
+
+For this Replit prototype, label simulated states clearly:
+
+“Interactive UI prototype — no live provider call is performed in this preview.”
+
+Do not add API keys or real provider calls.
+
+==================================================
+9. NEW FEATURE: PURPOSE-BOUND SAFE HANDOFF
+==================================================
+
+Redesign the existing Export Gate page.
+
+Include:
+
+- Current Purpose Brief summary.
+- Intended recipient.
+- Supported workflow.
+- Explicitly excluded decisions.
+- Full Practitioner Handoff option.
+- Minimum-Necessary Safe Share option.
+- Export blocker list.
+- Jump to blocker actions.
+- Included-content preview.
+- Excluded-content preview.
+- Side-by-side difference view.
+- Exact citations.
+- Preserved unknowns and limitations.
+- Review decisions.
+- Source coverage summary.
+- Analysis provenance.
+- Reviewed-state digest/manifest placeholder.
+- PDF and JSON download buttons.
+
+The export must remain blocked when:
+
+- Required review is pending.
+- Citations are unresolved.
+- Important pages are unavailable.
+- Masking is incomplete.
+- The intended recipient conflicts with the Purpose Brief.
+- Minimum necessity has not been confirmed.
+- A challenged evidence dependency is unresolved.
+
+Create an interactive flow where resolving or preserving a gap updates the blocker list.
+
+==================================================
+10. NEW FEATURE: EVALUATED AI RUN EXPERIENCE
+==================================================
+
+Design one real-AI-ready workflow inside Structured Analysis, but keep it as a frontend prototype for now.
+
+Do not expose provider selection to the practitioner.
+
+Show:
+
+- “Start analysis” primary action.
+- Prepared replay availability.
+- Evaluated AI synthetic-run state.
+- Current run method.
+- Processing stages.
+- Validation stages.
+- Citation verification.
+- Prohibited-conclusion scan.
+- Prompt-injection quarantine.
+- Accepted candidate count.
+- Quarantined candidate count.
+- Failed and unavailable states.
+- Clear fallback disclosure.
+- Provider/model provenance in the detail drawer and Audit/Trust pages.
+
+Processing stages:
+
+1. Validate purpose and permissions
+2. Confirm masking
+3. Build redacted input
+4. Analyze synthetic evidence
+5. Validate citations
+6. Quarantine unsafe output
+7. Prepare human-review queue
+
+Show both prototype scenarios:
+
+- Evaluated analysis succeeds.
+- Evaluated analysis is unavailable and the user deliberately loads a clearly labelled prepared replay.
+
+Never silently present replay output as live AI.
+
+==================================================
+11. NEW FEATURE: HELD-OUT SYNTHETIC CHALLENGE CASE
+==================================================
+
+Extend the Case Dashboard with a second synthetic case:
+
+- Clearly labelled “Held-Out Synthetic Challenge Case.”
+- Different document mix.
+- At least one missing page.
+- One contradictory date.
+- One unsupported relationship.
+- One embedded unsafe instruction.
+- One item where the correct behavior is abstention.
+
+Do not use any real names, organizations, locations, courts, or case records.
+
+Add an evaluation view under Trust/System Card or Audit Trail containing:
+
+- Citation validation result.
+- Redaction test result.
+- Abstention behavior.
+- Prompt-injection quarantine.
+- Dependency recalculation.
+- Export-gate behavior.
+
+Label all numbers as:
+
+“Illustrative synthetic fixture results for this UI prototype.”
+
+Do not imply production validation.
+
+==================================================
+12. EXISTING PAGE ENHANCEMENTS
+==================================================
+
+Urgent Needs:
+
+- Keep as a separate page.
+- Show Immediate, Time-sensitive, and Monitor sections.
+- Require human confirmation.
+- Link needs to evidence and source citations.
+- Allow creation of a task or referral.
+- Never produce an automatic risk determination.
+
+Services & Referrals:
+
+- Keep separate.
+- Show service category, location served, eligibility unknown/verified, verification date, language support, contact method, and practitioner notes.
+- Label all organizations as fictional prototype records.
+- Never automatically contact a service.
+- Show “Practitioner must verify current availability.”
+
+Notes & Journal:
+
+- Keep separate.
+- Support general notes, decision journal entries, supervision notes, and unresolved questions.
+- Allow source and candidate links.
+- Clearly distinguish editable notes from immutable Audit Trail events.
+
+Timeline:
+
+- Keep separate from Nexus.
+- Show documented, reported, conflicting, uncertain, and invalidated events.
+- Allow filtering by date, person, organization, evidence type, and review status.
+- Opening an event must show exact citations.
+- Challenged or withdrawn evidence must update the Timeline.
+
+Audit Trail:
+
+- Record masking approvals, source reveals and reasons, analysis runs, review decisions, evidence challenges, dependency invalidations, task creation, export checks, and handoff creation.
+
+==================================================
+13. REQUIRED INTERACTIONS
+==================================================
+
+The following interactions must work using local frontend mock state:
+
+1. Navigate to every existing route.
+2. Open exact source details.
+3. Challenge a Nexus relationship.
+4. Preview dependency impact.
+5. Withdraw supporting evidence.
+6. See Nexus and Timeline update.
+7. See a new Evidence Gap appear.
+8. Create an Interview Planner question from that gap.
+9. Create a Case Task from that gap.
+10. Preserve the gap as unknown.
+11. See Export Gate blockers update.
+12. Compare Full Handoff and Safe Share.
+13. Switch between evaluated-run and prepared-replay prototype states.
+14. Switch between primary and held-out synthetic cases.
+15. Reset the case to its initial state.
+
+Badges in the sidebar must update when these actions occur.
+
+==================================================
+14. ACCESSIBILITY AND RESPONSIVENESS
+==================================================
+
+- Use semantic headings and landmarks.
+- All controls must be keyboard accessible.
+- Use visible focus styles.
+- Do not communicate status through color alone.
+- Use readable labels with icons.
+- Keep body text at least 14px.
+- Provide accessible names for icon-only buttons.
+- Use proper dialog and drawer focus handling.
+- Provide a text/list alternative for the visual Evidence Integrity Map.
+- Ensure the sidebar becomes a drawer on smaller screens.
+- Avoid horizontal overflow at mobile widths.
+- Respect reduced-motion preferences.
+
+==================================================
+15. IMPLEMENTATION INSTRUCTIONS
+==================================================
+
+Before editing:
+
+1. Inspect the existing routes, components, mock data, theme, and shared UI primitives.
+2. Reuse the current React/Vite/Wouter/Tailwind/shadcn structure.
+3. Do not replace the current project architecture.
+4. Do not remove existing functionality.
+5. Do not add unnecessary dependencies.
+
+Implementation approach:
+
+1. Create shared synthetic case state for cross-page interactions.
+2. Add reusable evidence, citation, status, source-health, blocker, and provenance components.
+3. Enhance each existing page.
+4. Connect cross-page prototype actions.
+5. Add loading, empty, blocked, error, and reset states.
+6. Verify every route and interaction.
+7. Fix console and TypeScript errors.
+
+Do not deploy or publish automatically.
+
+At completion, provide:
+
+- Summary of what changed.
+- Routes updated.
+- Components added.
+- Interactions implemented.
+- Anything still simulated.
+- Any visual or accessibility limitations.
+
+The final result should look like a serious, trustworthy, production-quality legal evidence workspace—not a generic AI dashboard.

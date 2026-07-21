@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_EVIDENCE_GAPS, EvidenceGap, GapStatus } from '@/data/mock-case';
-import { AlertTriangle, HelpCircle, CheckCircle2, Clock, Plus, ArrowRight, FileText, ChevronRight, XCircle, RotateCcw, User } from 'lucide-react';
+import { AlertTriangle, HelpCircle, CheckCircle2, Clock, Plus, ArrowRight, FileText, ChevronRight, XCircle, RotateCcw, User, MessageSquare, ClipboardList, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -37,6 +37,8 @@ export default function CaseGaps() {
   const [selectedId, setSelectedId] = useState<string | null>(MOCK_EVIDENCE_GAPS[0]?.id ?? null);
   const [filter, setFilter] = useState<FilterKey>('all');
   const [convertedActions, setConvertedActions] = useState<Set<string>>(new Set(['sa-1']));
+  const [questionActions, setQuestionActions] = useState<Set<string>>(new Set());
+  const [preservedGaps, setPreservedGaps] = useState<Set<string>>(new Set());
   const [resolveModal, setResolveModal] = useState<ResolveModal>({ open: false, gapId: '', reason: '', evidence: '' });
 
   const selected = gaps.find(g => g.id === selectedId);
@@ -54,6 +56,15 @@ export default function CaseGaps() {
 
   const convertAction = (actionId: string) => {
     setConvertedActions(prev => new Set([...prev, actionId]));
+  };
+
+  const createQuestion = (actionId: string) => {
+    setQuestionActions(prev => new Set([...prev, actionId]));
+  };
+
+  const preserveAsUnknown = (gapId: string) => {
+    setPreservedGaps(prev => new Set([...prev, gapId]));
+    setStatus(gapId, 'unable-to-resolve');
   };
 
   const setStatus = (id: string, status: GapStatus) => {
@@ -261,33 +272,74 @@ export default function CaseGaps() {
                     <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3 border-b border-border pb-2">Suggested Next Actions</h3>
                     <div className="space-y-2">
                       {selected.suggestedActions.map(action => {
-                        const converted = convertedActions.has(action.id);
+                        const taskDone = convertedActions.has(action.id);
+                        const qDone = questionActions.has(action.id);
                         return (
                           <div key={action.id} className={cn(
-                            "flex items-center gap-3 p-3 rounded-sm border transition-all",
-                            converted ? "bg-teal-50 border-teal-200" : "bg-card border-border"
+                            "p-3.5 rounded-md border transition-all",
+                            (taskDone && qDone) ? "bg-teal-50/60 border-teal-200" : "bg-card border-border"
                           )}>
-                            {converted
-                              ? <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />
-                              : <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                            }
-                            <span className={cn("text-sm flex-1", converted ? "text-teal-800 line-through" : "text-foreground")}>
-                              {action.label}
-                            </span>
-                            {!converted && (
-                              <button
-                                onClick={() => convertAction(action.id)}
-                                className="shrink-0 text-[10px] font-mono uppercase text-primary hover:text-primary/80 border border-primary/30 bg-primary/5 hover:bg-primary/10 px-2 py-0.5 rounded transition-colors"
-                              >
-                                → Task
-                              </button>
-                            )}
-                            {converted && (
-                              <span className="shrink-0 text-[10px] font-mono text-teal-700 uppercase">Task Created</span>
-                            )}
+                            <div className="flex items-start gap-2.5 mb-3">
+                              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                              <span className="text-sm text-foreground leading-snug">{action.label}</span>
+                            </div>
+                            <div className="flex items-center gap-2 pl-6">
+                              {/* Create Task */}
+                              {!taskDone ? (
+                                <button
+                                  onClick={() => convertAction(action.id)}
+                                  className="flex items-center gap-1.5 text-[10px] font-mono uppercase text-foreground border border-border bg-muted hover:bg-card px-2.5 py-1 rounded transition-colors"
+                                >
+                                  <ClipboardList className="w-3 h-3" />Create Task
+                                </button>
+                              ) : (
+                                <span className="flex items-center gap-1.5 text-[10px] font-mono text-teal-700 border border-teal-200 bg-teal-50 px-2 py-0.5 rounded">
+                                  <CheckCircle2 className="w-3 h-3" />Task Created
+                                </span>
+                              )}
+                              {/* Create Interview Question */}
+                              {!qDone ? (
+                                <button
+                                  onClick={() => createQuestion(action.id)}
+                                  className="flex items-center gap-1.5 text-[10px] font-mono uppercase text-blue-700 border border-blue-200 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded transition-colors"
+                                >
+                                  <MessageSquare className="w-3 h-3" />Create Interview Q
+                                </button>
+                              ) : (
+                                <span className="flex items-center gap-1.5 text-[10px] font-mono text-blue-700 border border-blue-200 bg-blue-50 px-2 py-0.5 rounded">
+                                  <CheckCircle2 className="w-3 h-3" />Question Created
+                                </span>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
+                    </div>
+
+                    {/* Gap-level: Preserve as Unknown */}
+                    <div className="mt-3 p-3.5 bg-slate-50 border border-slate-200 rounded-md">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                            <Archive className="w-3.5 h-3.5 text-slate-500" />Preserve as Unknown
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                            Absence of evidence is not negative evidence. Mark this gap as a valid epistemic state — no further investigation required.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => preserveAsUnknown(selected.id)}
+                          disabled={preservedGaps.has(selected.id) || selected.status === 'unable-to-resolve'}
+                          className={cn(
+                            "shrink-0 text-[10px] font-mono uppercase px-2.5 py-1.5 rounded border transition-colors whitespace-nowrap",
+                            (preservedGaps.has(selected.id) || selected.status === 'unable-to-resolve')
+                              ? "bg-muted text-muted-foreground border-border cursor-default"
+                              : "bg-white border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer"
+                          )}
+                        >
+                          {(preservedGaps.has(selected.id) || selected.status === 'unable-to-resolve') ? '✓ Preserved' : 'Preserve →'}
+                        </button>
+                      </div>
                     </div>
                   </div>
 

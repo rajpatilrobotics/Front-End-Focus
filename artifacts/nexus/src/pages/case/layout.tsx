@@ -1,6 +1,9 @@
 import React from 'react';
 import { Route, Switch, useRoute, Link, useLocation } from 'wouter';
-import { MOCK_CASES } from '@/data/mock-case';
+import {
+  MOCK_CASES, MOCK_FINDINGS, MOCK_EVIDENCE_GAPS, MOCK_TASKS,
+  MOCK_INTERVIEW_QUESTIONS, MOCK_URGENT_NEEDS,
+} from '@/data/mock-case';
 import {
   FileText, BrainCircuit, Network, Clock, ShieldAlert, History, ArrowLeft,
   Download, ShieldCheck, RotateCcw, CheckCircle2, AlertTriangle, Phone,
@@ -64,6 +67,14 @@ export default function CaseLayout() {
   };
   const activeStep = getActiveStep();
 
+  // Derive live badge counts from fixture data
+  const pendingFindingsCount = MOCK_FINDINGS.filter(f => f.reviewStatus === 'pending').length;
+  const immediateNeedsCount = MOCK_URGENT_NEEDS.filter(n => n.urgency === 'immediate').length;
+  const openGapsCount = MOCK_EVIDENCE_GAPS.filter(g => g.status === 'open' || g.status === 'investigating' || g.status === 'waiting-external').length;
+  const pendingQuestionsCount = MOCK_INTERVIEW_QUESTIONS.filter(q => q.reviewStatus === 'pending-review').length;
+  const openTasksCount = MOCK_TASKS.filter(t => t.status === 'to-do' || t.status === 'in-progress' || t.status === 'waiting').length;
+  const isExportBlocked = caseData.exportGateStatus === 'blocked';
+
   const NAV_SECTIONS: NavSection[] = [
     {
       title: 'Intake',
@@ -75,18 +86,18 @@ export default function CaseLayout() {
     {
       title: 'Analysis',
       items: [
-        { path: '/analysis',  label: 'Structured Analysis', icon: BrainCircuit, badge: '4 Pending',   badgeStyle: 'warn' },
-        { path: '/safety',    label: 'Urgent Needs',        icon: Phone,         badge: '1 Immediate', badgeStyle: 'urgent' },
-        { path: '/gaps',      label: 'Evidence Gaps',       icon: HelpCircle,    badge: '3 Open',      badgeStyle: 'warn' },
+        { path: '/analysis',  label: 'Structured Analysis', icon: BrainCircuit, badge: pendingFindingsCount > 0 ? `${pendingFindingsCount} Pending` : undefined, badgeStyle: 'warn' },
+        { path: '/safety',    label: 'Urgent Needs',        icon: Phone,         badge: immediateNeedsCount > 0 ? `${immediateNeedsCount} Immediate` : undefined, badgeStyle: 'urgent' },
+        { path: '/gaps',      label: 'Evidence Gaps',       icon: HelpCircle,    badge: openGapsCount > 0 ? `${openGapsCount} Open` : undefined, badgeStyle: 'warn' },
       ],
     },
     {
       title: 'Planning',
       items: [
-        { path: '/interview', label: 'Interview Planner',  icon: Mic,          badge: '2 Pending', badgeStyle: 'default' },
-        { path: '/services',  label: 'Services & Referrals', icon: Users,      badgeStyle: 'default' },
-        { path: '/tasks',     label: 'Case Tasks',         icon: ClipboardList, badge: '5 Open',   badgeStyle: 'default' },
-        { path: '/notes',     label: 'Notes & Journal',    icon: MessageSquare },
+        { path: '/interview', label: 'Interview Planner',    icon: Mic,          badge: pendingQuestionsCount > 0 ? `${pendingQuestionsCount} Pending` : undefined, badgeStyle: 'default' },
+        { path: '/services',  label: 'Services & Referrals', icon: Users },
+        { path: '/tasks',     label: 'Case Tasks',           icon: ClipboardList, badge: openTasksCount > 0 ? `${openTasksCount} Open` : undefined, badgeStyle: 'default' },
+        { path: '/notes',     label: 'Notes & Journal',      icon: MessageSquare },
       ],
     },
     {
@@ -99,7 +110,7 @@ export default function CaseLayout() {
     {
       title: 'Export',
       items: [
-        { path: '/export', label: 'Export Gate', icon: ShieldAlert, badge: 'Blocked', badgeStyle: 'blocked' },
+        { path: '/export', label: 'Export Gate', icon: ShieldAlert, badge: isExportBlocked ? 'Blocked' : 'Ready', badgeStyle: isExportBlocked ? 'blocked' : 'default' },
       ],
     },
   ];

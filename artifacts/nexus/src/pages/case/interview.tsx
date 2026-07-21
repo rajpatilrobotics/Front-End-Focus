@@ -11,6 +11,7 @@ const STATUS_CONFIG: Record<InterviewQuestionStatus, { label: string; color: str
   'edited':         { label: 'Edited',          color: 'bg-amber-50 text-amber-700 border-amber-200' },
   'removed':        { label: 'Removed',         color: 'bg-slate-50 text-slate-500 border-slate-200' },
   'deferred':       { label: 'Deferred',        color: 'bg-slate-50 text-slate-600 border-slate-300' },
+  'inappropriate':  { label: 'Inappropriate',   color: 'bg-red-50 text-red-700 border-red-200' },
 };
 
 const NON_NEGOTIABLE = [

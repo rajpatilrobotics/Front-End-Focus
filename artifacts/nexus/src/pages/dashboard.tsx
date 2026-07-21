@@ -1,9 +1,10 @@
 import React from 'react';
-import { Case, MOCK_CASES, MOCK_TASKS, MOCK_URGENT_NEEDS, MOCK_EVIDENCE_GAPS } from '@/data/mock-case';
+import { Case, MOCK_CASES, MOCK_TASKS, MOCK_URGENT_NEEDS, MOCK_EVIDENCE_GAPS, CHALLENGE_CASE, CHALLENGE_FINDINGS, CHALLENGE_DOCUMENTS } from '@/data/mock-case';
 import { Link } from 'wouter';
 import {
   FileText, ShieldAlert, CheckCircle2, Clock, Plus, Activity, ArrowLeft,
   AlertTriangle, HelpCircle, ClipboardList, Phone, Eye, ArrowRight,
+  FlaskConical, XCircle, TriangleAlert,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -105,6 +106,90 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openCases.map(c => <CaseCard key={c.id} caseData={c} />)}
+          </div>
+        </div>
+
+        {/* ── Held-Out Synthetic Challenge Case ── */}
+        <div className="border border-dashed border-amber-300 rounded-xl bg-amber-50/40 overflow-hidden">
+          <div className="px-6 py-4 flex items-center justify-between border-b border-amber-200/60 bg-amber-50/60">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center">
+                <FlaskConical className="w-4.5 h-4.5 text-amber-700" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-amber-900 tracking-tight">Held-Out Synthetic Challenge Case</h2>
+                <p className="text-xs text-amber-700 font-mono mt-0.5">Evaluation fixture only — contains known errors for validation</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono uppercase bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-1 rounded font-semibold tracking-wider">
+              SYNTHETIC · NOT A REAL CASE
+            </span>
+          </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Case identity */}
+              <div className="space-y-4">
+                <div className="bg-white border border-amber-200 rounded-lg p-4 shadow-sm">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="font-mono text-sm font-bold text-foreground">{CHALLENGE_CASE.refId}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">5 source documents · 5 candidate findings</p>
+                    </div>
+                    <span className="text-[9px] font-mono uppercase bg-red-50 text-red-700 border border-red-200 px-1.5 py-0.5 rounded font-semibold">
+                      Export Blocked
+                    </span>
+                  </div>
+                  <div className="space-y-2.5 text-xs">
+                    {[
+                      { label: 'Missing page', value: 'cd-2 p.2 — Supervisor Logs partial', color: 'text-red-700' },
+                      { label: 'Contradictory date', value: '52-day gap in arrival record', color: 'text-amber-700' },
+                      { label: 'Prompt injection', value: 'Detected in cd-2 p.3 — quarantined', color: 'text-red-700' },
+                      { label: 'Legal abstention', value: 'Arrival date gap — no conclusion drawn', color: 'text-blue-700' },
+                      { label: 'Unsupported relationship', value: 'cf-4 marked insufficient evidence', color: 'text-amber-700' },
+                    ].map(item => (
+                      <div key={item.label} className="flex items-start gap-2 pb-2 border-b border-border/50 last:border-0 last:pb-0">
+                        <span className="text-muted-foreground w-32 shrink-0 font-mono">{item.label}:</span>
+                        <span className={cn("font-medium", item.color)}>{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Link href={`/trust`}>
+                  <div className="flex items-center justify-between p-3 bg-white border border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors group">
+                    <span className="text-sm font-medium text-amber-800">View Evaluation Results</span>
+                    <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </Link>
+              </div>
+
+              {/* Document health */}
+              <div>
+                <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3">Document Health</div>
+                <div className="space-y-2">
+                  {CHALLENGE_DOCUMENTS.map(doc => {
+                    const hasIssue = doc.extractionStatus === 'partial' || doc.pages?.some(p => p.status !== 'processed');
+                    return (
+                      <div key={doc.id} className="flex items-center gap-3 p-2.5 bg-white border border-amber-200/60 rounded-md text-xs">
+                        <div className={cn("w-2 h-2 rounded-full shrink-0", hasIssue ? "bg-amber-400" : "bg-teal-500")} />
+                        <span className="flex-1 text-foreground font-mono text-[11px] truncate">{doc.fileName}</span>
+                        <span className={cn("font-mono text-[9px] uppercase px-1.5 py-0.5 rounded border shrink-0",
+                          hasIssue ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-teal-50 text-teal-700 border-teal-200"
+                        )}>
+                          {doc.extractionStatus}
+                        </span>
+                        <span className="font-mono text-[10px] text-muted-foreground shrink-0">{doc.coveragePercentage}%</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-xs text-blue-800 flex items-start gap-2">
+                  <TriangleAlert className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                  <span>This case intentionally contains known errors. Evaluation results in Trust &amp; Safety → Evaluation.</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

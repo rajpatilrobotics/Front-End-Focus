@@ -8,7 +8,6 @@ import Landing from '@/pages/landing';
 import Dashboard from '@/pages/dashboard';
 import TrustAndSafety from '@/pages/trust';
 import CaseLayout from '@/pages/case/layout';
-
 const queryClient = new QueryClient();
 
 function Router() {
