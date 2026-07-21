@@ -311,7 +311,14 @@ export default function CaseDocuments() {
             {HEALTH_FILTERS.map(f => (
               <button
                 key={f.key}
-                onClick={() => setHealthFilter(f.key)}
+                onClick={() => {
+                  const newFiltered = f.key === 'all' ? MOCK_DOCUMENTS : MOCK_DOCUMENTS.filter(d => getHealthStatus(d).key === f.key);
+                  if (!newFiltered.some(d => d.id === selectedDoc.id)) {
+                    setSelectedDoc(newFiltered[0] ?? MOCK_DOCUMENTS[0]);
+                    setIsRevealed(false);
+                  }
+                  setHealthFilter(f.key);
+                }}
                 className={cn(
                   "px-2.5 py-0.5 text-[10px] font-mono rounded-full border transition-colors",
                   healthFilter === f.key

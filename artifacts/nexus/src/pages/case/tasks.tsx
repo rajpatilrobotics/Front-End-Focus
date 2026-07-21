@@ -166,7 +166,7 @@ export default function CaseTasks() {
   const [selectedId, setSelectedId] = useState<string>(TASKS[0].id);
 
   const filtered = activeFilter === 'all' ? TASKS : TASKS.filter(t => t.status === activeFilter);
-  const selected = TASKS.find(t => t.id === selectedId) ?? TASKS[0];
+  const selected = filtered.find(t => t.id === selectedId) ?? filtered[0] ?? TASKS[0];
 
   const counts = {
     urgent:      TASKS.filter(t => t.status === 'urgent').length,
@@ -236,7 +236,13 @@ export default function CaseTasks() {
         {FILTERS.map(f => (
           <button
             key={f.key}
-            onClick={() => setActiveFilter(f.key)}
+            onClick={() => {
+              const newFiltered = f.key === 'all' ? TASKS : TASKS.filter(t => t.status === f.key);
+              if (!newFiltered.some(t => t.id === selectedId)) {
+                setSelectedId(newFiltered[0]?.id ?? TASKS[0].id);
+              }
+              setActiveFilter(f.key);
+            }}
             className={cn(
               "px-3 py-1 text-xs font-medium rounded-full border transition-colors",
               activeFilter === f.key

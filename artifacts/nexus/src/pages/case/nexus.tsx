@@ -701,11 +701,16 @@ export default function CaseNexus() {
 
               return (
                 <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
+                  initial={{ scale: 1, opacity: isWithdrawn ? 0.45 : 1 }}
                   animate={{ scale: 1, opacity: isWithdrawn ? 0.45 : 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                  transition={{ duration: 0 }}
                   key={id}
                   onClick={() => !isWithdrawn && setSelectedNode(isSelected ? null : id)}
+                  onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !isWithdrawn) { e.preventDefault(); setSelectedNode(isSelected ? null : id); } }}
+                  tabIndex={0}
+                  role="button"
+                  aria-pressed={isSelected}
+                  aria-label={id === 'root' ? 'Charge–Coercion Nexus root node' : `Finding ${id}${isWithdrawn ? ' (withdrawn)' : ''}`}
                   className={cn(
                     'absolute -translate-x-1/2 -translate-y-1/2 rounded-lg border-2 p-3 shadow-sm transition-all duration-200',
                     isWithdrawn ? 'cursor-not-allowed grayscale' : 'cursor-pointer hover:scale-105 hover:shadow-md',

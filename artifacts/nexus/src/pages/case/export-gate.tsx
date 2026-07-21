@@ -129,7 +129,7 @@ const CRITICAL_BLOCKERS = [
     severity: 'critical' as const,
     affectedItems: ['d-5', 'gc-6'],
     reason: 'Document d-5 (Support Provider Notes) masking approval has not been confirmed by a practitioner. No export is possible until all identifiers are reviewed and approved.',
-    link: '/case/c-001/documents',
+    link: '/case/c-001',
     linkLabel: 'Review Masking',
   },
   {

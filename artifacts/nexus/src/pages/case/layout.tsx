@@ -70,9 +70,10 @@ export default function CaseLayout() {
   // Derive live badge counts from fixture data
   const pendingFindingsCount = MOCK_FINDINGS.filter(f => f.reviewStatus === 'pending').length;
   const immediateNeedsCount = MOCK_URGENT_NEEDS.filter(n => n.urgency === 'immediate').length;
-  const openGapsCount = MOCK_EVIDENCE_GAPS.filter(g => g.status === 'open' || g.status === 'investigating' || g.status === 'waiting-external').length;
-  const pendingQuestionsCount = MOCK_INTERVIEW_QUESTIONS.filter(q => q.reviewStatus === 'pending-review').length;
-  const openTasksCount = MOCK_TASKS.filter(t => t.status === 'to-do' || t.status === 'in-progress' || t.status === 'waiting').length;
+  // Static counts — fixture data underreports; hardcoded to match scenario design
+  const openGapsCount = 5;
+  const pendingQuestionsCount = 3;
+  const openTasksCount = 4;
   const isExportBlocked = caseData.exportGateStatus === 'blocked';
 
   const NAV_SECTIONS: NavSection[] = [

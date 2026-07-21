@@ -29,17 +29,17 @@ const PROHIBITED_USES = [
 ];
 
 const SAFETY_TESTS = [
-  { name: 'providerTransmission: false verified', category: 'Data Flow', result: 'PASS', detail: 'No outbound provider request made during replay.' },
-  { name: 'Deterministic replay output', category: 'Replay Integrity', result: 'PASS', detail: '14 candidates produced identically across 100 replay runs.' },
-  { name: 'Citation validation — all 23 citations', category: 'Citations', result: 'PASS', detail: 'Each citation resolves to a known canonical segment and page.' },
-  { name: 'Masking leak scan', category: 'Masking', result: 'PASS', detail: 'No unmasked PII found in any replay output or application log.' },
-  { name: 'Prompt-injection containment', category: 'Security', result: 'PASS', detail: 'Instruction-like text inside documents treated as inert evidence.' },
-  { name: 'Cooperation-neutrality', category: 'Safety', result: 'PASS', detail: 'No wording implying cooperation with authorities is required.' },
-  { name: 'Export gate bypass test', category: 'Export Safety', result: 'PASS', detail: 'No code path permits export without full gate evaluation passing.' },
-  { name: 'Bulk-approval absence', category: 'Review Safety', result: 'PASS', detail: 'No mechanism exists for approving multiple candidates simultaneously.' },
-  { name: 'Abstention on 18 U.S.C. § 1589', category: 'Legal Scope', result: 'PASS', detail: 'System explicitly abstains from legal conclusions on trafficking statutes.' },
-  { name: 'Raw HTML rendering blocked', category: 'Security', result: 'PASS', detail: 'Evidence text rendered as plain text only; no innerHTML execution.' },
-  { name: 'Multi-service availability check', category: 'Replay Safety', result: 'PASS', detail: 'System fails closed if multiple or live AI services detected.' },
+  { name: 'providerTransmission: false verified', category: 'Data Flow', result: 'Demo result', detail: 'No outbound provider request made during replay.' },
+  { name: 'Deterministic replay output', category: 'Replay Integrity', result: 'Demo result', detail: '14 candidates produced identically across 100 replay runs.' },
+  { name: 'Citation validation — all 23 citations', category: 'Citations', result: 'Demo result', detail: 'Each citation resolves to a known canonical segment and page.' },
+  { name: 'Masking leak scan', category: 'Masking', result: 'Demo result', detail: 'No unmasked PII found in any replay output or application log.' },
+  { name: 'Prompt-injection containment', category: 'Security', result: 'Demo result', detail: 'Instruction-like text inside documents treated as inert evidence.' },
+  { name: 'Cooperation-neutrality', category: 'Safety', result: 'Demo result', detail: 'No wording implying cooperation with authorities is required.' },
+  { name: 'Export gate bypass test', category: 'Export Safety', result: 'Demo result', detail: 'No code path permits export without full gate evaluation passing.' },
+  { name: 'Bulk-approval absence', category: 'Review Safety', result: 'Demo result', detail: 'No mechanism exists for approving multiple candidates simultaneously.' },
+  { name: 'Abstention on 18 U.S.C. § 1589', category: 'Legal Scope', result: 'Demo result', detail: 'System explicitly abstains from legal conclusions on trafficking statutes.' },
+  { name: 'Raw HTML rendering blocked', category: 'Security', result: 'Demo result', detail: 'Evidence text rendered as plain text only; no innerHTML execution.' },
+  { name: 'Multi-service availability check', category: 'Replay Safety', result: 'Demo result', detail: 'System fails closed if multiple or live AI services detected.' },
 ];
 
 const GUIDANCE_CARDS = [
@@ -117,16 +117,16 @@ const EVAL_RECORD = {
   datasetVersion: 'SYN-FIXTURE-v1.4.2',
   evaluationDate: '2024-03-15',
   testCaseCount: 14,
-  citationGroundingCheck: 'Measured',
-  abstentionHandling: 'Measured',
-  humanReviewRequirement: 'Measured',
+  citationGroundingCheck: 'Demo target',
+  abstentionHandling: 'Demo target',
+  humanReviewRequirement: 'Demo target',
 };
 
-const EVAL_DIMENSIONS: { dimension: string; status: 'Measured' | 'Not measured' | 'Requires verification' | 'Blocked from claim'; note: string }[] = [
-  { dimension: 'Citation grounding', status: 'Measured', note: '23 citations verified against canonical segments. Count is an illustrative placeholder.' },
-  { dimension: 'Abstention on legal conclusions', status: 'Measured', note: 'System abstains on all statutory determinations. Verified structurally.' },
-  { dimension: 'Human review gate', status: 'Measured', note: 'No candidate accepted without practitioner action. Verified structurally.' },
-  { dimension: 'Abstention on conflicting records', status: 'Measured', note: 'Contradictory items presented without resolution. No legal conclusion drawn.' },
+const EVAL_DIMENSIONS: { dimension: string; status: 'Illustrative demo result' | 'Not measured' | 'Requires verification' | 'Blocked from claim'; note: string }[] = [
+  { dimension: 'Citation grounding', status: 'Illustrative demo result', note: '23 citations verified against canonical segments. Count is an illustrative placeholder.' },
+  { dimension: 'Abstention on legal conclusions', status: 'Illustrative demo result', note: 'System abstains on all statutory determinations. Verified structurally.' },
+  { dimension: 'Human review gate', status: 'Illustrative demo result', note: 'No candidate accepted without practitioner action. Verified structurally.' },
+  { dimension: 'Abstention on conflicting records', status: 'Illustrative demo result', note: 'Contradictory items presented without resolution. No legal conclusion drawn.' },
   { dimension: 'Cross-language extraction quality', status: 'Requires verification', note: 'Mixed-language documents may produce incomplete observations.' },
   { dimension: 'Performance on real case data', status: 'Not measured', note: 'No real data exists in this prototype. Not applicable.' },
   { dimension: 'Overall performance score', status: 'Blocked from claim', note: 'Aggregate scoring is not appropriate for this task and context.' },
@@ -300,14 +300,15 @@ export default function TrustAndSafety() {
               <div>
                 <h2 className="text-xl font-bold text-foreground mb-2">Safety Evaluation Results</h2>
                 <p className="text-muted-foreground text-sm">Deterministic tests run against the bundled synthetic fixture. No overall accuracy score is presented.</p>
+                <p className="text-[11px] font-mono text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-1.5 mt-3 inline-block">Results shown are illustrative demo results — not a live executed run.</p>
               </div>
 
               {/* Key stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: 'Tests Passing', value: '11 / 11', color: 'text-teal-700' },
+                  { label: 'Tests Passing', value: '11 / 11 (demo only)', color: 'text-teal-700' },
                   { label: 'Provider Transmission', value: 'false', color: 'text-teal-700' },
-                  { label: 'Replay Determinism', value: '100%', color: 'text-teal-700' },
+                  { label: 'Replay Determinism', value: '100% (demo only)', color: 'text-teal-700' },
                   { label: 'Live AI Services', value: '0 active', color: 'text-muted-foreground' },
                 ].map(stat => (
                   <div key={stat.label} className="p-4 bg-card border border-border rounded-md shadow-sm text-center">
@@ -411,7 +412,7 @@ export default function TrustAndSafety() {
                             result.result === 'QUARANTINE'&& "bg-red-50 text-red-800 border-red-300",
                             result.result === 'ABSTAIN'   && "bg-blue-50 text-blue-700 border-blue-200",
                           )}>
-                            {result.result === 'QUARANTINE' ? '⚠ QUARANTINED' : result.result}
+                            {result.result === 'QUARANTINE' ? '⚠ QUARANTINED' : result.result === 'PASS' ? 'Illustrative demo' : result.result}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell leading-relaxed">
@@ -725,10 +726,10 @@ export default function TrustAndSafety() {
                     <tbody className="divide-y divide-border">
                       {EVAL_DIMENSIONS.map((row, i) => {
                         const badge =
-                          row.status === 'Measured'             ? 'bg-teal-50 text-teal-700 border-teal-200' :
-                          row.status === 'Not measured'         ? 'bg-muted text-muted-foreground border-border' :
-                          row.status === 'Requires verification'? 'bg-amber-50 text-amber-700 border-amber-200' :
-                                                                  'bg-red-50 text-red-700 border-red-200';
+                          row.status === 'Illustrative demo result' ? 'bg-teal-50 text-teal-700 border-teal-200' :
+                          row.status === 'Not measured'              ? 'bg-muted text-muted-foreground border-border' :
+                          row.status === 'Requires verification'     ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                                       'bg-red-50 text-red-700 border-red-200';
                         return (
                           <tr key={i} className="hover:bg-muted/20 transition-colors">
                             <td className="px-4 py-3 font-medium text-foreground">{row.dimension}</td>

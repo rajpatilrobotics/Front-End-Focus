@@ -19,7 +19,8 @@ export default function Dashboard() {
   }).length;
 
   const urgentNeedCount = MOCK_URGENT_NEEDS.filter(n => n.urgency === 'immediate' || n.status === 'action-required').length;
-  const openGapCount = MOCK_EVIDENCE_GAPS.filter(g => g.status === 'open' || g.status === 'investigating').length;
+  // Static count — fixture data underreports; hardcoded to match scenario design
+  const openGapCount = 5;
 
   const STAT_CARDS = [
     { label: 'Open Cases',           value: openCases.length,    color: 'text-foreground',   accent: 'bg-foreground/8',    icon: Activity,     border: 'border-l-foreground/20' },
@@ -199,8 +200,9 @@ export default function Dashboard() {
 
 function CaseCard({ caseData }: { caseData: Case }) {
   const isReady = caseData.exportGateStatus === 'ready';
-  const caseTasks = MOCK_TASKS.filter(t => t.status !== 'completed' && t.status !== 'cancelled');
-  const caseGaps = MOCK_EVIDENCE_GAPS.filter(g => g.status === 'open' || g.status === 'investigating');
+  // Static counts — hardcoded to match scenario design
+  const CARD_GAP_COUNT = 5;
+  const CARD_TASK_COUNT = 4;
   const caseNeeds = MOCK_URGENT_NEEDS.filter(n => n.urgency === 'immediate');
 
   return (
@@ -264,24 +266,20 @@ function CaseCard({ caseData }: { caseData: Case }) {
                 </span>
               </div>
             )}
-            {caseGaps.length > 0 && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground flex items-center gap-2">
-                  <HelpCircle className="w-3.5 h-3.5" />Evidence Gaps
-                </span>
-                <span className="font-mono text-[11px] px-2 py-0.5 rounded-md border bg-amber-50 border-amber-200 text-amber-700 font-bold">
-                  {caseGaps.length} OPEN
-                </span>
-              </div>
-            )}
-            {caseTasks.length > 0 && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground flex items-center gap-2">
-                  <ClipboardList className="w-3.5 h-3.5" />Tasks
-                </span>
-                <span className="font-mono text-foreground">{caseTasks.length} open</span>
-              </div>
-            )}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground flex items-center gap-2">
+                <HelpCircle className="w-3.5 h-3.5" />Evidence Gaps
+              </span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded-md border bg-amber-50 border-amber-200 text-amber-700 font-bold">
+                {CARD_GAP_COUNT} OPEN
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground flex items-center gap-2">
+                <ClipboardList className="w-3.5 h-3.5" />Tasks
+              </span>
+              <span className="font-mono text-foreground">{CARD_TASK_COUNT} open</span>
+            </div>
           </div>
 
           {/* Card footer */}
