@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'wouter';
-import { Shield, FlaskConical, BookOpen, History, Flag, CheckCircle2, XCircle, AlertTriangle, Activity, ArrowLeft, ExternalLink, Lock, BarChart3, ShieldAlert, Info } from 'lucide-react';
+import { Shield, FlaskConical, BookOpen, History, Flag, CheckCircle2, XCircle, AlertTriangle, Activity, ArrowLeft, ExternalLink, Lock, BarChart3, ShieldAlert, Info, Cpu, Ban, FileCheck2 } from 'lucide-react';
 import { CHALLENGE_EVAL_RESULTS } from '@/data/mock-case';
 import { cn } from '@/lib/utils';
 
-type Tab = 'system-card' | 'safety-lab' | 'guidance' | 'audit' | 'report' | 'evaluation';
+type Tab = 'system-card' | 'safety-lab' | 'guidance' | 'audit' | 'report' | 'evaluation' | 'boundaries';
 
 const INTENDED_USES = [
   'Case-packet organisation for qualified practitioners',
@@ -102,6 +102,70 @@ const REPORT_CATEGORIES = [
   'Other safety concern',
 ];
 
+// ── Phase 8 static data ────────────────────────────────────────────────────
+
+const PERMITTED_AI_TASK = {
+  id: 'AT-001',
+  task: 'Create source-linked candidate observations for practitioner review.',
+  scope: 'Deterministic replay against bundled synthetic fixture only.',
+  requires: 'Practitioner-initiated. Purpose brief present. Masking reviewed.',
+  produces: 'Candidate observations with source citations — not conclusions.',
+};
+
+const EVAL_RECORD = {
+  task: 'Create source-linked candidate observations',
+  datasetVersion: 'SYN-FIXTURE-v1.4.2',
+  evaluationDate: '2024-03-15',
+  testCaseCount: 14,
+  citationGroundingCheck: 'Measured',
+  abstentionHandling: 'Measured',
+  humanReviewRequirement: 'Measured',
+};
+
+const EVAL_DIMENSIONS: { dimension: string; status: 'Measured' | 'Not measured' | 'Requires verification' | 'Blocked from claim'; note: string }[] = [
+  { dimension: 'Citation grounding', status: 'Measured', note: '23 citations verified against canonical segments. Count is an illustrative placeholder.' },
+  { dimension: 'Abstention on legal conclusions', status: 'Measured', note: 'System abstains on all statutory determinations. Verified structurally.' },
+  { dimension: 'Human review gate', status: 'Measured', note: 'No candidate accepted without practitioner action. Verified structurally.' },
+  { dimension: 'Abstention on conflicting records', status: 'Measured', note: 'Contradictory items presented without resolution. No legal conclusion drawn.' },
+  { dimension: 'Cross-language extraction quality', status: 'Requires verification', note: 'Mixed-language documents may produce incomplete observations.' },
+  { dimension: 'Performance on real case data', status: 'Not measured', note: 'No real data exists in this prototype. Not applicable.' },
+  { dimension: 'Overall performance score', status: 'Blocked from claim', note: 'Aggregate scoring is not appropriate for this task and context.' },
+  { dimension: 'Benchmark comparison', status: 'Blocked from claim', note: 'No benchmark comparison is claimed or presented.' },
+];
+
+const EVAL_FAILURE_MODES = [
+  'Unreadable or image-only source pages — text extraction not attempted.',
+  'Missing context across documents — observation flagged as partially supported only.',
+  'Conflicting records without clear resolution — system abstains; practitioner decides.',
+  'Unsupported or heavily mixed languages — observation may be incomplete.',
+  'Stale analysis if fixture version changes without re-evaluation.',
+];
+
+const PERMISSION_STATUSES: { label: string; status: string; note: string; color: string }[] = [
+  { label: 'Purpose authorized', status: 'Required', note: 'Purpose brief must be completed before any analysis step.', color: 'teal' },
+  { label: 'Masking reviewed', status: 'Required', note: 'Masking state verified before output display.', color: 'teal' },
+  { label: 'Practitioner initiated', status: 'Enforced', note: 'No autonomous analysis. All steps require practitioner action.', color: 'teal' },
+  { label: 'Live processing disabled', status: 'Confirmed', note: 'providerTransmission: false. No outbound AI requests in this prototype.', color: 'teal' },
+];
+
+const PHASE8_PROVENANCE = {
+  versionId: 'SYN-FIXTURE-v1.4.2',
+  runId: 'REPLAY-2024-0315-001',
+  evalArtifactId: 'EVAL-SYN-2024-0315',
+  reviewDate: '2024-03-15',
+  auditAvailable: true,
+};
+
+const PHASE8_AUDIT_PREVIEW = [
+  { event: 'Evaluation fixture loaded — SYN-FIXTURE-v1.4.2', ts: '2024-03-15 09:00', actor: 'system' },
+  { event: 'Citation grounding check: 23 citations verified', ts: '2024-03-15 09:03', actor: 'system' },
+  { event: 'Abstention check: statutory items abstained correctly', ts: '2024-03-15 09:05', actor: 'system' },
+  { event: 'Human review gate: verified structurally (no bulk approval path)', ts: '2024-03-15 09:07', actor: 'system' },
+  { event: 'Evaluation record reviewed and signed', ts: '2024-03-15 10:00', actor: 'reviewer' },
+];
+
+// ───────────────────────────────────────────────────────────────────────────
+
 export default function TrustAndSafety() {
   const [activeTab, setActiveTab] = useState<Tab>('system-card');
   const [reportCategory, setReportCategory] = useState('');
@@ -115,6 +179,7 @@ export default function TrustAndSafety() {
     { id: 'guidance', label: 'Guidance', icon: BookOpen },
     { id: 'audit', label: 'Audit', icon: History },
     { id: 'report', label: 'Report', icon: Flag },
+    { id: 'boundaries', label: 'AI Boundaries', icon: Cpu },
   ];
 
   return (
@@ -517,6 +582,277 @@ export default function TrustAndSafety() {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+
+          {/* ── AI Boundaries (Phase 8) ── */}
+          {activeTab === 'boundaries' && (
+            <div className="space-y-10">
+
+              {/* System-status banner */}
+              <div className="flex items-center gap-3 bg-amber-50 border border-amber-300 rounded-md px-5 py-3.5 text-sm text-amber-900">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span className="font-semibold">Prepared demonstration</span>
+                <span className="text-amber-700">—</span>
+                <span className="text-amber-800">live AI processing is not enabled in this prototype.</span>
+              </div>
+
+              {/* What this system does / never decides */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-teal-50 border border-teal-200 rounded-md p-5 space-y-3">
+                  <h2 className="text-xs font-mono text-teal-700 uppercase tracking-widest flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> What this system does
+                  </h2>
+                  <ul className="space-y-2 text-sm text-foreground">
+                    {[
+                      'Organises case documents into a structured evidence packet.',
+                      'Creates source-linked candidate observations for practitioner review.',
+                      'Maps citations back to specific document pages and segments.',
+                      'Flags gaps, conflicts, and missing context for human review.',
+                      'Supports practitioner-initiated export with full provenance.',
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-md p-5 space-y-3">
+                  <h2 className="text-xs font-mono text-red-700 uppercase tracking-widest flex items-center gap-2">
+                    <Ban className="w-3.5 h-3.5" /> What this system never decides
+                  </h2>
+                  <ul className="space-y-2 text-sm text-foreground">
+                    {[
+                      'Trafficking or victim status for any person.',
+                      'Credibility, guilt, or innocence determination.',
+                      'Legal eligibility or non-punishment outcomes.',
+                      'Case priority, urgency, or referral to authorities.',
+                      'Any legal conclusion, recommendation, or strategy.',
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <XCircle className="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Permitted AI task */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <Cpu className="w-3.5 h-3.5 text-primary" /> Permitted AI Task
+                </h2>
+                <div className="border-l-4 border-primary bg-card border border-border rounded-sm p-5 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded">{PERMITTED_AI_TASK.id}</span>
+                    <span className="text-sm font-semibold text-foreground">{PERMITTED_AI_TASK.task}</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div>
+                      <span className="font-mono text-muted-foreground uppercase tracking-wider block mb-1">Scope</span>
+                      <span className="text-foreground">{PERMITTED_AI_TASK.scope}</span>
+                    </div>
+                    <div>
+                      <span className="font-mono text-muted-foreground uppercase tracking-wider block mb-1">Requires</span>
+                      <span className="text-foreground">{PERMITTED_AI_TASK.requires}</span>
+                    </div>
+                    <div>
+                      <span className="font-mono text-muted-foreground uppercase tracking-wider block mb-1">Produces</span>
+                      <span className="text-foreground">{PERMITTED_AI_TASK.produces}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Evaluation record */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <FileCheck2 className="w-3.5 h-3.5" /> Evaluation Record
+                </h2>
+                <div className="bg-card border border-border rounded-md overflow-hidden shadow-sm">
+                  <div className="bg-muted border-b border-border px-5 py-3 flex items-center gap-2">
+                    <span className="text-sm font-semibold text-foreground">Task: {EVAL_RECORD.task}</span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 divide-x divide-border border-b border-border">
+                    {[
+                      { label: 'Dataset version', value: EVAL_RECORD.datasetVersion },
+                      { label: 'Evaluation date', value: EVAL_RECORD.evaluationDate },
+                      { label: 'Test-case count', value: String(EVAL_RECORD.testCaseCount), placeholder: true },
+                    ].map(({ label, value, placeholder }) => (
+                      <div key={label} className="px-5 py-4">
+                        <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">{label}</div>
+                        <div className="text-sm font-mono font-semibold text-foreground flex items-center gap-2">
+                          {value}
+                          {placeholder && <span className="text-[9px] font-sans font-normal text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">illustrative</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-border">
+                    {[
+                      { label: 'Citation-grounding check', value: EVAL_RECORD.citationGroundingCheck },
+                      { label: 'Abstention handling', value: EVAL_RECORD.abstentionHandling },
+                      { label: 'Human-review requirement', value: EVAL_RECORD.humanReviewRequirement },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="px-5 py-4">
+                        <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider mb-1">{label}</div>
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-teal-50 text-teal-700 border-teal-200">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">All displayed numbers are illustrative placeholders until replaced by real executed evaluation results.</p>
+              </div>
+
+              {/* Evaluation dimensions */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <Activity className="w-3.5 h-3.5" /> Evaluation Status by Dimension
+                </h2>
+                <div className="bg-card border border-border rounded-md overflow-hidden shadow-sm">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-muted border-b border-border">
+                        <th className="text-left px-4 py-3 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Dimension</th>
+                        <th className="text-left px-4 py-3 text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Status</th>
+                        <th className="text-left px-4 py-3 text-[10px] font-mono text-muted-foreground uppercase tracking-wider hidden md:table-cell">Note</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {EVAL_DIMENSIONS.map((row, i) => {
+                        const badge =
+                          row.status === 'Measured'             ? 'bg-teal-50 text-teal-700 border-teal-200' :
+                          row.status === 'Not measured'         ? 'bg-muted text-muted-foreground border-border' :
+                          row.status === 'Requires verification'? 'bg-amber-50 text-amber-700 border-amber-200' :
+                                                                  'bg-red-50 text-red-700 border-red-200';
+                        return (
+                          <tr key={i} className="hover:bg-muted/20 transition-colors">
+                            <td className="px-4 py-3 font-medium text-foreground">{row.dimension}</td>
+                            <td className="px-4 py-3">
+                              <span className={cn("text-[10px] font-mono font-bold px-2 py-0.5 rounded border whitespace-nowrap", badge)}>{row.status}</span>
+                            </td>
+                            <td className="px-4 py-3 text-xs text-muted-foreground hidden md:table-cell leading-relaxed">{row.note}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Known limitations */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" /> Known Failure Modes &amp; Limitations
+                </h2>
+                <div className="bg-amber-50 border border-amber-200 rounded-md p-4 space-y-2">
+                  {EVAL_FAILURE_MODES.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2.5 text-sm text-amber-900">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Permission statuses */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5" /> Permission Statuses
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {PERMISSION_STATUSES.map((perm, i) => (
+                    <div key={i} className="flex items-start gap-3 p-4 bg-card border border-border rounded-md">
+                      <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-foreground">{perm.label}</span>
+                          <span className="text-[10px] font-mono font-bold bg-teal-50 text-teal-700 border border-teal-200 px-1.5 py-0.5 rounded">{perm.status}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{perm.note}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Provenance */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <Shield className="w-3.5 h-3.5" /> Provenance
+                </h2>
+                <div className="bg-card border border-border rounded-md p-5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+                    {[
+                      { label: 'Version ID', value: PHASE8_PROVENANCE.versionId },
+                      { label: 'Run ID', value: PHASE8_PROVENANCE.runId },
+                      { label: 'Eval Artifact ID', value: PHASE8_PROVENANCE.evalArtifactId },
+                      { label: 'Review Date', value: PHASE8_PROVENANCE.reviewDate },
+                      { label: 'Audit Available', value: PHASE8_PROVENANCE.auditAvailable ? 'Yes — see Audit tab' : 'No' },
+                    ].map(({ label, value }) => (
+                      <div key={label}>
+                        <span className="text-muted-foreground uppercase tracking-wider text-[10px] block mb-1">{label}</span>
+                        <span className="text-foreground">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground">Provenance values above are synthetic illustrative placeholders tied to the bundled fixture. They will be replaced when real evaluation results are available.</p>
+                </div>
+              </div>
+
+              {/* Compact audit-history preview */}
+              <div>
+                <h2 className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                  <History className="w-3.5 h-3.5" /> Evaluation Audit Preview
+                </h2>
+                <div className="bg-card border border-border rounded-md overflow-hidden shadow-sm">
+                  {PHASE8_AUDIT_PREVIEW.map((log, i) => (
+                    <div key={i} className="px-4 py-2.5 border-b border-border last:border-b-0 flex items-center justify-between hover:bg-muted/30 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className={cn(
+                          "text-[10px] font-mono uppercase px-1.5 py-0.5 rounded",
+                          log.actor === 'system'   ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                          log.actor === 'reviewer' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                                                     'bg-muted text-muted-foreground border border-border'
+                        )}>{log.actor}</span>
+                        <span className="text-sm text-foreground">{log.event}</span>
+                      </div>
+                      <span className="text-xs font-mono text-muted-foreground shrink-0 ml-4">{log.ts}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">Synthetic audit preview. Full trail in the Audit tab. Timestamps are illustrative placeholders.</p>
+              </div>
+
+              {/* Report action (visual-only) */}
+              <div className="flex items-start gap-4 p-5 bg-card border border-border rounded-md">
+                <Flag className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h2 className="text-sm font-semibold text-foreground mb-1">Report unsafe or incorrect output</h2>
+                  <p className="text-xs text-muted-foreground mb-3">If you observe an observation that is unsafe, incorrectly cited, or appears to draw a conclusion the system is not permitted to make, use the Report tab to record a local safety concern. No external transmission occurs.</p>
+                  <button
+                    onClick={() => setActiveTab('report')}
+                    className="text-xs font-medium border border-border bg-muted hover:bg-muted/70 text-foreground px-4 py-2 rounded transition-colors"
+                  >
+                    Go to Report tab
+                  </button>
+                </div>
+              </div>
+
+              {/* Boundary statement */}
+              <div className="bg-foreground text-background rounded-md px-6 py-5">
+                <div className="flex items-start gap-3">
+                  <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 opacity-80" />
+                  <p className="text-sm leading-relaxed font-medium">
+                    ContextFirst Nexus organises evidence for review. It does not determine trafficking, victim status, credibility, guilt, or legal outcomes.
+                  </p>
+                </div>
+              </div>
+
             </div>
           )}
 
