@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { MOCK_FINDINGS, MOCK_EVIDENCE_GAPS, Finding } from '@/data/mock-case';
-import { ReviewStatusBadge, SupportStatusBadge } from '@/components/badges';
+import { ReviewStatusBadge, SupportStatusBadge, EvidenceNatureBadge, OriginBadge } from '@/components/badges';
 import {
-  Maximize2, ShieldAlert, Filter, Table2, GitBranch, HelpCircle,
+  ShieldAlert, Filter, Table2, GitBranch, HelpCircle,
   AlertTriangle, CheckCircle2, ArrowRight, XCircle, ChevronRight,
   Scale, Eye, EyeOff, FileText, Link2, X, TriangleAlert,
+  Clock, ShieldX, BookOpen, CircleDot, CircleCheck, CircleHelp,
+  CircleX, CircleMinus, CircleAlert, ChevronDown, ChevronUp,
+  ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -79,6 +82,12 @@ const CHALLENGE_ASSUMPTIONS = [
   'Assumes "no overtime recorded" means overtime was owed rather than absent by design.',
 ];
 
+const CHALLENGE_MISSING = [
+  'Subject\'s independent account of working schedule',
+  'Independent payroll or time-tracking record',
+  'Third-party observation of shift duration',
+];
+
 const CHALLENGE_IMPACT = [
   { id: 'f-9', label: 'Alleged Conduct Timing (f-9)', change: 'Becomes Unresolved / Pending', severity: 'high' },
   { id: 't-4', label: 'Timeline event: Alleged task assigned (t-4)', change: 'Marked Uncertain', severity: 'med' },
@@ -87,6 +96,428 @@ const CHALLENGE_IMPACT = [
 ];
 
 const CHALLENGE_UNCHANGED = ['f-1 Passport Retention', 'f-2 Recruitment Fee Debt', 'f-6 Arrival Date Discrepancy'];
+
+// ── Evidence Integrity Trace data ──────────────────────────────────────────────
+
+type IntegrityTrace = {
+  documentId: string;
+  documentName: string;
+  page: number;
+  quote: string;
+  claimSummary: string;
+  timelineDeps: { id: string; label: string; dateType: string }[];
+  reviewActor: string;
+  reviewDate: string;
+  reviewAction: string;
+  exportStatus: 'contributing' | 'blocked' | 'clear' | 'pending';
+  exportNote: string;
+};
+
+const INTEGRITY_TRACES: Record<string, IntegrityTrace> = {
+  'f-1': {
+    documentId: 'd-2',
+    documentName: 'Recruiter Communication Log',
+    page: 5,
+    quote: '[REDACTED] requested original passport for "safekeeping" on day of arrival.',
+    claimSummary: 'Coercion indicator — employer withheld travel documents removing means of departure',
+    timelineDeps: [
+      { id: 't-3', label: 'Passport confiscated upon arrival', dateType: 'approximate' },
+    ],
+    reviewActor: 'M. Chen',
+    reviewDate: '24 Mar 2024',
+    reviewAction: 'Accepted with reservation (single-source)',
+    exportStatus: 'pending',
+    exportNote: 'f-1 accepted — dependency chain to f-5 requires resolution before export',
+  },
+  'f-2': {
+    documentId: 'd-1',
+    documentName: 'Employment Offer Letter',
+    page: 2,
+    quote: 'Deduction of $400/month for initial placement fee will be applied to first 6 months of wages.',
+    claimSummary: 'Recruitment fee debt creating ongoing economic dependency on employer',
+    timelineDeps: [
+      { id: 't-1', label: 'Employment contract signed in home country', dateType: 'exact' },
+    ],
+    reviewActor: 'M. Chen',
+    reviewDate: '24 Mar 2024',
+    reviewAction: 'Accepted — documented in signed contract',
+    exportStatus: 'pending',
+    exportNote: 'f-2 accepted — wage records absent (eg-3); export may require limitation statement',
+  },
+  'f-3': {
+    documentId: 'd-4',
+    documentName: 'Operational Task Log',
+    page: 1,
+    quote: 'Shift extended by 6 hours, no overtime recorded.',
+    claimSummary: 'Compelled task — extended hours without compensation or right to refuse',
+    timelineDeps: [
+      { id: 't-6', label: 'Shift extensions recorded Jan–Feb 2024', dateType: 'range' },
+      { id: 't-4', label: 'Alleged task assigned during control period', dateType: 'exact' },
+    ],
+    reviewActor: 'M. Chen',
+    reviewDate: '24 Mar 2024',
+    reviewAction: 'Accepted — supervisor log, medium extraction quality',
+    exportStatus: 'blocked',
+    exportNote: 'f-3 → f-9 (Conduct Timing) partially supported — export gate blocked on this dependency',
+  },
+  'f-4': {
+    documentId: 'd-2',
+    documentName: 'Recruiter Communication Log',
+    page: 8,
+    quote: '"If you leave, ICE will be notified immediately."',
+    claimSummary: 'Coercion via immigration threat — supervisor leveraged status to compel compliance',
+    timelineDeps: [],
+    reviewActor: '—',
+    reviewDate: '—',
+    reviewAction: 'Pending — unverified, translation partial, pp.2–3 unreadable',
+    exportStatus: 'blocked',
+    exportNote: 'f-4 pending review — partially supported, unverified citation; export blocked',
+  },
+  'f-5': {
+    documentId: 'd-5',
+    documentName: 'Support Provider Notes',
+    page: 2,
+    quote: 'Client stated they were not allowed out of the housing facility.',
+    claimSummary: 'Isolation — subject prohibited from contacting family or leaving unescorted',
+    timelineDeps: [],
+    reviewActor: '—',
+    reviewDate: '—',
+    reviewAction: 'Pending — single-source, no corroborating documentation',
+    exportStatus: 'blocked',
+    exportNote: 'f-5 insufficient support — dependency of f-1; export blocked pending resolution',
+  },
+  'f-6': {
+    documentId: 'd-1',
+    documentName: 'Employment Offer Letter + Travel Record',
+    page: 1,
+    quote: 'Start Date: October 1, 2023 [contract] vs. Entry stamped: November 15, 2023 [travel record]',
+    claimSummary: 'Contradiction — 45-day unexplained gap between contract start and border entry',
+    timelineDeps: [
+      { id: 't-2', label: 'Arrived in destination country — date conflict', dateType: 'exact' },
+    ],
+    reviewActor: '—',
+    reviewDate: '—',
+    reviewAction: 'Pending — conflicting sources, no explanation documented',
+    exportStatus: 'blocked',
+    exportNote: 'f-6 conflicting — non-punishment timeline cannot be completed; export blocked',
+  },
+  'f-7': {
+    documentId: 'd-5',
+    documentName: 'Support Provider Notes',
+    page: 4,
+    quote: 'Eviction notice served, effective Friday.',
+    claimSummary: 'Imminent housing loss — eviction within 48 hours, no alternative documented',
+    timelineDeps: [],
+    reviewActor: '—',
+    reviewDate: '—',
+    reviewAction: 'Pending — document-supported, requires immediate action',
+    exportStatus: 'pending',
+    exportNote: 'f-7 urgent need — does not directly block export but requires resolution before handoff',
+  },
+  'f-8': {
+    documentId: 'd-7',
+    documentName: 'Wage Deduction Records',
+    page: 1,
+    quote: '(No extractable text — document pages are image-only or extraction-failed)',
+    claimSummary: 'Evidence gap — no documentation of actual wages received vs. contracted amount',
+    timelineDeps: [],
+    reviewActor: '—',
+    reviewDate: '—',
+    reviewAction: 'Rejected — not-processed; document not readable',
+    exportStatus: 'pending',
+    exportNote: 'f-8 not processed — wage verification absent; f-2 debt claim partially supported only',
+  },
+};
+
+// ── Dependent export item per finding ──────────────────────────────────────────
+
+const EXPORT_DEPS: Record<string, { label: string; status: 'blocked' | 'pending' | 'clear' }> = {
+  'f-1': { label: 'Export dep: f-1 accepted, but f-5 dependency unresolved → gate blocked', status: 'blocked' },
+  'f-2': { label: 'Export dep: wage records absent → limitation note required in handoff', status: 'pending' },
+  'f-3': { label: 'Export dep: f-3 → f-9 unresolved → BLOCKED · new blocker would be added if withdrawn', status: 'blocked' },
+  'f-4': { label: 'Export dep: f-4 pending review → one of 4 active export blockers', status: 'blocked' },
+  'f-5': { label: 'Export dep: f-5 insufficient → f-1 dependency chain unresolved → gate blocked', status: 'blocked' },
+  'f-6': { label: 'Export dep: f-6 conflicting → non-punishment timeline incomplete → gate blocked', status: 'blocked' },
+  'f-7': { label: 'Export dep: f-7 urgency noted · does not directly block export', status: 'pending' },
+  'f-8': { label: 'Export dep: f-8 not processed · wage limitation note required if f-2 is included', status: 'pending' },
+};
+
+// ── Node state visual legend config ───────────────────────────────────────────
+
+const NODE_REVIEW_STATES = [
+  { icon: CheckCircle2, color: 'text-teal-600',  dot: 'bg-teal-500',  label: 'Human accepted' },
+  { icon: CircleDot,   color: 'text-blue-600',   dot: 'bg-blue-500',  label: 'Pending review' },
+  { icon: CircleCheck, color: 'text-purple-600', dot: 'bg-purple-500',label: 'Uncertain' },
+  { icon: CircleX,     color: 'text-red-600',    dot: 'bg-red-500',   label: 'Invalidated' },
+  { icon: ShieldX,     color: 'text-orange-600', dot: 'bg-orange-400',label: 'Export blocked' },
+];
+
+const NODE_EVIDENCE_STATES = [
+  { bg: 'bg-teal-50 border-teal-300',   label: 'Supporting' },
+  { bg: 'bg-red-50 border-red-300',     label: 'Contrary' },
+  { bg: 'bg-amber-50 border-amber-300', label: 'Missing info' },
+  { bg: 'bg-slate-50 border-slate-300 border-dashed', label: 'Unknown' },
+];
+
+// ── Integrity trace component ──────────────────────────────────────────────────
+
+function IntegrityTraceFlow({ findingId }: { findingId: string }) {
+  const trace = INTEGRITY_TRACES[findingId];
+  if (!trace) return null;
+
+  const exportColors = {
+    blocked: 'border-red-200 bg-red-50 text-red-700',
+    pending: 'border-amber-200 bg-amber-50 text-amber-700',
+    clear:   'border-teal-200 bg-teal-50 text-teal-700',
+    contributing: 'border-blue-200 bg-blue-50 text-blue-700',
+  };
+
+  const steps = [
+    {
+      icon: FileText,
+      color: 'bg-slate-100 border-slate-300 text-slate-600',
+      label: 'Document',
+      value: `${trace.documentId.toUpperCase()} · ${trace.documentName} · p.${trace.page}`,
+    },
+    {
+      icon: BookOpen,
+      color: 'bg-blue-50 border-blue-200 text-blue-600',
+      label: 'Exact source quotation',
+      value: trace.quote,
+      mono: true,
+    },
+    {
+      icon: CircleAlert,
+      color: 'bg-purple-50 border-purple-200 text-purple-600',
+      label: 'Extracted claim',
+      value: trace.claimSummary,
+    },
+    ...(trace.timelineDeps.length > 0 ? [{
+      icon: Clock,
+      color: 'bg-orange-50 border-orange-200 text-orange-600',
+      label: 'Timeline event(s)',
+      value: trace.timelineDeps.map(t => `${t.id} · ${t.label} (${t.dateType})`).join('\n'),
+    }] : []),
+    {
+      icon: GitBranch,
+      color: 'bg-indigo-50 border-indigo-200 text-indigo-600',
+      label: 'Nexus relationship',
+      value: `${findingId} → root · Charge–Coercion Nexus`,
+    },
+    {
+      icon: Eye,
+      color: 'bg-teal-50 border-teal-200 text-teal-600',
+      label: 'Human review',
+      value: `${trace.reviewAction} · ${trace.reviewDate !== '—' ? `by ${trace.reviewActor}` : 'Awaiting review'}`,
+    },
+    {
+      icon: ShieldAlert,
+      color: exportColors[trace.exportStatus],
+      label: 'Export eligibility',
+      value: trace.exportNote,
+    },
+  ];
+
+  return (
+    <div>
+      <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-1.5">
+        <ArrowRight className="w-3 h-3" />Evidence Integrity Trace
+      </div>
+      <div className="relative pl-3">
+        {/* vertical rail */}
+        <div className="absolute left-[5px] top-2 bottom-2 w-px bg-border" />
+        <div className="space-y-0">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+            return (
+              <div key={i} className="relative flex gap-2.5 pb-2.5 last:pb-0">
+                {/* rail dot */}
+                <div className={cn(
+                  'relative z-10 w-3 h-3 rounded-full border shrink-0 mt-1.5 flex items-center justify-center',
+                  step.color,
+                )}>
+                  <div className="w-1 h-1 rounded-full bg-current opacity-60" />
+                </div>
+                <div className={cn(
+                  'flex-1 rounded-md border p-2.5 text-xs',
+                  step.color,
+                )}>
+                  <div className="font-mono uppercase text-[9px] tracking-widest opacity-60 mb-0.5">{step.label}</div>
+                  <div className={cn('leading-relaxed', step.mono ? 'font-mono text-[11px]' : '')}>
+                    {step.value.split('\n').map((line, j) => (
+                      <div key={j}>{line}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Static challenge section (visual-only) ────────────────────────────────────
+
+function StaticChallengeSection({ findingId }: { findingId: string }) {
+  const [open, setOpen] = useState(false);
+
+  // Only show for f-3 (the pre-configured challenge scenario)
+  if (findingId !== 'f-3') return null;
+
+  return (
+    <div className="border border-amber-200 rounded-lg overflow-hidden">
+      {/* Section header — toggle */}
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-3.5 py-3 bg-amber-50 hover:bg-amber-100 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2">
+          <Scale className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+          <span className="text-xs font-semibold text-amber-900">Challenge this relationship</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-mono uppercase text-amber-600 border border-amber-300 bg-amber-100 px-1.5 py-0.5 rounded">
+            UI PREVIEW
+          </span>
+          {open ? <ChevronUp className="w-3.5 h-3.5 text-amber-600" /> : <ChevronDown className="w-3.5 h-3.5 text-amber-600" />}
+        </div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="p-3.5 space-y-4 bg-white">
+              {/* Prototype notice */}
+              <div className="bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-[10px] font-mono text-slate-600 leading-relaxed">
+                UI preview — dependency changes are not executed in this design prototype.
+                No state will be modified, no audit events will be recorded.
+              </div>
+
+              {/* Supporting evidence */}
+              <div>
+                <div className="text-[9px] font-mono text-teal-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3 h-3" />Supporting Evidence
+                </div>
+                <div className="bg-muted border border-border rounded-md p-2.5 text-[11px] font-mono text-foreground/80 border-l-2 border-l-teal-400 leading-relaxed">
+                  "Shift extended by 6 hours, no overtime recorded."
+                  <div className="mt-1 text-[10px] text-muted-foreground flex items-center gap-1.5">
+                    <span>Operational Task Log · p.1</span>
+                    <span className="text-[9px] uppercase bg-teal-50 text-teal-700 border border-teal-200 px-1 py-0.5 rounded">Medium quality</span>
+                    <CheckCircle2 className="w-2.5 h-2.5 text-teal-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Contrary evidence */}
+              <div>
+                <div className="text-[9px] font-mono text-red-600 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <XCircle className="w-3 h-3" />Contrary Evidence
+                </div>
+                <div className="space-y-1.5">
+                  {CHALLENGE_CONTRARY.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 p-2 bg-red-50 border border-red-200 rounded-md text-[11px] text-red-800">
+                      <XCircle className="w-3 h-3 text-red-400 shrink-0 mt-0.5" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Unverified assumptions */}
+              <div>
+                <div className="text-[9px] font-mono text-amber-700 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3 h-3" />Unverified Assumptions
+                </div>
+                <div className="space-y-1.5">
+                  {CHALLENGE_ASSUMPTIONS.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md text-[11px] text-amber-800">
+                      <AlertTriangle className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Missing information */}
+              <div>
+                <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                  <HelpCircle className="w-3 h-3" />Missing Information
+                </div>
+                <div className="space-y-1">
+                  {CHALLENGE_MISSING.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                      <ChevronRight className="w-3 h-3 text-amber-400 shrink-0" />{item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Impact preview */}
+              <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <div className="px-3 py-2 bg-slate-100 border-b border-slate-200 flex items-center gap-2">
+                  <EyeOff className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="text-[10px] font-mono text-slate-600 uppercase tracking-widest">Impact Preview — if withdrawn</span>
+                  <span className="ml-auto text-[9px] font-mono text-slate-500 border border-slate-300 bg-white px-1.5 py-0.5 rounded">NOT EXECUTED</span>
+                </div>
+                <div className="p-3 space-y-2">
+                  {/* Affected nexus ID */}
+                  <div className="flex items-start gap-2.5 p-2 bg-red-50 border border-red-200 rounded text-[11px] text-red-800">
+                    <TriangleAlert className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-mono font-semibold">Affected Nexus ID: f-9</span>
+                      <p className="mt-0.5 opacity-80">Alleged Conduct Timing → Becomes Unresolved / Pending</p>
+                    </div>
+                  </div>
+                  {/* Affected timeline ID */}
+                  <div className="flex items-start gap-2.5 p-2 bg-amber-50 border border-amber-200 rounded text-[11px] text-amber-800">
+                    <Clock className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-mono font-semibold">Affected Timeline ID: t-4</span>
+                      <p className="mt-0.5 opacity-80">Alleged task assigned (2025-04-02) → Marked Uncertain</p>
+                    </div>
+                  </div>
+                  {/* Evidence gap created */}
+                  <div className="flex items-start gap-2.5 p-2 bg-red-50 border border-red-200 rounded text-[11px] text-red-800">
+                    <CircleHelp className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-mono font-semibold">Evidence Gap created: eg-new</span>
+                      <p className="mt-0.5 opacity-80">"Compelled task evidence no longer supportable" — open gap</p>
+                    </div>
+                  </div>
+                  {/* Export blocker */}
+                  <div className="flex items-start gap-2.5 p-2 bg-red-50 border border-red-200 rounded text-[11px] text-red-800">
+                    <ShieldX className="w-3 h-3 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-mono font-semibold">Export Gate: new blocker added</span>
+                      <p className="mt-0.5 opacity-80">Remains Blocked — additional dependency blocker from f-9 cascade</p>
+                    </div>
+                  </div>
+                  {/* Unchanged */}
+                  <div className="pt-1 border-t border-border">
+                    <div className="text-[9px] font-mono text-teal-700 uppercase mb-1.5">Unchanged</div>
+                    {CHALLENGE_UNCHANGED.map(item => (
+                      <div key={item} className="flex items-center gap-2 text-[11px] text-teal-700 mb-1">
+                        <CheckCircle2 className="w-3 h-3 text-teal-500 shrink-0" />{item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -111,7 +542,6 @@ export default function CaseNexus() {
     const tPos = NODE_POSITIONS[edge.target];
     if (!sPos || !tPos || !isVisible(edge.source) || !isVisible(edge.target)) return null;
     const cfg = EDGE_TYPES[edge.type as keyof typeof EDGE_TYPES] || EDGE_TYPES.supports;
-    // If challenge withdrawn, show f-3 edges as dashed red
     const isWithdrawnEdge = challengeWithdrawn && (edge.source === 'f-3' || edge.target === 'f-3');
     return (
       <line
@@ -206,22 +636,52 @@ export default function CaseNexus() {
 
       {viewMode === 'graph' ? (
         <>
-          {/* Legend */}
-          <div className="absolute top-[120px] left-4 z-10 bg-card/95 backdrop-blur-md p-4 rounded-lg border border-border shadow-md pointer-events-none">
+          {/* Legend — expanded with node states */}
+          <div className="absolute top-[120px] left-4 z-10 bg-card/97 backdrop-blur-md p-4 rounded-lg border border-border shadow-md pointer-events-none" style={{ width: 188 }}>
             <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3">Legend</h3>
-            <div className="space-y-1.5 text-[11px] text-foreground">
+
+            {/* Node types */}
+            <div className="space-y-1.5 text-[11px] text-foreground mb-3">
               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-50 border border-blue-300" />Recruitment</div>
               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-purple-50 border border-purple-300" />Coercion / Control</div>
               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-amber-50 border border-amber-300" />Compelled Task</div>
               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-50 border border-red-300" />Contradiction</div>
               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-orange-50 border border-orange-300" />Urgency</div>
               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm border border-dashed border-slate-300" />Evidence Gap</div>
-              <div className="mt-3 pt-2 border-t border-border space-y-1.5">
-                <div className="flex items-center gap-2"><div className="w-6 h-0.5 bg-slate-300" />Supports</div>
-                <div className="flex items-center gap-2"><div className="w-6 h-0.5 bg-purple-400" />Depends on</div>
-                <div className="flex items-center gap-2"><div className="w-6 border-t-2 border-dashed border-red-400" />Conflicts with</div>
-                <div className="flex items-center gap-2"><div className="w-6 border-t border-dashed border-orange-400" />Urgency modifier</div>
+            </div>
+
+            {/* Evidence states */}
+            <div className="border-t border-border pt-2.5 mb-3">
+              <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Evidence state</div>
+              <div className="space-y-1.5 text-[11px]">
+                {NODE_EVIDENCE_STATES.map(s => (
+                  <div key={s.label} className="flex items-center gap-2">
+                    <div className={cn("w-3 h-3 rounded border shrink-0", s.bg)} />
+                    <span className="text-foreground">{s.label}</span>
+                  </div>
+                ))}
               </div>
+            </div>
+
+            {/* Review states */}
+            <div className="border-t border-border pt-2.5 mb-3">
+              <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Review state</div>
+              <div className="space-y-1.5 text-[11px]">
+                {NODE_REVIEW_STATES.map(s => (
+                  <div key={s.label} className="flex items-center gap-2">
+                    <div className={cn("w-2 h-2 rounded-full shrink-0", s.dot)} />
+                    <span className="text-foreground">{s.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Edge types */}
+            <div className="border-t border-border pt-2.5 space-y-1.5">
+              <div className="flex items-center gap-2"><div className="w-6 h-0.5 bg-slate-300" />Supports</div>
+              <div className="flex items-center gap-2"><div className="w-6 h-0.5 bg-purple-400" />Depends on</div>
+              <div className="flex items-center gap-2"><div className="w-6 border-t-2 border-dashed border-red-400" />Conflicts with</div>
+              <div className="flex items-center gap-2"><div className="w-6 border-t border-dashed border-orange-400" />Urgency modifier</div>
             </div>
           </div>
 
@@ -266,6 +726,7 @@ export default function CaseNexus() {
                     <div>
                       <div className="flex justify-between items-start mb-1.5">
                         <span className="text-[9px] font-mono uppercase opacity-70">{finding.type.replace(/-/g, ' ')}</span>
+                        {/* Review state dot */}
                         <div className={cn(
                           'w-2 h-2 rounded-full shrink-0',
                           isWithdrawn ? 'bg-slate-400'
@@ -273,15 +734,29 @@ export default function CaseNexus() {
                           : finding.reviewStatus === 'accepted' ? 'bg-teal-500'
                           : finding.reviewStatus === 'pending' ? 'bg-blue-500'
                           : finding.reviewStatus === 'invalidated' ? 'bg-red-500'
+                          : finding.reviewStatus === 'uncertain' ? 'bg-purple-500'
+                          : finding.reviewStatus === 'rejected' ? 'bg-orange-400'
                           : 'bg-slate-400'
                         )} />
                       </div>
                       <div className="font-medium text-[13px] leading-snug line-clamp-2">{finding.title}</div>
+                      {/* Support status mini-badge */}
+                      <div className={cn(
+                        "mt-1.5 text-[9px] font-mono uppercase px-1.5 py-0.5 rounded inline-block border",
+                        finding.supportStatus === 'supported' ? 'bg-teal-50 border-teal-200 text-teal-700'
+                        : finding.supportStatus === 'partially-supported' ? 'bg-amber-50 border-amber-200 text-amber-700'
+                        : finding.supportStatus === 'conflicting' ? 'bg-red-50 border-red-200 text-red-700'
+                        : finding.supportStatus === 'insufficient' ? 'bg-slate-50 border-slate-200 text-slate-500'
+                        : finding.supportStatus === 'unresolved' ? 'bg-purple-50 border-purple-200 text-purple-700'
+                        : 'bg-slate-50 border-slate-200 text-slate-400'
+                      )}>
+                        {finding.supportStatus.replace(/-/g, ' ')}
+                      </div>
                       {isWithdrawn && (
-                        <div className="mt-1.5 text-[9px] font-mono uppercase text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded inline-block">Withdrawn</div>
+                        <div className="mt-1.5 text-[9px] font-mono uppercase text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded inline-block ml-1">Withdrawn</div>
                       )}
                       {isCascaded && (
-                        <div className="mt-1.5 text-[9px] font-mono uppercase text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded inline-block">Unresolved</div>
+                        <div className="mt-1.5 text-[9px] font-mono uppercase text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded inline-block ml-1">Unresolved</div>
                       )}
                     </div>
                   ) : null}
@@ -383,138 +858,241 @@ export default function CaseNexus() {
       <AnimatePresence>
         {selectedNode && selectedNode !== 'root' && selectedFinding && challengePhase === 'idle' && (
           <motion.div
-            initial={{ x: 400, opacity: 0 }}
+            initial={{ x: 440, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 400, opacity: 0 }}
+            exit={{ x: 440, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="absolute top-[88px] right-0 bottom-0 w-[400px] bg-card/98 backdrop-blur-xl border-l border-border shadow-2xl flex flex-col z-30"
+            className="absolute top-[88px] right-0 bottom-0 w-[440px] bg-card/98 backdrop-blur-xl border-l border-border shadow-2xl flex flex-col z-30"
           >
-            <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
-              <div>
-                <h3 className="font-mono text-foreground font-semibold text-sm">Evidence Node</h3>
-                <span className="text-[10px] font-mono text-muted-foreground">{selectedFinding.id} · {NODE_POSITIONS[selectedNode]?.group} node</span>
+            {/* Panel header */}
+            <div className="p-4 border-b border-border bg-muted/30 shrink-0">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-mono text-xs text-muted-foreground">{selectedFinding.id}</span>
+                    <span className="text-muted-foreground/40">·</span>
+                    <span className="text-xs font-mono text-muted-foreground capitalize">{NODE_POSITIONS[selectedNode]?.group} node</span>
+                    <span className="text-muted-foreground/40">·</span>
+                    <span className="text-xs font-mono text-muted-foreground">Lane {selectedFinding.lane}</span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <ReviewStatusBadge status={selectedFinding.reviewStatus} />
+                    <SupportStatusBadge status={selectedFinding.supportStatus} />
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedNode(null)}
+                  className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-muted transition-colors shrink-0"
+                  aria-label="Close panel"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button onClick={() => setSelectedNode(null)} className="text-muted-foreground hover:text-foreground p-1.5 rounded hover:bg-muted transition-colors" aria-label="Close panel">
-                <X className="w-4 h-4" />
-              </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5 space-y-5">
-              {/* Badges */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <ReviewStatusBadge status={selectedFinding.reviewStatus} />
-                <SupportStatusBadge status={selectedFinding.supportStatus} />
-              </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 space-y-5">
 
-              <div>
-                <h2 className="text-lg font-bold text-foreground mb-2 leading-snug">{selectedFinding.title}</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed">{selectedFinding.description}</p>
-              </div>
-
-              {/* Metadata grid */}
-              <div className="bg-muted/50 border border-border rounded-lg p-3.5 space-y-3">
-                {[
-                  ['Support', selectedFinding.supportStatus.replace(/-/g, ' ')],
-                  ['Origin', selectedFinding.origin.replace(/-/g, ' ')],
-                  ['Evidence nature', selectedFinding.evidenceNature.replace(/-/g, ' ')],
-                  ['Lane', selectedFinding.lane === 'A' ? 'Lane A · Trafficking Indicators'
-                    : selectedFinding.lane === 'B' ? 'Lane B · Non-Punishment Relevance'
-                    : 'Lane C · Protection & Urgency'],
-                ].map(([label, value]) => (
-                  <div key={label} className="flex justify-between items-center text-sm border-b border-border/50 pb-3 last:border-0 last:pb-0">
-                    <span className="text-muted-foreground font-mono text-xs">{label}:</span>
-                    <span className="text-xs font-mono text-foreground capitalize">{value}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Citations */}
-              {selectedFinding.citations.length > 0 && (
+                {/* Title + description */}
                 <div>
-                  <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
-                    <FileText className="w-3 h-3" />Source Citations
+                  <h2 className="text-base font-bold text-foreground mb-1.5 leading-snug">{selectedFinding.title}</h2>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{selectedFinding.description}</p>
+                </div>
+
+                {/* Metadata row */}
+                <div className="bg-muted/40 border border-border rounded-lg p-3 space-y-2.5">
+                  <div className="flex justify-between items-center text-xs border-b border-border/50 pb-2">
+                    <span className="font-mono text-muted-foreground text-[10px]">Relationship ID:</span>
+                    <span className="font-mono text-foreground font-semibold">{selectedFinding.id}</span>
                   </div>
-                  {selectedFinding.citations.map((cit, i) => (
-                    <div key={i} className="bg-muted border border-border rounded-md p-3 text-xs font-mono text-foreground/80 border-l-2 border-l-primary/50 leading-relaxed mb-2">
-                      "{cit.text}"
-                      <div className="mt-1.5 text-[10px] text-muted-foreground/70 flex items-center gap-1.5">
-                        <span>{cit.sourceAuthority}</span>
-                        <span>·</span>
-                        <span>p.{cit.page}</span>
-                        {cit.validationStatus === 'verified' && (
-                          <CheckCircle2 className="w-3 h-3 text-teal-600" />
+                  <div className="flex justify-between items-center text-xs border-b border-border/50 pb-2">
+                    <span className="font-mono text-muted-foreground text-[10px]">Evidence nature:</span>
+                    <EvidenceNatureBadge nature={selectedFinding.evidenceNature} />
+                  </div>
+                  <div className="flex justify-between items-center text-xs border-b border-border/50 pb-2">
+                    <span className="font-mono text-muted-foreground text-[10px]">Origin:</span>
+                    <OriginBadge origin={selectedFinding.origin} />
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-mono text-muted-foreground text-[10px]">Review lane:</span>
+                    <span className="font-mono text-xs text-foreground">
+                      {selectedFinding.lane === 'A' ? 'Lane A · Trafficking Indicators'
+                        : selectedFinding.lane === 'B' ? 'Lane B · Non-Punishment Relevance'
+                        : 'Lane C · Protection & Urgency'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Evidence Integrity Trace */}
+                <IntegrityTraceFlow findingId={selectedFinding.id} />
+
+                {/* Exact citation */}
+                {selectedFinding.citations.length > 0 && (
+                  <div>
+                    <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                      <FileText className="w-3 h-3" />Exact Citation{selectedFinding.citations.length > 1 ? 's' : ''}
+                    </div>
+                    {selectedFinding.citations.map((cit, i) => (
+                      <div key={i} className="bg-muted border border-border rounded-md p-3 text-xs font-mono border-l-2 border-l-primary/50 leading-relaxed mb-2">
+                        <div className="text-[9px] font-mono text-muted-foreground uppercase mb-1.5">
+                          {cit.documentId?.toUpperCase()} · {cit.sourceAuthority} · p.{cit.page}
+                          {cit.segment && <span className="ml-1 opacity-60">· {cit.segment}</span>}
+                        </div>
+                        <div className="text-foreground/85 mb-1.5">"{cit.text}"</div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {cit.extractionQuality && (
+                            <span className={cn("text-[9px] uppercase px-1 py-0.5 rounded border font-mono",
+                              cit.extractionQuality === 'high' ? 'bg-teal-50 text-teal-700 border-teal-200'
+                              : cit.extractionQuality === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : 'bg-red-50 text-red-700 border-red-200'
+                            )}>
+                              {cit.extractionQuality} quality
+                            </span>
+                          )}
+                          {cit.validationStatus === 'verified' && (
+                            <span className="flex items-center gap-1 text-[9px] text-teal-700 font-mono">
+                              <CheckCircle2 className="w-2.5 h-2.5" />Verified
+                            </span>
+                          )}
+                          {cit.translationStatus && cit.translationStatus !== 'original' && (
+                            <span className="text-[9px] uppercase bg-blue-50 text-blue-700 border border-blue-200 px-1 py-0.5 rounded font-mono">
+                              {cit.translationStatus}
+                            </span>
+                          )}
+                        </div>
+                        {cit.limitations && (
+                          <div className="mt-2 flex items-start gap-1.5 text-amber-700 bg-amber-50 border border-amber-200 p-1.5 rounded text-[10px] leading-snug">
+                            <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5" />
+                            {cit.limitations}
+                          </div>
                         )}
                       </div>
-                      {cit.limitations && (
-                        <div className="mt-2 flex items-start gap-1.5 text-amber-700 bg-amber-50 border border-amber-200 p-1.5 rounded text-[10px] leading-snug">
-                          <AlertTriangle className="w-3 h-3 shrink-0 mt-0.5" />
-                          {cit.limitations}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Contradictions */}
-              {selectedFinding.contradictions && selectedFinding.contradictions.length > 0 && (
-                <div>
-                  <div className="text-[10px] font-mono text-red-600 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
-                    <XCircle className="w-3 h-3" />Contrary Evidence
-                  </div>
-                  {selectedFinding.contradictions.map((c, i) => (
-                    <div key={i} className="p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-xs mb-2">{c}</div>
-                  ))}
-                </div>
-              )}
-
-              {/* Missing context */}
-              {selectedFinding.missingContext && selectedFinding.missingContext.length > 0 && (
-                <div>
-                  <div className="text-[10px] font-mono text-amber-700 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
-                    <HelpCircle className="w-3 h-3" />Missing Information
-                  </div>
-                  {selectedFinding.missingContext.map((m, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
-                      <ChevronRight className="w-3 h-3 text-amber-500 shrink-0" />{m}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Dependencies */}
-              {selectedFinding.dependencies && selectedFinding.dependencies.length > 0 && (
-                <div className="bg-muted/50 border border-border rounded-lg p-3.5">
-                  <div className="text-[10px] font-mono text-muted-foreground uppercase mb-2.5 flex items-center gap-1.5">
-                    <Link2 className="w-3 h-3" />Downstream Dependencies
-                  </div>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {selectedFinding.dependencies.map(dep => (
-                      <span
-                        key={dep}
-                        onClick={() => setSelectedNode(dep)}
-                        className="text-[10px] font-mono bg-secondary border border-border px-2 py-1 rounded cursor-pointer hover:bg-primary/5 flex items-center gap-1 transition-colors"
-                      >
-                        {dep}<ArrowRight className="w-3 h-3" />
-                      </span>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
 
-              {selectedFinding.supportStatus === 'unresolved' && (
-                <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-sm text-amber-800 flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                {/* Contrary evidence */}
+                {selectedFinding.contradictions && selectedFinding.contradictions.length > 0 && (
                   <div>
-                    <strong className="block text-amber-700 mb-1 text-xs font-semibold uppercase tracking-wide">Dependency Broken</strong>
-                    This node's validity is unresolved due to upstream changes. Human review required before export.
+                    <div className="text-[10px] font-mono text-red-600 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                      <XCircle className="w-3 h-3" />Contrary Evidence
+                    </div>
+                    {selectedFinding.contradictions.map((c, i) => (
+                      <div key={i} className="flex items-start gap-2 p-2.5 bg-red-50 border border-red-200 rounded-md text-red-800 text-xs mb-2">
+                        <XCircle className="w-3 h-3 text-red-400 shrink-0 mt-0.5" />
+                        {c}
+                      </div>
+                    ))}
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* Missing information */}
+                {selectedFinding.missingContext && selectedFinding.missingContext.length > 0 && (
+                  <div>
+                    <div className="text-[10px] font-mono text-amber-700 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                      <HelpCircle className="w-3 h-3" />Missing Information
+                    </div>
+                    {selectedFinding.missingContext.map((m, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground mb-1.5">
+                        <ChevronRight className="w-3 h-3 text-amber-500 shrink-0" />{m}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Dependent Timeline items */}
+                {INTEGRITY_TRACES[selectedFinding.id]?.timelineDeps.length > 0 && (
+                  <div>
+                    <div className="text-[10px] font-mono text-orange-700 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                      <Clock className="w-3 h-3" />Dependent Timeline Items
+                    </div>
+                    <div className="space-y-1.5">
+                      {INTEGRITY_TRACES[selectedFinding.id].timelineDeps.map(t => (
+                        <div key={t.id} className="flex items-center gap-2.5 p-2.5 bg-orange-50 border border-orange-200 rounded-md text-xs">
+                          <span className="font-mono font-bold text-orange-800 shrink-0">{t.id}</span>
+                          <span className="text-orange-800 flex-1">{t.label}</span>
+                          <span className={cn("text-[9px] font-mono uppercase px-1 py-0.5 rounded border shrink-0",
+                            t.dateType === 'exact' ? 'bg-teal-50 text-teal-700 border-teal-200'
+                            : t.dateType === 'approximate' ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : t.dateType === 'range' ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            : 'bg-slate-50 text-slate-600 border-slate-200'
+                          )}>
+                            {t.dateType}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Downstream dependencies (finding-to-finding) */}
+                {selectedFinding.dependencies && selectedFinding.dependencies.length > 0 && (
+                  <div className="bg-muted/50 border border-border rounded-lg p-3.5">
+                    <div className="text-[10px] font-mono text-muted-foreground uppercase mb-2.5 flex items-center gap-1.5">
+                      <Link2 className="w-3 h-3" />Downstream Nexus Dependencies
+                    </div>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {selectedFinding.dependencies.map(dep => (
+                        <span
+                          key={dep}
+                          onClick={() => setSelectedNode(dep)}
+                          className="text-[10px] font-mono bg-secondary border border-border px-2 py-1 rounded cursor-pointer hover:bg-primary/5 flex items-center gap-1 transition-colors"
+                        >
+                          {dep}<ArrowRight className="w-3 h-3" />
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Dependent export item */}
+                {EXPORT_DEPS[selectedFinding.id] && (
+                  <div className={cn(
+                    "flex items-start gap-2.5 p-3 rounded-lg border text-xs",
+                    EXPORT_DEPS[selectedFinding.id].status === 'blocked'
+                      ? "bg-red-50 border-red-200 text-red-800"
+                      : "bg-amber-50 border-amber-200 text-amber-800"
+                  )}>
+                    <ShieldAlert className={cn("w-3.5 h-3.5 shrink-0 mt-0.5",
+                      EXPORT_DEPS[selectedFinding.id].status === 'blocked' ? 'text-red-500' : 'text-amber-500'
+                    )} />
+                    <div>
+                      <div className="font-mono font-semibold text-[10px] uppercase mb-0.5">Dependent Export Item</div>
+                      {EXPORT_DEPS[selectedFinding.id].label}
+                    </div>
+                  </div>
+                )}
+
+                {/* Unresolved warning */}
+                {selectedFinding.supportStatus === 'unresolved' && (
+                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg text-sm text-amber-800 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block text-amber-700 mb-1 text-xs font-semibold uppercase tracking-wide">Dependency Broken</strong>
+                      This node's validity is unresolved due to upstream changes. Human review required before export.
+                    </div>
+                  </div>
+                )}
+
+                {/* Static challenge section (visual-only, collapsible) */}
+                <StaticChallengeSection findingId={selectedFinding.id} />
+
+              </div>
             </div>
 
             {/* Action footer */}
-            <div className="p-4 border-t border-border bg-muted/20 space-y-2">
+            <div className="p-4 border-t border-border bg-muted/20 space-y-2 shrink-0">
+              {/* Open Source button */}
+              <button
+                disabled
+                className="w-full flex items-center justify-center gap-2 py-2 bg-slate-50 border border-slate-200 text-slate-500 font-medium text-xs rounded-md cursor-not-allowed opacity-70"
+                title="UI preview — source viewer not enabled in prototype"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Open Source — {INTEGRITY_TRACES[selectedFinding.id]?.documentName ?? selectedFinding.citations[0]?.sourceAuthority ?? 'Source Document'}
+                <span className="text-[9px] font-mono uppercase bg-slate-100 border border-slate-300 px-1.5 py-0.5 rounded ml-1">UI preview</span>
+              </button>
+
               {canChallenge && !challengeWithdrawn && (
                 <Button
                   onClick={() => setChallengePhase('reviewing')}
@@ -522,7 +1100,7 @@ export default function CaseNexus() {
                   className="w-full border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100 text-xs font-semibold h-9 gap-2"
                 >
                   <Scale className="w-3.5 h-3.5" />
-                  Challenge this relationship
+                  Open Challenge Workflow
                 </Button>
               )}
               {challengeWithdrawn && selectedNode === 'f-3' && (
@@ -541,7 +1119,7 @@ export default function CaseNexus() {
         )}
       </AnimatePresence>
 
-      {/* ── Challenge Review Panel ── */}
+      {/* ── Challenge Review Panel (interactive, existing) ── */}
       <AnimatePresence>
         {challengePhase !== 'idle' && (
           <motion.div
@@ -614,6 +1192,20 @@ export default function CaseNexus() {
                     <div key={i} className="flex items-start gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-md text-xs text-amber-800">
                       <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
                       {item}
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Missing information */}
+              <section>
+                <h4 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-1.5 border-b border-border pb-2">
+                  <HelpCircle className="w-3.5 h-3.5" />Missing Information
+                </h4>
+                <div className="space-y-1.5">
+                  {CHALLENGE_MISSING.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <ChevronRight className="w-3 h-3 text-amber-400 shrink-0" />{item}
                     </div>
                   ))}
                 </div>
