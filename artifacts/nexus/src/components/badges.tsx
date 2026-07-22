@@ -20,7 +20,7 @@ export function EvidenceNatureBadge({ nature, className }: { nature: EvidenceNat
   );
 }
 
-export function OriginBadge({ origin, className }: { origin, className?: string }) {
+export function OriginBadge({ origin, className }: { origin: 'source-extraction' | 'ai-suggestion' | 'human-created'; className?: string }) {
   const config = {
     'source-extraction': { icon: FileText, label: 'Extracted', color: 'text-slate-700 border-slate-200 bg-slate-50 shadow-slate-500/10' },
     'ai-suggestion': { icon: Sparkles, label: 'AI Suggested', color: 'text-purple-800 border-purple-200 bg-purple-50 shadow-purple-500/10' },

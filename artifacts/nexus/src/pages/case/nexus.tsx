@@ -15,16 +15,21 @@ import { Button } from '@/components/ui/button';
 
 // ── Graph config ──────────────────────────────────────────────────────────────
 
+// Node x-positions are chosen so that at 1280px viewport the graph fits
+// without horizontal scrolling (sidebar 260px + legend 204px = 464px used;
+// ~816px available).  Rightmost nodes (f-3, f-7) centred at x=700 → right
+// edge 795px — 21px inside the safe margin.  Scroll (overflow-auto on the
+// wrapper) remains a safety net for narrower screens.
 const NODE_POSITIONS: Record<string, { x: number; y: number; group: string }> = {
-  root:  { x: 500, y: 80,  group: 'charge' },
-  'f-2': { x: 190, y: 260, group: 'recruitment' },
-  'f-1': { x: 390, y: 260, group: 'coercion' },
-  'f-4': { x: 610, y: 260, group: 'coercion' },
-  'f-5': { x: 500, y: 410, group: 'coercion' },
-  'f-3': { x: 820, y: 260, group: 'task' },
-  'f-6': { x: 295, y: 155, group: 'contradiction' },
-  'f-7': { x: 820, y: 120, group: 'urgency' },
-  'f-8': { x: 175, y: 410, group: 'gap' },
+  root:  { x: 450, y: 80,  group: 'charge' },
+  'f-2': { x: 155, y: 260, group: 'recruitment' },
+  'f-1': { x: 345, y: 260, group: 'coercion' },
+  'f-4': { x: 555, y: 260, group: 'coercion' },
+  'f-5': { x: 450, y: 410, group: 'coercion' },
+  'f-3': { x: 700, y: 260, group: 'task' },
+  'f-6': { x: 255, y: 155, group: 'contradiction' },
+  'f-7': { x: 700, y: 120, group: 'urgency' },
+  'f-8': { x: 140, y: 410, group: 'gap' },
 };
 
 const EDGES = [
@@ -686,7 +691,11 @@ export default function CaseNexus() {
           </div>
 
           {/* Graph area */}
-          <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-muted/40 via-background to-background min-h-0">
+          <div className="flex-1 overflow-auto bg-gradient-to-br from-muted/40 via-background to-background min-h-0">
+            {/* Inner canvas: fixed minimum size so nodes at the right edge are never clipped.
+                Right-most nodes (f-3, f-7) are centred at x=700 with width 190 → right edge 795px.
+                min-w-[820px] gives 25px of breathing room beyond that. */}
+            <div className="relative min-w-[820px] h-full min-h-[520px]">
             <div className="absolute inset-0 opacity-25" style={{ backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
               {EDGES.map((edge, i) => renderEdge(edge, i))}
@@ -768,6 +777,7 @@ export default function CaseNexus() {
                 </motion.div>
               );
             })}
+            </div>{/* end inner canvas */}
           </div>
         </div>
       ) : (
