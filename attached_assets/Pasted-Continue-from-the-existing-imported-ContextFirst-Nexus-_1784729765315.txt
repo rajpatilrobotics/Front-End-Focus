@@ -1,0 +1,76 @@
+Continue from the existing imported ContextFirst Nexus GitHub project.
+
+FINAL UI/UX POLISH PASS — STATIC PROTOTYPE ONLY
+
+This is NOT an application-building task.
+
+Do not add backend code, APIs, databases, authentication, file processing, OCR, AI calls, export generation, persistence, shared state, Context, reducers, cross-page synchronization, new routes, dependencies, tests, deployment, or real workflows.
+
+Use only existing static synthetic fixture data and existing local visual interactions.
+
+Work only inside:
+artifacts/nexus
+
+The case workspace may remain desktop-optimized. If opened on a small screen, show a small static notice:
+“Desktop-optimized prototype — use a larger screen for the complete workspace.”
+
+Do not build a mobile navigation system.
+
+8. DASHBOARD FIXTURE CLARITY
+
+Keep REF-2024-0047-SYN as the primary clickable demo workspace.
+
+For other case cards that do not have complete distinct workflows:
+- Label them “Illustrative fixture”
+- Replace “Open Workspace” with a disabled “Preview only” treatment
+- Do not create new case routes or data
+
+Keep the evaluation fixture card and its existing Trust link.
+
+9. PURPOSE BRIEF CLARITY
+
+In pages/case/purpose.tsx:
+
+Add a visible message near the form:
+
+“Synthetic fixture inputs only. Do not enter real, private, or identifying information.”
+
+Keep the current form design and prepared-checkpoint button.
+
+Do not add form submission, storage, validation services, or backend logic.
+
+10. REPLIT PREVIEW ELEMENTS
+
+Do not attempt to hide, modify, or work around Replit’s development-preview banner or “Build for free” badge in application code.
+
+These will be handled later through publication.
+
+FILES ALLOWED TO CHANGE
+
+- artifacts/nexus/src/pages/landing.tsx
+- artifacts/nexus/src/pages/dashboard.tsx
+- artifacts/nexus/src/pages/case/layout.tsx
+- artifacts/nexus/src/pages/case/purpose.tsx
+- artifacts/nexus/src/pages/case/documents.tsx
+- artifacts/nexus/src/pages/case/nexus.tsx
+- artifacts/nexus/src/pages/case/tasks.tsx
+- artifacts/nexus/src/pages/case/export-gate.tsx
+- artifacts/nexus/src/pages/trust.tsx
+- artifacts/nexus/src/index.css
+
+Do not modify any other files.
+Do not create new files.
+Do not create attached_assets or prompt-copy files.
+Do not modify package.json, pnpm-lock.yaml, .replit, or configuration files.
+Do not install packages.
+Do not run builds or tests.
+Do not commit, push, publish, or deploy.
+Do not add new features.
+
+Stop immediately after completing these static TSX/CSS UI repairs.
+
+At the end, report only:
+1. Files changed
+2. UI text repaired
+3. Responsive/layout repairs made
+4. Controls marked as UI preview
