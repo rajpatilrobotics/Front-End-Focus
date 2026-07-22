@@ -1,0 +1,238 @@
+Continue from the existing imported ContextFirst Nexus GitHub project.
+
+FINAL UI/UX POLISH PASS — STATIC PROTOTYPE ONLY
+
+This is NOT an application-building task.
+
+Do not add backend code, APIs, databases, authentication, file processing, OCR, AI calls, export generation, persistence, shared state, Context, reducers, cross-page synchronization, new routes, dependencies, tests, deployment, or real workflows.
+
+Use only existing static synthetic fixture data and existing local visual interactions.
+
+Work only inside:
+artifacts/nexus
+
+Preserve:
+- The current visual style and design system
+- All existing routes
+- All 12 separate sidebar tabs
+- The Evidence Integrity Map
+- Existing filters and tabs
+- The Accessible Table
+- Existing static synthetic fixture
+- Existing working navigation
+
+Do not rebuild or redesign the application.
+
+Make only the following UI/UX repairs.
+
+1. TRUTHFUL PROTOTYPE LANGUAGE
+
+In landing.tsx, dashboard.tsx, trust.tsx, and export-gate.tsx:
+
+Replace unsupported real-test language.
+
+Change:
+- “11/11 Safety tests passing”
+- “4 Tests PASS”
+- “verified”
+- “correctly detected”
+- Similar claims suggesting real measured evaluation
+
+Use truthful prototype wording such as:
+- “11/11 safety scenarios illustrated”
+- “4 expected outcomes shown”
+- “Illustrative fixture example”
+- “Linked to synthetic fixture segments”
+- “Expected blocked state demonstrated”
+- “Not independently validated”
+- “Static synthetic example — not a live AI run”
+
+Do not claim that tests, AI, OCR, or validation actually ran.
+
+Keep the Trust evaluation design, cards, and table.
+
+2. NON-FUNCTIONAL CONTROLS
+
+The following controls currently look operational even though this is a static UI prototype:
+
+- New Case
+- Upload
+- Upload Documents
+- Process Bundled PDFs Locally
+- Replace File
+- Intentional Reveal
+- Request OCR
+- Retry OCR
+- Retry Extraction
+- Create Task
+- Reassign
+- Update Status
+- Mark Completed
+
+Do not implement these actions.
+
+Keep them visible for design demonstration, but:
+- Render them disabled
+- Add a small “UI PREVIEW” or “DEMO ONLY” badge
+- Add nearby text: “Static prototype — no processing or data changes occur”
+- Ensure disabled styling remains readable
+
+Do not disable navigation, filters, the Accessible Table, or the prepared demo/checkpoint controls that already work locally.
+
+3. CONSISTENT STATIC COUNTS AND COPY
+
+Use these canonical values everywhere for case c-001:
+
+- 5 unresolved evidence gaps
+- 3 pending interview questions
+- 4 open tasks
+- 1 immediate urgent need
+- 7 documents
+
+Fix Export Gate text that currently says two urgent needs. It must say one immediate urgent need.
+
+Change:
+“Timeline (1 events)”
+to:
+“Timeline (1 event)”
+
+Change:
+“23 verified”
+to:
+“23 linked fixture citations”
+
+Do not create shared state. Update visible static text only.
+
+4. DOCUMENT COVERAGE CONTRADICTION
+
+In pages/case/documents.tsx:
+
+The OCR-required Wage Deduction Records document has:
+- 0 readable pages
+- 1 image-only page
+- 1 extraction-failed page
+
+Its Coverage Limitations section must not say:
+“No coverage limitations recorded.”
+
+Replace it with truthful static text explaining:
+- Page 1 is image-only and requires OCR
+- Page 2 extraction failed
+- The document cannot currently support complete review
+- Missing access must not be treated as negative evidence
+
+Do not implement OCR or file processing.
+
+5. EVIDENCE MAP LAYOUT
+
+In pages/case/nexus.tsx:
+
+Preserve the current graph and all existing nodes.
+
+Fix the layout so the legend does not overlap or hide graph nodes.
+
+Use a responsive CSS layout:
+- On large desktop: reserve a separate left column for the legend
+- Place the graph in a flexible right column
+- On narrower screens: place the legend above the graph
+- Keep every node visible with opacity 1 and scale 1
+- Preserve keyboard focusability
+- Preserve the Accessible Table
+- Do not add graph libraries, dragging, zooming, or graph logic
+
+6. DESKTOP READABILITY
+
+Across the listed case pages:
+
+- Increase important text currently using 9px or 10px sizing
+- Important metadata should generally be at least 11–12px
+- Explanatory text should generally be at least 13–14px
+- Improve low-contrast gray text where necessary
+- Preserve the compact practitioner-workspace appearance
+- Do not enlarge everything or redesign the typography system
+
+7. LANDING PAGE RESPONSIVENESS
+
+In landing.tsx and index.css:
+
+Fix the landing page at a 390px-wide viewport.
+
+Requirements:
+- No horizontal scrolling
+- Header content must fit
+- Synthetic fixture notice must stack or wrap
+- Audience pill must wrap within the viewport
+- Hero title must fit without clipping
+- Supporting copy and buttons must remain visible
+- Stats must stack or wrap
+- Cards and sections should use one column on mobile
+- Use max-w-full, min-w-0, flex-wrap, and responsive font sizes where appropriate
+
+At a 1280×720 desktop viewport:
+- Preserve the visual identity
+- Slightly reduce the hero heading if necessary
+- Keep explanatory copy or a primary Start Demo action visible without excessive scrolling
+
+The case workspace may remain desktop-optimized. If opened on a small screen, show a small static notice:
+“Desktop-optimized prototype — use a larger screen for the complete workspace.”
+
+Do not build a mobile navigation system.
+
+8. DASHBOARD FIXTURE CLARITY
+
+Keep REF-2024-0047-SYN as the primary clickable demo workspace.
+
+For other case cards that do not have complete distinct workflows:
+- Label them “Illustrative fixture”
+- Replace “Open Workspace” with a disabled “Preview only” treatment
+- Do not create new case routes or data
+
+Keep the evaluation fixture card and its existing Trust link.
+
+9. PURPOSE BRIEF CLARITY
+
+In pages/case/purpose.tsx:
+
+Add a visible message near the form:
+
+“Synthetic fixture inputs only. Do not enter real, private, or identifying information.”
+
+Keep the current form design and prepared-checkpoint button.
+
+Do not add form submission, storage, validation services, or backend logic.
+
+10. REPLIT PREVIEW ELEMENTS
+
+Do not attempt to hide, modify, or work around Replit’s development-preview banner or “Build for free” badge in application code.
+
+These will be handled later through publication.
+
+FILES ALLOWED TO CHANGE
+
+- artifacts/nexus/src/pages/landing.tsx
+- artifacts/nexus/src/pages/dashboard.tsx
+- artifacts/nexus/src/pages/case/layout.tsx
+- artifacts/nexus/src/pages/case/purpose.tsx
+- artifacts/nexus/src/pages/case/documents.tsx
+- artifacts/nexus/src/pages/case/nexus.tsx
+- artifacts/nexus/src/pages/case/tasks.tsx
+- artifacts/nexus/src/pages/case/export-gate.tsx
+- artifacts/nexus/src/pages/trust.tsx
+- artifacts/nexus/src/index.css
+
+Do not modify any other files.
+Do not create new files.
+Do not create attached_assets or prompt-copy files.
+Do not modify package.json, pnpm-lock.yaml, .replit, or configuration files.
+Do not install packages.
+Do not run builds or tests.
+Do not commit, push, publish, or deploy.
+Do not add new features.
+
+Stop immediately after completing these static TSX/CSS UI repairs.
+
+At the end, report only:
+1. Files changed
+2. UI text repaired
+3. Responsive/layout repairs made
+4. Controls marked as UI preview

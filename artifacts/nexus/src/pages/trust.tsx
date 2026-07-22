@@ -123,7 +123,7 @@ const EVAL_RECORD = {
 };
 
 const EVAL_DIMENSIONS: { dimension: string; status: 'Illustrative demo result' | 'Not measured' | 'Requires verification' | 'Blocked from claim'; note: string }[] = [
-  { dimension: 'Citation grounding', status: 'Illustrative demo result', note: '23 citations verified against canonical segments. Count is an illustrative placeholder.' },
+  { dimension: 'Citation grounding', status: 'Illustrative demo result', note: '23 linked fixture citations against canonical segments. Count is an illustrative placeholder.' },
   { dimension: 'Abstention on legal conclusions', status: 'Illustrative demo result', note: 'System abstains on all statutory determinations. Verified structurally.' },
   { dimension: 'Human review gate', status: 'Illustrative demo result', note: 'No candidate accepted without practitioner action. Verified structurally.' },
   { dimension: 'Abstention on conflicting records', status: 'Illustrative demo result', note: 'Contradictory items presented without resolution. No legal conclusion drawn.' },
@@ -158,7 +158,7 @@ const PHASE8_PROVENANCE = {
 
 const PHASE8_AUDIT_PREVIEW = [
   { event: 'Evaluation fixture loaded — SYN-FIXTURE-v1.4.2', ts: '2024-03-15 09:00', actor: 'system' },
-  { event: 'Citation grounding check: 23 citations verified', ts: '2024-03-15 09:03', actor: 'system' },
+  { event: 'Citation grounding check: 23 linked fixture citations', ts: '2024-03-15 09:03', actor: 'system' },
   { event: 'Abstention check: statutory items abstained correctly', ts: '2024-03-15 09:05', actor: 'system' },
   { event: 'Human review gate: verified structurally (no bulk approval path)', ts: '2024-03-15 09:07', actor: 'system' },
   { event: 'Evaluation record reviewed and signed', ts: '2024-03-15 10:00', actor: 'reviewer' },
@@ -372,7 +372,7 @@ export default function TrustAndSafety() {
               {/* Summary cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: 'Tests PASS', value: String(CHALLENGE_EVAL_RESULTS.filter(r => r.result === 'PASS').length), color: 'text-teal-700', bg: 'bg-teal-50 border-teal-200' },
+                  { label: 'Expected outcomes shown', value: String(CHALLENGE_EVAL_RESULTS.filter(r => r.result === 'PASS').length), color: 'text-teal-700', bg: 'bg-teal-50 border-teal-200' },
                   { label: 'Quarantined', value: String(CHALLENGE_EVAL_RESULTS.filter(r => r.result === 'QUARANTINE').length), color: 'text-red-700', bg: 'bg-red-50 border-red-200' },
                   { label: 'Abstentions', value: String(CHALLENGE_EVAL_RESULTS.filter(r => r.result === 'ABSTAIN').length), color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200' },
                   { label: 'Total checks', value: String(CHALLENGE_EVAL_RESULTS.length), color: 'text-foreground', bg: 'bg-muted border-border' },

@@ -67,9 +67,10 @@ export default function Landing() {
       </header>
 
       {/* ── Synthetic data strip ── */}
-      <div className="bg-amber-50 border-b border-amber-200 px-6 py-2.5 flex items-center justify-center gap-2 text-[11px] font-mono text-amber-800 shadow-sm z-20 relative">
+      <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-center gap-2 text-[11px] font-mono text-amber-800 shadow-sm z-20 relative flex-wrap text-center">
         <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-        <span className="font-semibold">All data in this workspace is a bundled synthetic fixture.</span> This prototype does not accept real or private case data.
+        <span className="font-semibold">All data in this workspace is a bundled synthetic fixture.</span>
+        <span className="hidden xs:inline">This prototype does not accept real or private case data.</span>
       </div>
 
       {/* ── Dark hero ── */}
@@ -89,15 +90,15 @@ export default function Landing() {
         <div className="absolute top-0 left-1/3 w-[600px] h-[500px] rounded-full pointer-events-none animate-[spin_20s_linear_infinite]" style={{ background: 'radial-gradient(ellipse, rgba(43,188,212,0.15) 0%, transparent 70%)' }} />
         <div className="absolute -bottom-20 right-1/4 w-96 h-96 rounded-full pointer-events-none animate-[pulse_6s_ease-in-out_infinite]" style={{ background: 'radial-gradient(ellipse, rgba(43,188,212,0.1) 0%, transparent 70%)' }} />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 py-20 md:py-28">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-28">
           {/* Audience pill */}
-          <div className="inline-flex items-center gap-2 text-[11px] font-mono border-2 border-emerald-500/30 bg-emerald-500/15 text-emerald-300 px-4 py-2 rounded-full mb-8 shadow-sm backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            For qualified legal practitioners — not survivors, hotlines, or law enforcement
+          <div className="inline-flex flex-wrap items-center gap-2 text-[11px] font-mono border-2 border-emerald-500/30 bg-emerald-500/15 text-emerald-300 px-4 py-2 rounded-full mb-6 sm:mb-8 shadow-sm backdrop-blur-md max-w-full">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="min-w-0">For qualified legal practitioners — not survivors, hotlines, or law enforcement</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight text-white mb-6 leading-[1.0]">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]">
             Source-grounded case preparation
             <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-[#2BBCD4] via-[#5EDFEF] to-[#2BBCD4]">
               for forced-criminality matters
@@ -105,37 +106,37 @@ export default function Landing() {
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed mb-10 font-light">
+          <p className="text-base sm:text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed mb-8 sm:mb-10 font-light">
             ContextFirst Nexus helps qualified practitioners answer: what does the case packet actually document about the relationship between alleged conduct and possible coercion — and what needs human review before a safe handoff?
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3 sm:gap-4">
             <Link href="/cases">
               <Button
                 size="lg"
-                className="text-white font-bold px-10 h-14 rounded-md gap-2 shadow-2xl hover:scale-[1.02] transition-transform"
+                className="text-white font-bold px-8 sm:px-10 h-12 sm:h-14 rounded-md gap-2 shadow-2xl hover:scale-[1.02] transition-transform w-full sm:w-auto"
                 style={{ background: 'linear-gradient(135deg, #2BBCD4 0%, #1FA8C0 100%)', boxShadow: '0 8px 32px rgba(43,188,212,0.4)' }}
               >
                 Start Demo <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
             <Link href="/trust">
-              <Button size="lg" variant="outline" className="h-14 border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium px-8 rounded-md backdrop-blur-sm transition-all">
+              <Button size="lg" variant="outline" className="h-12 sm:h-14 border-white/20 text-white hover:bg-white/10 hover:border-white/40 font-medium px-6 sm:px-8 rounded-md backdrop-blur-sm transition-all w-full sm:w-auto">
                 Trust &amp; Safety
               </Button>
             </Link>
           </div>
 
           {/* Hero stats */}
-          <div className="mt-16 flex flex-wrap gap-8 border-t border-white/8 pt-10 max-w-2xl">
+          <div className="mt-10 sm:mt-16 flex flex-col sm:flex-row flex-wrap gap-6 sm:gap-8 border-t border-white/8 pt-8 sm:pt-10 max-w-2xl">
             {[
-              { value: '11/11', label: 'Safety tests passing' },
+              { value: '11/11', label: 'safety scenarios illustrated' },
               { value: 'false', label: 'Provider transmission' },
               { value: 'Local', label: 'Processing location' },
             ].map((s, idx) => (
-              <div key={s.label} className={cn("group pr-8", idx !== 2 && "border-r border-white/10")}>
-                <div className="text-4xl font-bold font-mono text-[#2BBCD4] group-hover:text-white transition-colors">{s.value}</div>
+              <div key={s.label} className={cn("group", idx !== 2 && "sm:pr-8 sm:border-r border-white/10")}>
+                <div className="text-3xl sm:text-4xl font-bold font-mono text-[#2BBCD4] group-hover:text-white transition-colors">{s.value}</div>
                 <div className="text-[10px] text-slate-400 mt-1 font-mono uppercase tracking-wider leading-tight">{s.label}</div>
               </div>
             ))}
@@ -271,17 +272,17 @@ export default function Landing() {
             <Link href="/cases">
               <Button
                 size="lg"
-                className="text-white font-bold px-12 h-16 text-lg rounded-xl gap-2 shadow-xl hover:scale-105 transition-all duration-300 ring-4 ring-primary/30 animate-pulse"
+                className="text-white font-bold px-8 sm:px-12 h-14 sm:h-16 text-base sm:text-lg rounded-xl gap-2 shadow-xl hover:scale-105 transition-all duration-300 ring-4 ring-primary/30 animate-pulse"
                 style={{ background: 'linear-gradient(135deg, #2BBCD4 0%, #1FA8C0 100%)', boxShadow: '0 8px 32px rgba(43,188,212,0.3)' }}
               >
                 Load Case Workspace <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
-            <div className="flex items-center gap-4 text-xs text-slate-400 font-mono mt-4">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-slate-400 font-mono mt-4">
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> No account needed</span>
-              <span className="text-white/20">•</span>
+              <span className="text-white/20 hidden sm:inline">•</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Synthetic data only</span>
-              <span className="text-white/20">•</span>
+              <span className="text-white/20 hidden sm:inline">•</span>
               <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Local processing</span>
             </div>
           </div>

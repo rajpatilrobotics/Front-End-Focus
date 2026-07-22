@@ -635,9 +635,9 @@ export default function CaseNexus() {
       </div>
 
       {viewMode === 'graph' ? (
-        <>
-          {/* Legend — expanded with node states */}
-          <div className="absolute top-[120px] left-4 z-10 bg-card/97 backdrop-blur-md p-4 rounded-lg border border-border shadow-md pointer-events-none" style={{ width: 188 }}>
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
+          {/* Legend — in a dedicated column on large screens, above graph on small screens */}
+          <div className="lg:w-[204px] shrink-0 overflow-y-auto border-b lg:border-b-0 lg:border-r border-border bg-card/80 backdrop-blur-md p-4">
             <h3 className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-3">Legend</h3>
 
             {/* Node types */}
@@ -652,7 +652,7 @@ export default function CaseNexus() {
 
             {/* Evidence states */}
             <div className="border-t border-border pt-2.5 mb-3">
-              <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Evidence state</div>
+              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Evidence state</div>
               <div className="space-y-1.5 text-[11px]">
                 {NODE_EVIDENCE_STATES.map(s => (
                   <div key={s.label} className="flex items-center gap-2">
@@ -665,7 +665,7 @@ export default function CaseNexus() {
 
             {/* Review states */}
             <div className="border-t border-border pt-2.5 mb-3">
-              <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Review state</div>
+              <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mb-2">Review state</div>
               <div className="space-y-1.5 text-[11px]">
                 {NODE_REVIEW_STATES.map(s => (
                   <div key={s.label} className="flex items-center gap-2">
@@ -677,7 +677,7 @@ export default function CaseNexus() {
             </div>
 
             {/* Edge types */}
-            <div className="border-t border-border pt-2.5 space-y-1.5">
+            <div className="border-t border-border pt-2.5 space-y-1.5 text-[11px]">
               <div className="flex items-center gap-2"><div className="w-6 h-0.5 bg-slate-300" />Supports</div>
               <div className="flex items-center gap-2"><div className="w-6 h-0.5 bg-purple-400" />Depends on</div>
               <div className="flex items-center gap-2"><div className="w-6 border-t-2 border-dashed border-red-400" />Conflicts with</div>
@@ -686,7 +686,7 @@ export default function CaseNexus() {
           </div>
 
           {/* Graph area */}
-          <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-muted/40 via-background to-background">
+          <div className="flex-1 relative overflow-hidden bg-gradient-to-br from-muted/40 via-background to-background min-h-0">
             <div className="absolute inset-0 opacity-25" style={{ backgroundImage: 'radial-gradient(circle, #94a3b8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
               {EDGES.map((edge, i) => renderEdge(edge, i))}
@@ -730,7 +730,7 @@ export default function CaseNexus() {
                   ) : finding ? (
                     <div>
                       <div className="flex justify-between items-start mb-1.5">
-                        <span className="text-[9px] font-mono uppercase opacity-70">{finding.type.replace(/-/g, ' ')}</span>
+                        <span className="text-[10px] font-mono uppercase opacity-70">{finding.type.replace(/-/g, ' ')}</span>
                         {/* Review state dot */}
                         <div className={cn(
                           'w-2 h-2 rounded-full shrink-0',
@@ -747,7 +747,7 @@ export default function CaseNexus() {
                       <div className="font-medium text-[13px] leading-snug line-clamp-2">{finding.title}</div>
                       {/* Support status mini-badge */}
                       <div className={cn(
-                        "mt-1.5 text-[9px] font-mono uppercase px-1.5 py-0.5 rounded inline-block border",
+                        "mt-1.5 text-[10px] font-mono uppercase px-1.5 py-0.5 rounded inline-block border",
                         finding.supportStatus === 'supported' ? 'bg-teal-50 border-teal-200 text-teal-700'
                         : finding.supportStatus === 'partially-supported' ? 'bg-amber-50 border-amber-200 text-amber-700'
                         : finding.supportStatus === 'conflicting' ? 'bg-red-50 border-red-200 text-red-700'
@@ -769,7 +769,7 @@ export default function CaseNexus() {
               );
             })}
           </div>
-        </>
+        </div>
       ) : (
         /* Accessible table view */
         <div className="flex-1 overflow-y-auto p-6">

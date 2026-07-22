@@ -133,6 +133,12 @@ export default function CaseLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
+      {/* Mobile notice — case workspace is desktop-optimized */}
+      <div className="lg:hidden bg-slate-800 text-slate-200 text-xs font-mono px-4 py-3 text-center shrink-0 z-30 flex items-center justify-center gap-2">
+        <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+        Desktop-optimized prototype — use a larger screen for the complete workspace.
+      </div>
+
       {/* Synthetic warning banner */}
       <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center justify-center gap-2 text-[11px] font-mono text-amber-800 shrink-0 shadow-sm z-20">
         <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
@@ -176,7 +182,7 @@ export default function CaseLayout() {
           <nav className="flex-1 px-3 py-2 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-sidebar-border">
             {NAV_SECTIONS.map((section, idx) => (
               <div key={section.title} className={cn("relative", idx !== 0 && "pt-4 before:absolute before:top-0 before:left-4 before:right-4 before:h-px before:bg-sidebar-border/50")}>
-                <div className="text-[9px] font-mono font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/40 px-3 mb-2 flex items-center gap-2">
+                <div className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-sidebar-foreground/40 px-3 mb-2 flex items-center gap-2">
                   {section.title}
                 </div>
                 <div className="space-y-0.5">

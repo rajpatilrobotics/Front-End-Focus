@@ -67,6 +67,17 @@ export default function CasePurpose() {
       />
 
       <div className="flex-1 overflow-y-auto p-6 md:p-10">
+        <div className="max-w-5xl mx-auto space-y-6">
+
+          {/* Synthetic fixture notice */}
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-amber-800 leading-relaxed">
+              <strong>Synthetic fixture inputs only.</strong> Do not enter real, private, or identifying information. This form is part of a static design prototype — no data is stored, submitted, or transmitted.
+            </p>
+          </div>
+
+        </div>
         <div className="max-w-5xl mx-auto grid grid-cols-1 xl:grid-cols-5 gap-10">
 
           {/* Form — left 3 cols */}

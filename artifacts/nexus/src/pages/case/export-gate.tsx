@@ -52,7 +52,7 @@ const EXPORT_BLOCKER_GAPS = MOCK_EVIDENCE_GAPS.filter(g =>
   (g.priority === 'high' || g.evidenceStatus === 'missing')
 );
 const IMMEDIATE_NEEDS = MOCK_URGENT_NEEDS.filter(n =>
-  n.urgency === 'immediate' || n.urgency === 'within-24h'
+  n.urgency === 'immediate'
 );
 
 // ── Phase 6: Checklist categories ────────────────────────────────────────────
@@ -622,7 +622,7 @@ export default function CaseExportGate() {
                     icon: <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />,
                     color: 'text-teal-800',
                     value: selectedOutput === 'full'
-                      ? `${FINDING_SAFE_SHARE_CANDIDATES.length} accepted findings · Timeline (${MOCK_FINDINGS.filter(f => f.type === 'timeline-link').length} events) · 23 citations · Evidence gap summary · Urgent need referrals · Export-eligible notes`
+                      ? (() => { const evtCount = MOCK_FINDINGS.filter(f => f.type === 'timeline-link').length; return `${FINDING_SAFE_SHARE_CANDIDATES.length} accepted findings · Timeline (${evtCount} event${evtCount !== 1 ? 's' : ''}) · 23 linked fixture citations · Evidence gap summary · Urgent need referrals · Export-eligible notes`; })()
                       : `${selectedFindingCandidates.size} selected finding${selectedFindingCandidates.size !== 1 ? 's' : ''} · ${selectedNeedCandidates.size} urgent need item${selectedNeedCandidates.size !== 1 ? 's' : ''} · Minimum-scope summary only`,
                   },
                   {
@@ -695,7 +695,7 @@ export default function CaseExportGate() {
                   { label: 'Reviewed-State Hash',   value: 'sha256:7f3a9b2c4e1d8f…',     highlight: false },
                   { label: 'Masking Status',        value: 'Incomplete — d-5 pending',   highlight: true },
                   { label: 'Human Review Status',   value: 'Incomplete — 4 items pending', highlight: true },
-                  { label: 'Citation Count',        value: '23 verified',                highlight: false },
+                  { label: 'Citation Count',        value: '23 linked fixture citations', highlight: false },
                   { label: 'Provider Transmission', value: 'false — browser-local only', highlight: false },
                   { label: 'Generated',             value: '2024-03-24 11:42 UTC',       highlight: false },
                 ].map(row => (

@@ -113,6 +113,12 @@ const COVERAGE_LIMITATIONS: Record<string, string[]> = {
   'd-3': ['Page 1 partially legible — border entry stamp obscured. Arrival date unresolvable from this source alone.', 'Pages 4–5 missing from uploaded file. Not treated as blank — absence is recorded.'],
   'd-4': ['Full extraction failed. Document may be password-protected or corrupted. Replace with a readable copy before export.'],
   'd-5': ['Masking approval pending. Document is withheld from export until practitioner confirms masking is complete.', 'Segment mismatch on p.2 — extracted text does not align with linked citation. Manual review required.'],
+  'd-7': [
+    'Page 1 is image-only — no text layer is present. Content cannot be extracted without OCR processing.',
+    'Page 2 extraction failed — the text layer could not be read from this page.',
+    'This document cannot currently support a complete review. Both pages require intervention before any claim can be assessed against its content.',
+    'Missing access to this document must not be treated as negative evidence — the absence of readable wage records reflects a processing limitation, not a confirmed absence of payment.',
+  ],
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -227,9 +233,12 @@ export default function CaseDocuments() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {processingState === 'idle' && (
-            <Button size="sm" onClick={handleProcess} className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-sm h-7 text-xs font-medium">
-              <Cpu className="w-3.5 h-3.5 mr-1.5" />Process Bundled PDFs Locally
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button size="sm" disabled className="bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60 rounded-sm h-7 text-xs font-medium" title="Static prototype — no processing or data changes occur">
+                <Cpu className="w-3.5 h-3.5 mr-1.5" />Process Bundled PDFs Locally
+              </Button>
+              <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded hidden md:inline">DEMO ONLY</span>
+            </div>
           )}
           {processingState === 'complete' && (
             <div className="flex items-center gap-1.5 text-xs text-teal-700 font-medium">
@@ -300,9 +309,10 @@ export default function CaseDocuments() {
           <div className="p-3.5 border-b border-border flex items-center justify-between bg-card/60">
             <h2 className="font-semibold text-foreground text-sm">Documents</h2>
             <div className="flex items-center gap-1.5">
-              <Button variant="outline" size="sm" className="h-7 bg-card border-border text-foreground hover:bg-muted text-xs">
+              <Button variant="outline" size="sm" disabled className="h-7 bg-muted border-border text-muted-foreground text-xs opacity-50 cursor-not-allowed" title="Static prototype — no processing or data changes occur">
                 <Upload className="w-3 h-3 mr-1.5" />Upload
               </Button>
+              <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded hidden sm:inline">DEMO ONLY</span>
             </div>
           </div>
 
@@ -479,19 +489,14 @@ export default function CaseDocuments() {
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              {/* Phase 5: visual-only actions */}
-              <Button size="sm" variant="outline" className="h-7 text-xs border-border text-muted-foreground hover:bg-muted font-mono">
+              {/* Phase 5: visual-only actions — disabled in prototype */}
+              <Button size="sm" variant="outline" disabled className="h-7 text-xs border-border text-muted-foreground font-mono opacity-50 cursor-not-allowed" title="Static prototype — no processing or data changes occur">
                 <FilePlus className="w-3 h-3 mr-1" />Replace File
               </Button>
-              {!isRevealed ? (
-                <Button onClick={() => setRevealModalOpen(true)} size="sm" variant="outline" className="h-7 text-xs border-amber-300 text-amber-700 hover:bg-amber-50 font-mono uppercase tracking-wider">
-                  <Unlock className="w-3 h-3 mr-1" />Intentional Reveal
-                </Button>
-              ) : (
-                <Button onClick={() => setIsRevealed(false)} size="sm" variant="outline" className="h-7 text-xs border-teal-300 text-teal-700 hover:bg-teal-50 font-mono uppercase tracking-wider">
-                  <Lock className="w-3 h-3 mr-1" />Restore Masking
-                </Button>
-              )}
+              <Button size="sm" variant="outline" disabled className="h-7 text-xs border-amber-300 text-amber-700 font-mono uppercase tracking-wider opacity-50 cursor-not-allowed" title="Static prototype — no processing or data changes occur">
+                <Unlock className="w-3 h-3 mr-1" />Intentional Reveal
+              </Button>
+              <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded hidden md:inline">DEMO ONLY</span>
             </div>
           </div>
 
@@ -617,12 +622,12 @@ export default function CaseDocuments() {
                               <td className="px-3 py-2 text-xs text-muted-foreground">{cfg.ocr}</td>
                               <td className="px-3 py-2">
                                 {cfg.retryable ? (
-                                  <Button size="sm" variant="outline" className={cn(
-                                    "h-6 text-[10px] font-mono border rounded-sm px-2",
+                                  <Button size="sm" variant="outline" disabled className={cn(
+                                    "h-6 text-[10px] font-mono border rounded-sm px-2 opacity-50 cursor-not-allowed",
                                     p.status === 'image-only'
-                                      ? "border-blue-200 text-blue-700 hover:bg-blue-50"
-                                      : "border-amber-200 text-amber-700 hover:bg-amber-50"
-                                  )}>
+                                      ? "border-blue-200 text-blue-700"
+                                      : "border-amber-200 text-amber-700"
+                                  )} title="Static prototype — no processing or data changes occur">
                                     <RotateCcw className="w-2.5 h-2.5 mr-1" />{cfg.retryLabel}
                                   </Button>
                                 ) : (
@@ -667,23 +672,24 @@ export default function CaseDocuments() {
                   </div>
                 </div>
 
-                {/* Visual-only action bar */}
+                {/* Visual-only action bar — all actions disabled in prototype */}
                 <div className="border border-border rounded-sm bg-card p-3 flex items-center gap-2 flex-wrap">
                   <span className="text-[10px] font-mono uppercase text-muted-foreground mr-1">Actions:</span>
-                  <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border">
+                  <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border" onClick={() => setActiveDetailTab('pages')}>
                     <Eye className="w-3 h-3 mr-1.5" />Review Pages
                   </Button>
                   {selectedDoc.pages.some(p => p.status === 'image-only') && (
-                    <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-blue-200 text-blue-700 hover:bg-blue-50">
+                    <Button size="sm" variant="outline" disabled className="h-7 text-xs rounded-sm border-blue-200 text-blue-700 opacity-50 cursor-not-allowed" title="Static prototype — no processing or data changes occur">
                       <RefreshCw className="w-3 h-3 mr-1.5" />Retry OCR
                     </Button>
                   )}
-                  <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border">
+                  <Button size="sm" variant="outline" disabled className="h-7 text-xs rounded-sm border-border opacity-50 cursor-not-allowed" title="Static prototype — no processing or data changes occur">
                     <FilePlus className="w-3 h-3 mr-1.5" />Replace File
                   </Button>
-                  <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border">
+                  <Button size="sm" variant="outline" disabled className="h-7 text-xs rounded-sm border-border opacity-50 cursor-not-allowed" title="Static prototype — no processing or data changes occur">
                     <Upload className="w-3 h-3 mr-1.5" />Upload Documents
                   </Button>
+                  <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded ml-auto">DEMO ONLY</span>
                 </div>
 
               </div>

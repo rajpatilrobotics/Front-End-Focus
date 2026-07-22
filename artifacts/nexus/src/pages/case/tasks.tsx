@@ -193,9 +193,12 @@ export default function CaseTasks() {
           <p className="text-[10px] font-mono text-muted-foreground hidden lg:block">
             Suggested deadlines require practitioner confirmation
           </p>
-          <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border gap-1.5">
-            <Plus className="w-3 h-3" /> Create Task
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button size="sm" variant="outline" disabled className="h-7 text-xs rounded-sm border-border gap-1.5 opacity-50 cursor-not-allowed">
+              <Plus className="w-3 h-3" /> Create Task
+            </Button>
+            <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded hidden sm:inline">DEMO ONLY</span>
+          </div>
         </div>
       </div>
 
@@ -301,7 +304,7 @@ export default function CaseTasks() {
                           {task.title}
                         </p>
                         <span className={cn(
-                          "text-[9px] uppercase font-mono px-1.5 py-0.5 rounded-sm border shrink-0",
+                          "text-[10px] uppercase font-mono px-1.5 py-0.5 rounded-sm border shrink-0",
                           priority.color
                         )}>
                           {priority.label}
@@ -319,7 +322,7 @@ export default function CaseTasks() {
                       {/* Meta row */}
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={cn(
-                          "text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm border flex items-center gap-1",
+                          "text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-sm border flex items-center gap-1",
                           status.chip
                         )}>
                           {STATUS_ICON[task.status]}
@@ -369,14 +372,14 @@ export default function CaseTasks() {
               {/* Status / priority badges */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className={cn(
-                  "text-[9px] uppercase font-mono px-2 py-0.5 rounded-sm border flex items-center gap-1.5",
+                  "text-[10px] uppercase font-mono px-2 py-0.5 rounded-sm border flex items-center gap-1.5",
                   STATUS_CONFIG[selected.status].chip
                 )}>
                   {STATUS_ICON[selected.status]}
                   {STATUS_CONFIG[selected.status].label}
                 </span>
                 <span className={cn(
-                  "text-[9px] uppercase font-mono px-2 py-0.5 rounded-sm border",
+                  "text-[10px] uppercase font-mono px-2 py-0.5 rounded-sm border",
                   PRIORITY_CONFIG[selected.priority].color
                 )}>
                   {PRIORITY_CONFIG[selected.priority].label} Priority
@@ -530,17 +533,19 @@ export default function CaseTasks() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border">
+              <span className="text-[9px] font-mono text-muted-foreground/70 hidden lg:block italic">Static prototype — no data changes occur</span>
+              <Button size="sm" variant="outline" disabled className="h-7 text-xs rounded-sm border-border opacity-50 cursor-not-allowed">
                 <ArrowRight className="w-3 h-3 mr-1.5" />Reassign
               </Button>
-              <Button size="sm" variant="outline" className="h-7 text-xs rounded-sm border-border">
+              <Button size="sm" variant="outline" disabled className="h-7 text-xs rounded-sm border-border opacity-50 cursor-not-allowed">
                 Update Status
               </Button>
               {selected.status !== 'completed' && (
-                <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white text-xs rounded-sm h-7">
+                <Button size="sm" disabled className="bg-muted text-muted-foreground text-xs rounded-sm h-7 opacity-50 cursor-not-allowed border border-border">
                   <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />Mark Completed
                 </Button>
               )}
+              <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded shrink-0">DEMO ONLY</span>
             </div>
           </div>
         </div>

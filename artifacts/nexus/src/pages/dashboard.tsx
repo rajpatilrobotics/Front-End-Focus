@@ -53,9 +53,12 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        <Button size="sm" className="bg-[linear-gradient(135deg,#2BBCD4_0%,#1FA8C0_100%)] text-white hover:opacity-90 rounded-md font-semibold gap-1.5 shadow-md border-none">
-          <Plus className="w-3.5 h-3.5" />New Case
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" disabled className="bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60 rounded-md font-semibold gap-1.5" title="Static prototype — no processing or data changes occur">
+            <Plus className="w-3.5 h-3.5" />New Case
+          </Button>
+          <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded hidden sm:inline">DEMO ONLY</span>
+        </div>
       </header>
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 space-y-10">
@@ -206,100 +209,122 @@ export default function Dashboard() {
 
 function CaseCard({ caseData }: { caseData: Case }) {
   const isReady = caseData.exportGateStatus === 'ready';
+  const isPrimaryDemo = caseData.id === 'c-001';
   // Static counts — hardcoded to match scenario design
   const CARD_GAP_COUNT = 5;
   const CARD_TASK_COUNT = 4;
   const caseNeeds = MOCK_URGENT_NEEDS.filter(n => n.urgency === 'immediate');
 
-  return (
-    <Link href={`/case/${caseData.id}`} className="block group h-full">
+  const innerCard = (
+    <div className={cn(
+      "bg-card border rounded-2xl flex flex-col h-full transition-all duration-300 relative overflow-hidden",
+      isReady ? "border-teal-200/50" : "border-border",
+      isPrimaryDemo
+        ? "cursor-pointer group-hover:shadow-[0_0_0_1px_rgba(43,188,212,0.3),_0_20px_40px_rgba(0,0,0,0.08)] group-hover:border-primary/40 group-hover:-translate-y-1"
+        : "cursor-default",
+    )}>
+      {/* Status bar at top */}
       <div className={cn(
-        "bg-card border rounded-2xl flex flex-col h-full cursor-pointer transition-all duration-300 relative overflow-hidden",
-        isReady ? "border-teal-200/50" : "border-border",
-        "group-hover:shadow-[0_0_0_1px_rgba(43,188,212,0.3),_0_20px_40px_rgba(0,0,0,0.08)] group-hover:border-primary/40 group-hover:-translate-y-1",
-      )}>
-        {/* Status bar at top */}
-        <div className={cn(
-          "h-1 w-full",
-          isReady ? "bg-gradient-to-r from-teal-400 to-teal-500" : "bg-gradient-to-r from-amber-400 to-orange-500"
-        )} />
+        "h-1 w-full",
+        isReady ? "bg-gradient-to-r from-teal-400 to-teal-500" : "bg-gradient-to-r from-amber-400 to-orange-500"
+      )} />
 
-        <div className="p-6 flex flex-col flex-1 gap-5">
-          {/* Card header */}
-          <div className="flex justify-between items-start">
-            <div>
+      <div className="p-6 flex flex-col flex-1 gap-5">
+        {/* Card header */}
+        <div className="flex justify-between items-start">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap mb-0.5">
               <h3 className="font-mono text-lg font-bold text-foreground group-hover:text-primary transition-colors tracking-tight">{caseData.refId}</h3>
-              <p className="text-sm font-medium text-muted-foreground mt-1 flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> {caseData.practitioner}</p>
+              {!isPrimaryDemo && (
+                <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-500 border border-slate-300 px-1.5 py-0.5 rounded">Illustrative fixture</span>
+              )}
             </div>
-            <div className={cn(
-              "px-3 py-1.5 rounded-md border text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm",
-              isReady
-                ? "bg-teal-50 border-teal-200 text-teal-800"
-                : "bg-amber-50 border-amber-200 text-amber-800"
-            )}>
-              {isReady ? <CheckCircle2 className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
-              {isReady ? 'Gate Ready' : 'Gate Blocked'}
-            </div>
+            <p className="text-sm font-medium text-muted-foreground mt-1 flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> {caseData.practitioner}</p>
           </div>
-
-          {/* Metrics */}
-          <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-3 bg-background/60 p-4 rounded-xl border border-border/40">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
-                <FileText className="w-3 h-3" />Documents
-              </span>
-              <span className="font-mono font-bold text-foreground text-sm">{caseData.documentCount}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
-                <Activity className="w-3 h-3" />Analysis
-              </span>
-              <span className={cn(
-                "font-mono text-[10px] font-bold w-fit px-1.5 py-0.5 rounded border",
-                caseData.analysisReadiness === 'ready'
-                  ? "bg-blue-50 border-blue-200 text-blue-700"
-                  : "bg-muted border-border text-muted-foreground"
-              )}>
-                {caseData.analysisReadiness.toUpperCase()}
-              </span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
-                <HelpCircle className="w-3 h-3" />Gaps
-              </span>
-              <span className="font-mono text-[10px] font-bold text-amber-700 w-fit">{CARD_GAP_COUNT} OPEN</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
-                <ClipboardList className="w-3 h-3" />Tasks
-              </span>
-              <span className="font-mono text-[10px] font-bold text-foreground w-fit">{CARD_TASK_COUNT} OPEN</span>
-            </div>
+          <div className={cn(
+            "px-3 py-1.5 rounded-md border text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm",
+            isReady
+              ? "bg-teal-50 border-teal-200 text-teal-800"
+              : "bg-amber-50 border-amber-200 text-amber-800"
+          )}>
+            {isReady ? <CheckCircle2 className="w-3.5 h-3.5" /> : <ShieldAlert className="w-3.5 h-3.5" />}
+            {isReady ? 'Gate Ready' : 'Gate Blocked'}
           </div>
+        </div>
 
-          {caseNeeds.length > 0 && (
-            <div className="flex items-center justify-between text-xs px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
-              <span className="text-red-800 flex items-center gap-1.5 font-semibold">
-                <Phone className="w-3.5 h-3.5" />Urgent Needs
-              </span>
-              <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-red-100 text-red-800 font-bold shadow-sm">
-                {caseNeeds.length} IMMEDIATE
-              </span>
-            </div>
-          )}
-
-          {/* Card footer */}
-          <div className="pt-2 flex items-center justify-between mt-auto">
-            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono bg-muted px-2 py-1 rounded border border-border">
-              <Clock className="w-3 h-3" />
-              {new Date(caseData.lastActivity).toLocaleDateString()}
+        {/* Metrics */}
+        <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-3 bg-background/60 p-4 rounded-xl border border-border/40">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
+              <FileText className="w-3 h-3" />Documents
             </span>
+            <span className="font-mono font-bold text-foreground text-sm">{caseData.documentCount}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
+              <Activity className="w-3 h-3" />Analysis
+            </span>
+            <span className={cn(
+              "font-mono text-[10px] font-bold w-fit px-1.5 py-0.5 rounded border",
+              caseData.analysisReadiness === 'ready'
+                ? "bg-blue-50 border-blue-200 text-blue-700"
+                : "bg-muted border-border text-muted-foreground"
+            )}>
+              {caseData.analysisReadiness.toUpperCase()}
+            </span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
+              <HelpCircle className="w-3 h-3" />Gaps
+            </span>
+            <span className="font-mono text-[10px] font-bold text-amber-700 w-fit">{CARD_GAP_COUNT} OPEN</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase flex items-center gap-1">
+              <ClipboardList className="w-3 h-3" />Tasks
+            </span>
+            <span className="font-mono text-[10px] font-bold text-foreground w-fit">{CARD_TASK_COUNT} OPEN</span>
+          </div>
+        </div>
+
+        {caseNeeds.length > 0 && (
+          <div className="flex items-center justify-between text-xs px-3 py-2 bg-red-50 border border-red-200 rounded-lg">
+            <span className="text-red-800 flex items-center gap-1.5 font-semibold">
+              <Phone className="w-3.5 h-3.5" />Urgent Needs
+            </span>
+            <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-red-100 text-red-800 font-bold shadow-sm">
+              {caseNeeds.length} IMMEDIATE
+            </span>
+          </div>
+        )}
+
+        {/* Card footer */}
+        <div className="pt-2 flex items-center justify-between mt-auto">
+          <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono bg-muted px-2 py-1 rounded border border-border">
+            <Clock className="w-3 h-3" />
+            {new Date(caseData.lastActivity).toLocaleDateString()}
+          </span>
+          {isPrimaryDemo ? (
             <span className="text-xs font-bold text-primary flex items-center gap-1.5 group-hover:gap-2.5 transition-all px-3 py-1.5 rounded-lg" style={{ background: 'linear-gradient(135deg, rgba(43,188,212,0.15) 0%, rgba(43,188,212,0.05) 100%)' }}>
               Open Workspace <ArrowRight className="w-3.5 h-3.5" />
             </span>
-          </div>
+          ) : (
+            <span className="text-xs font-medium text-muted-foreground px-3 py-1.5 rounded-lg border border-border bg-muted opacity-60 cursor-not-allowed">
+              Preview only
+            </span>
+          )}
         </div>
       </div>
+    </div>
+  );
+
+  if (!isPrimaryDemo) {
+    return <div className="block group h-full">{innerCard}</div>;
+  }
+
+  return (
+    <Link href={`/case/${caseData.id}`} className="block group h-full">
+      {innerCard}
     </Link>
   );
 }
